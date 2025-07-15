@@ -10,9 +10,10 @@ import {
   SafetyCertificateOutlined,
   BulbOutlined,
   TransactionOutlined,
-  SettingOutlined
+  SettingOutlined,
+  BuildingOutlined
 } from '@ant-design/icons';
-import { useLocation, useRouter } from 'umi';
+import { useLocation } from 'wouter';
 
 const { Sider } = Layout;
 const { Text } = Typography;
@@ -66,8 +67,7 @@ const menuItems: MenuProps['items'] = [
 ];
 
 export function Sidebar() {
-  const [location] = useLocation();
-  const [, navigate] = useRouter();
+  const [location, navigate] = useLocation();
 
   const getSelectedKey = () => {
     if (location === '/vendor-comparison') return 'vendor';
