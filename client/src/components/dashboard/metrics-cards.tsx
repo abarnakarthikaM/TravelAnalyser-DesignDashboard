@@ -1,11 +1,11 @@
 
-import { Card, Statistic, Row, Col } from "antd";
 import { 
-  DollarOutlined, 
-  SendOutlined, 
-  HomeOutlined, 
-  CarOutlined 
-} from "@ant-design/icons";
+  DollarSign, 
+  Send, 
+  Home, 
+  Car 
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface MetricsCardsProps {
   metrics?: {
@@ -22,65 +22,51 @@ export function MetricsCards({ metrics }: MetricsCardsProps) {
       title: "Total Expenses",
       value: metrics?.totalExpenses || 0,
       prefix: "$",
-      icon: <DollarOutlined style={{ fontSize: 24, color: '#1890ff' }} />,
+      icon: <DollarSign className="w-6 h-6 text-blue-600" />,
       suffix: "",
     },
     {
       title: "Air Travel",
       value: metrics?.airTravel || 0,
       prefix: "$",
-      icon: <SendOutlined style={{ fontSize: 24, color: '#52c41a' }} />,
+      icon: <Send className="w-6 h-6 text-green-600" />,
       suffix: "",
     },
     {
       title: "Accommodation", 
       value: metrics?.accommodation || 0,
       prefix: "$",
-      icon: <HomeOutlined style={{ fontSize: 24, color: '#fa8c16' }} />,
+      icon: <Home className="w-6 h-6 text-orange-600" />,
       suffix: "",
     },
     {
       title: "Ground Transport",
       value: metrics?.groundTransport || 0,
       prefix: "$",
-      icon: <CarOutlined style={{ fontSize: 24, color: '#722ed1' }} />,
+      icon: <Car className="w-6 h-6 text-purple-600" />,
       suffix: "",
     },
   ];
 
   return (
-    <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       {cards.map((card, index) => (
-        <Col xs={24} sm={12} lg={6} key={index}>
-          <Card 
-            bordered={false}
-            style={{ 
-              textAlign: 'center',
-              boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02)'
-            }}
-          >
-            <div style={{ marginBottom: 16 }}>
+        <Card key={index} className="text-center">
+          <CardHeader>
+            <div className="flex justify-center mb-4">
               {card.icon}
             </div>
-            <Statistic
-              title={card.title}
-              value={card.value}
-              prefix={card.prefix}
-              suffix={card.suffix}
-              valueStyle={{ 
-                fontSize: 28, 
-                fontWeight: 600,
-                color: '#262626'
-              }}
-              titleStyle={{
-                fontSize: 14,
-                color: '#8c8c8c',
-                fontWeight: 500
-              }}
-            />
-          </Card>
-        </Col>
+            <CardTitle className="text-lg font-semibold text-gray-900">
+              {card.title}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-gray-900">
+              {card.prefix}{card.value.toLocaleString()}{card.suffix}
+            </div>
+          </CardContent>
+        </Card>
       ))}
-    </Row>
+    </div>
   );
 }

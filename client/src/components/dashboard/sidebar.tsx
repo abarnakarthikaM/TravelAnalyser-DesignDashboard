@@ -1,123 +1,75 @@
 
 import { useState } from "react";
-import { Layout, Menu, Typography, Avatar } from "antd";
 import { 
-  BuildingOutlined, 
-  BarChartOutlined, 
-  CompareOutlined, 
-  TrendingUpOutlined, 
-  UserOutlined, 
-  ShieldOutlined, 
-  BulbOutlined, 
-  SwapOutlined, 
-  SettingOutlined 
-} from "@ant-design/icons";
-
-const { Sider } = Layout;
-const { Text, Title } = Typography;
+  Building, 
+  BarChart3, 
+  GitCompare, 
+  TrendingUp, 
+  User, 
+  Shield, 
+  Lightbulb, 
+  ArrowLeftRight, 
+  Settings 
+} from "lucide-react";
 
 const menuItems = [
-  { key: "corporate", label: "Corporate View", icon: <BuildingOutlined /> },
-  { key: "dashboard", label: "Dashboard Overview", icon: <BarChartOutlined /> },
-  { key: "vendor", label: "Vendor Comparison", icon: <CompareOutlined /> },
-  { key: "spending", label: "Spending Trends", icon: <TrendingUpOutlined /> },
-  { key: "spenders", label: "Top Spenders", icon: <UserOutlined /> },
-  { key: "compliance", label: "Compliance Metrics", icon: <ShieldOutlined /> },
-  { key: "insights", label: "AI Insights", icon: <BulbOutlined /> },
-  { key: "transactions", label: "Transactions", icon: <SwapOutlined /> },
-  { key: "settings", label: "Settings", icon: <SettingOutlined /> },
+  { key: "corporate", label: "Corporate View", icon: <Building className="w-5 h-5" /> },
+  { key: "dashboard", label: "Dashboard Overview", icon: <BarChart3 className="w-5 h-5" /> },
+  { key: "vendor", label: "Vendor Comparison", icon: <GitCompare className="w-5 h-5" /> },
+  { key: "spending", label: "Spending Trends", icon: <TrendingUp className="w-5 h-5" /> },
+  { key: "spenders", label: "Top Spenders", icon: <User className="w-5 h-5" /> },
+  { key: "compliance", label: "Compliance Metrics", icon: <Shield className="w-5 h-5" /> },
+  { key: "insights", label: "AI Insights", icon: <Lightbulb className="w-5 h-5" /> },
+  { key: "transactions", label: "Transactions", icon: <ArrowLeftRight className="w-5 h-5" /> },
+  { key: "settings", label: "Settings", icon: <Settings className="w-5 h-5" /> },
 ];
 
 export function Sidebar() {
   const [selectedKey, setSelectedKey] = useState("corporate");
 
   return (
-    <Sider
-      width={256}
-      style={{
-        position: 'fixed',
-        height: '100vh',
-        left: 0,
-        top: 0,
-        bottom: 0,
-        background: 'linear-gradient(180deg, #1f2937 0%, #374151 100%)',
-        zIndex: 100,
-      }}
-    >
+    <div className="fixed left-0 top-0 bottom-0 w-64 bg-gradient-to-b from-gray-800 to-gray-700 z-50">
       {/* INFINITI Logo Section */}
-      <div style={{ 
-        padding: 24, 
-        borderBottom: '1px solid #4b5563',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12
-      }}>
-        <div style={{
-          width: 32,
-          height: 32,
-          backgroundColor: '#fff',
-          borderRadius: 6,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
-          <Text strong style={{ color: '#1890ff', fontSize: 14 }}>I</Text>
+      <div className="p-6 border-b border-gray-600 flex items-center gap-3">
+        <div className="w-8 h-8 bg-white rounded-md flex items-center justify-center">
+          <span className="text-blue-600 font-bold">I</span>
         </div>
         <div>
-          <Title level={4} style={{ margin: 0, color: '#fff' }}>INFINITI</Title>
-          <Text style={{ fontSize: 12, color: '#d1d5db' }}>
+          <h4 className="text-white font-bold text-lg m-0">INFINITI</h4>
+          <p className="text-gray-300 text-sm">
             Inspiring Travel Innovation
-          </Text>
+          </p>
         </div>
       </div>
 
       {/* Navigation Menu */}
-      <Menu
-        mode="inline"
-        selectedKeys={[selectedKey]}
-        onClick={({ key }) => setSelectedKey(key)}
-        style={{
-          backgroundColor: 'transparent',
-          border: 'none',
-          paddingTop: 16,
-        }}
-        theme="dark"
-        items={menuItems.map(item => ({
-          key: item.key,
-          icon: item.icon,
-          label: item.label,
-          style: {
-            margin: '4px 16px',
-            borderRadius: 6,
-            height: 48,
-            lineHeight: '48px',
-          }
-        }))}
-      />
+      <nav className="pt-4">
+        {menuItems.map(item => (
+          <button
+            key={item.key}
+            onClick={() => setSelectedKey(item.key)}
+            className={`w-full flex items-center gap-3 px-6 py-3 mx-4 rounded-md transition-colors ${
+              selectedKey === item.key 
+                ? 'bg-blue-600 text-white' 
+                : 'text-gray-300 hover:bg-gray-600 hover:text-white'
+            }`}
+          >
+            {item.icon}
+            <span>{item.label}</span>
+          </button>
+        ))}
+      </nav>
 
       {/* User Profile Section */}
-      <div style={{
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        padding: 24,
-        borderTop: '1px solid #4b5563',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12
-      }}>
-        <Avatar 
-          size={40} 
-          style={{ backgroundColor: '#6b7280' }}
-        >
+      <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-gray-600 flex items-center gap-3">
+        <div className="w-10 h-10 bg-gray-500 rounded-full flex items-center justify-center text-white font-bold">
           JD
-        </Avatar>
+        </div>
         <div>
-          <Text strong style={{ color: '#fff', display: 'block' }}>John Doe</Text>
-          <Text style={{ fontSize: 12, color: '#d1d5db' }}>Admin</Text>
+          <p className="text-white font-medium">John Doe</p>
+          <p className="text-gray-300 text-sm">Admin</p>
         </div>
       </div>
-    </Sider>
+    </div>
   );
 }

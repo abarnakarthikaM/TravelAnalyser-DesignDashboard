@@ -15,7 +15,7 @@ export const expenses = pgTable("expenses", {
   date: timestamp("date").notNull(),
   description: text("description").notNull(),
   category: text("category").notNull(),
-  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  amount: text("amount").notNull(),
   userId: integer("user_id").references(() => users.id),
 });
 
@@ -29,7 +29,8 @@ export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
   name: true,
-  role: true,
+}).extend({
+  role: z.string().optional(),
 });
 
 export const insertExpenseSchema = createInsertSchema(expenses).pick({
@@ -37,7 +38,8 @@ export const insertExpenseSchema = createInsertSchema(expenses).pick({
   description: true,
   category: true,
   amount: true,
-  userId: true,
+}).extend({
+  userId: z.number().nullable().optional(),
 });
 
 export const insertVendorSchema = createInsertSchema(vendors).pick({

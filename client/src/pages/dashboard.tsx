@@ -1,16 +1,12 @@
 
 import { useQuery } from "@tanstack/react-query";
-import { Layout, Typography, Button, Select, Space, Spin } from "antd";
-import { FilterOutlined, CalendarOutlined } from "@ant-design/icons";
+import { Filter, Calendar } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { MetricsCards } from "@/components/dashboard/metrics-cards";
 import { ExpenseCharts } from "@/components/dashboard/expense-charts";
 import { TopExpenses } from "@/components/dashboard/top-expenses";
 import { AlertsInsights } from "@/components/dashboard/alerts-insights";
-
-const { Header, Content } = Layout;
-const { Title, Text } = Typography;
-const { Option } = Select;
 
 export default function Dashboard() {
   const { data: metrics, isLoading } = useQuery({
@@ -19,88 +15,57 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <Layout style={{ minHeight: '100vh' }}>
-        <div style={{ 
-          display: 'flex', 
-          height: '100vh', 
-          alignItems: 'center', 
-          justifyContent: 'center' 
-        }}>
-          <Spin size="large" />
-          <Text style={{ marginLeft: 16, fontSize: 18 }}>Loading dashboard...</Text>
+      <div className="min-h-screen">
+        <div className="flex h-screen items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+          <p className="ml-4 text-lg">Loading dashboard...</p>
         </div>
-      </Layout>
+      </div>
     );
   }
 
   return (
-    <Layout style={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
+    <div className="min-h-screen bg-gray-50">
       <Sidebar />
       
-      <Layout style={{ marginLeft: 256 }}>
-        <Header style={{ 
-          backgroundColor: '#fff', 
-          borderBottom: '1px solid #f0f0f0',
-          padding: '0 32px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
+      <div className="ml-64">
+        <header className="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between">
           <div>
-            <Title level={2} style={{ margin: 0, color: '#262626' }}>
+            <h2 className="text-2xl font-semibold text-gray-900 m-0">
               Travel Expense Dashboard
-            </Title>
-            <Text type="secondary">
+            </h2>
+            <p className="text-gray-600">
               Monitor and analyze your corporate travel expenses across all vendors
-            </Text>
+            </p>
           </div>
           
-          <Space size="middle">
-            <Space>
-              <CalendarOutlined style={{ color: '#8c8c8c' }} />
-              <Text type="secondary">Jan 01, 2023 - Jul 15, 2025</Text>
-            </Space>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-gray-400" />
+              <span className="text-gray-600">Jan 01, 2023 - Jul 15, 2025</span>
+            </div>
             
-            <Button 
-              type="primary" 
-              icon={<FilterOutlined />}
-              size="middle"
-            >
+            <Button className="flex items-center gap-2">
+              <Filter className="w-4 h-4" />
               Filters
             </Button>
-            
-            <Select 
-              defaultValue="all" 
-              style={{ width: 120 }}
-              size="middle"
-            >
-              <Option value="all">All Vendors</Option>
-              <Option value="aircorp">AirCorp</Option>
-              <Option value="globalstay">GlobalStay</Option>
-              <Option value="rideshare">RideShare</Option>
-            </Select>
-          </Space>
-        </Header>
+          </div>
+        </header>
 
-        <Content style={{ 
-          padding: 32, 
-          overflow: 'auto',
-          backgroundColor: '#f5f5f5'
-        }}>
+        <main className="p-8">
           <MetricsCards metrics={metrics} />
           <ExpenseCharts metrics={metrics} />
           
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: '2fr 1fr',
-            gap: 32,
-            marginTop: 32
-          }}>
-            <TopExpenses expenses={metrics?.topExpenses || []} />
-            <AlertsInsights />
+          <div className="grid grid-cols-3 gap-8 mt-8">
+            <div className="col-span-2">
+              <TopExpenses expenses={metrics?.topExpenses || []} />
+            </div>
+            <div className="col-span-1">
+              <AlertsInsights />
+            </div>
           </div>
-        </Content>
-      </Layout>
-    </Layout>
+        </main>
+      </div>
+    </div>
   );
 }
