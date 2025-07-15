@@ -75,6 +75,7 @@ export function Sidebar() {
     if (location.pathname === '/vendor-comparison') return 'vendor';
     if (location.pathname === '/spending-trends') return 'spending';
     if (location.pathname === '/top-spenders') return 'spenders';
+    if (location.pathname === '/compliance-metrics') return 'compliance';
     return 'dashboard';
   };
 
@@ -91,6 +92,9 @@ export function Sidebar() {
         break;
       case 'spenders':
         navigate('/top-spenders');
+        break;
+      case 'compliance':
+        navigate('/compliance-metrics');
         break;
       default:
         break;
