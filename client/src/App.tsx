@@ -6,6 +6,7 @@ import Dashboard from "@/pages/dashboard";
 import NotFound from "@/pages/not-found";
 import VendorComparison from "@/pages/vendor-comparison";
 import SpendingTrends from "@/pages/spending-trends";
+import TopSpenders from "@/pages/top-spenders";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/vendor-comparison" element={<VendorComparison />} />
           <Route path="/spending-trends" element={<SpendingTrends />} />
+          <Route path="/top-spenders" element={<TopSpenders />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
