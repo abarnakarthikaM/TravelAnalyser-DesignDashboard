@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Layout, Menu, Avatar, Typography } from 'antd';
 import type { MenuProps } from 'antd';
@@ -13,6 +12,7 @@ import {
   TransactionOutlined,
   SettingOutlined
 } from '@ant-design/icons';
+import { useLocation, useRouter } from 'umi';
 
 const { Sider } = Layout;
 const { Text } = Typography;
@@ -66,7 +66,26 @@ const menuItems: MenuProps['items'] = [
 ];
 
 export function Sidebar() {
-  const [selectedKey, setSelectedKey] = useState('corporate');
+  const [location] = useLocation();
+  const [, navigate] = useRouter();
+
+  const getSelectedKey = () => {
+    if (location === '/vendor-comparison') return 'vendor';
+    return 'dashboard';
+  };
+
+  const handleMenuClick: MenuProps['onClick'] = (e) => {
+    switch (e.key) {
+      case 'dashboard':
+        navigate('/');
+        break;
+      case 'vendor':
+        navigate('/vendor-comparison');
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <Sider
@@ -133,16 +152,15 @@ export function Sidebar() {
 
       {/* Navigation Menu */}
       <Menu
+        theme="dark"
         mode="inline"
-        selectedKeys={[selectedKey]}
-        onClick={({ key }) => setSelectedKey(key)}
+        selectedKeys={[getSelectedKey()]}
+        items={menuItems}
         style={{
           backgroundColor: 'transparent',
           border: 'none',
-          paddingTop: '16px',
         }}
-        theme="dark"
-        items={menuItems}
+        onClick={handleMenuClick}
       />
 
       {/* User Profile Section */}
