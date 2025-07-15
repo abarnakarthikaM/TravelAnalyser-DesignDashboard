@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Layout, Menu, Avatar, Typography } from 'antd';
 import type { MenuProps } from 'antd';
@@ -13,7 +14,7 @@ import {
   SettingOutlined,
   BuildingOutlined
 } from '@ant-design/icons';
-import { useLocation } from 'wouter';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const { Sider } = Layout;
 const { Text } = Typography;
@@ -67,10 +68,11 @@ const menuItems: MenuProps['items'] = [
 ];
 
 export function Sidebar() {
-  const [location, navigate] = useLocation();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const getSelectedKey = () => {
-    if (location === '/vendor-comparison') return 'vendor';
+    if (location.pathname === '/vendor-comparison') return 'vendor';
     return 'dashboard';
   };
 
