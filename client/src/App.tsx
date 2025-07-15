@@ -5,6 +5,7 @@ import { queryClient } from "./lib/queryClient";
 import Dashboard from "@/pages/dashboard";
 import NotFound from "@/pages/not-found";
 import VendorComparison from "@/pages/vendor-comparison";
+import SpendingTrends from "@/pages/spending-trends";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/vendor-comparison" element={<VendorComparison />} />
+          <Route path="/spending-trends" element={<SpendingTrends />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

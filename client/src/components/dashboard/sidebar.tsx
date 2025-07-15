@@ -73,6 +73,7 @@ export function Sidebar() {
 
   const getSelectedKey = () => {
     if (location.pathname === '/vendor-comparison') return 'vendor';
+    if (location.pathname === '/spending-trends') return 'spending';
     return 'dashboard';
   };
 
@@ -83,6 +84,9 @@ export function Sidebar() {
         break;
       case 'vendor':
         navigate('/vendor-comparison');
+        break;
+      case 'spending':
+        navigate('/spending-trends');
         break;
       default:
         break;
