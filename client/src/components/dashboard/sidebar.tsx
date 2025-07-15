@@ -1,40 +1,41 @@
 
 import React, { useState } from 'react';
 import { Layout, Menu, Avatar, Typography } from 'antd';
+import type { MenuProps } from 'antd';
 import {
-  BuildingOutlined,
-  DashboardOutlined,
-  CompareOutlined,
-  TrendingUpOutlined,
-  UserOutlined,
-  SafetyOutlined,
-  BulbOutlined,
+  HomeOutlined,
+  BarChartOutlined,
   SwapOutlined,
+  RiseOutlined,
+  UserOutlined,
+  SafetyCertificateOutlined,
+  BulbOutlined,
+  TransactionOutlined,
   SettingOutlined
 } from '@ant-design/icons';
 
 const { Sider } = Layout;
 const { Text } = Typography;
 
-const menuItems = [
+const menuItems: MenuProps['items'] = [
   {
     key: 'corporate',
-    icon: <BuildingOutlined />,
+    icon: <HomeOutlined />,
     label: 'Corporate View',
   },
   {
     key: 'dashboard',
-    icon: <DashboardOutlined />,
+    icon: <BarChartOutlined />,
     label: 'Dashboard Overview',
   },
   {
     key: 'vendor',
-    icon: <CompareOutlined />,
+    icon: <SwapOutlined />,
     label: 'Vendor Comparison',
   },
   {
     key: 'spending',
-    icon: <TrendingUpOutlined />,
+    icon: <RiseOutlined />,
     label: 'Spending Trends',
   },
   {
@@ -44,7 +45,7 @@ const menuItems = [
   },
   {
     key: 'compliance',
-    icon: <SafetyOutlined />,
+    icon: <SafetyCertificateOutlined />,
     label: 'Compliance Metrics',
   },
   {
@@ -54,7 +55,7 @@ const menuItems = [
   },
   {
     key: 'transactions',
-    icon: <SwapOutlined />,
+    icon: <TransactionOutlined />,
     label: 'Transactions',
   },
   {
