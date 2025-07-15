@@ -1,5 +1,8 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+
+import { Card, Table, Tag, Typography } from "antd";
+import type { ColumnsType } from 'antd/es/table';
+
+const { Title } = Typography;
 
 interface Expense {
   id: number;
@@ -15,53 +18,69 @@ interface TopExpensesProps {
 }
 
 export function TopExpenses({ expenses }: TopExpensesProps) {
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    });
-  };
-
-  const formatCurrency = (amount: string) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(parseFloat(amount));
-  };
+  const columns: ColumnsType<Expense> = [
+    {
+      title: 'Date',
+      dataIndex: 'date',
+      key: 'date',
+      render: (date: Date) => new Date(date).toLocaleDateString(),
+      width: 100,
+    },
+    {
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description',
+      ellipsis: true,
+    },
+    {
+      title: 'Category',
+      dataIndex: 'category',
+      key: 'category',
+      render: (category: string) => {
+        const colors: { [key: string]: string } = {
+          'Air Travel': 'blue',
+          'Accommodation': 'green', 
+          'Ground Transport': 'orange',
+          'Meals': 'purple',
+        };
+        return <Tag color={colors[category] || 'default'}>{category}</Tag>;
+      },
+      width: 140,
+    },
+    {
+      title: 'Amount',
+      dataIndex: 'amount',
+      key: 'amount',
+      align: 'right',
+      render: (amount: string) => (
+        <span style={{ fontWeight: 600, color: '#262626' }}>{amount}</span>
+      ),
+      width: 100,
+    },
+  ];
 
   return (
-    <Card className="lg:col-span-2">
-      <CardHeader className="border-b">
-        <CardTitle>Top Expenses</CardTitle>
-        <p className="text-sm text-gray-500">Highest expense transactions in the current period</p>
-      </CardHeader>
-      <CardContent className="p-0">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Amount</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {expenses.map((expense) => (
-              <TableRow key={expense.id}>
-                <TableCell className="font-medium">
-                  {formatDate(expense.date)}
-                </TableCell>
-                <TableCell>{expense.description}</TableCell>
-                <TableCell className="text-gray-500">{expense.category}</TableCell>
-                <TableCell className="font-medium">
-                  {formatCurrency(expense.amount)}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
+    <Card 
+      bordered={false}
+      style={{ 
+        boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02)'
+      }}
+    >
+      <Title level={4} style={{ marginBottom: 16 }}>
+        Top Expenses
+      </Title>
+      
+      <Table
+        columns={columns}
+        dataSource={expenses}
+        rowKey="id"
+        pagination={{
+          pageSize: 8,
+          showSizeChanger: false,
+          showQuickJumper: false,
+        }}
+        size="middle"
+      />
     </Card>
   );
 }

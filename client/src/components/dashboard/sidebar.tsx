@@ -1,83 +1,123 @@
+
 import { useState } from "react";
+import { Layout, Menu, Typography, Avatar } from "antd";
 import { 
-  Building, 
-  BarChart3, 
-  GitCompare, 
-  TrendingUp, 
-  Users, 
-  Shield, 
-  Brain, 
-  ArrowRightLeft, 
-  Settings 
-} from "lucide-react";
+  BuildingOutlined, 
+  BarChartOutlined, 
+  CompareOutlined, 
+  TrendingUpOutlined, 
+  UserOutlined, 
+  ShieldOutlined, 
+  BulbOutlined, 
+  SwapOutlined, 
+  SettingOutlined 
+} from "@ant-design/icons";
+
+const { Sider } = Layout;
+const { Text, Title } = Typography;
 
 const menuItems = [
-  { id: "corporate", label: "Corporate View", icon: Building, active: true },
-  { id: "dashboard", label: "Dashboard Overview", icon: BarChart3, active: false },
-  { id: "vendor", label: "Vendor Comparison", icon: GitCompare, active: false },
-  { id: "spending", label: "Spending Trends", icon: TrendingUp, active: false },
-  { id: "spenders", label: "Top Spenders", icon: Users, active: false },
-  { id: "compliance", label: "Compliance Metrics", icon: Shield, active: false },
-  { id: "insights", label: "AI Insights", icon: Brain, active: false },
-  { id: "transactions", label: "Transactions", icon: ArrowRightLeft, active: false },
-  { id: "settings", label: "Settings", icon: Settings, active: false },
+  { key: "corporate", label: "Corporate View", icon: <BuildingOutlined /> },
+  { key: "dashboard", label: "Dashboard Overview", icon: <BarChartOutlined /> },
+  { key: "vendor", label: "Vendor Comparison", icon: <CompareOutlined /> },
+  { key: "spending", label: "Spending Trends", icon: <TrendingUpOutlined /> },
+  { key: "spenders", label: "Top Spenders", icon: <UserOutlined /> },
+  { key: "compliance", label: "Compliance Metrics", icon: <ShieldOutlined /> },
+  { key: "insights", label: "AI Insights", icon: <BulbOutlined /> },
+  { key: "transactions", label: "Transactions", icon: <SwapOutlined /> },
+  { key: "settings", label: "Settings", icon: <SettingOutlined /> },
 ];
 
 export function Sidebar() {
-  const [activeMenu, setActiveMenu] = useState("corporate");
+  const [selectedKey, setSelectedKey] = useState("corporate");
 
   return (
-    <div className="w-64 infiniti-sidebar text-white flex flex-col">
+    <Sider
+      width={256}
+      style={{
+        position: 'fixed',
+        height: '100vh',
+        left: 0,
+        top: 0,
+        bottom: 0,
+        background: 'linear-gradient(180deg, #1f2937 0%, #374151 100%)',
+        zIndex: 100,
+      }}
+    >
       {/* INFINITI Logo Section */}
-      <div className="p-6 border-b border-gray-600">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-white rounded-md flex items-center justify-center">
-            <span className="text-[var(--infiniti-blue)] font-bold text-sm">I</span>
-          </div>
-          <div>
-            <h1 className="text-xl font-bold">INFINITI</h1>
-            <p className="text-xs text-gray-300">Inspiring Travel Innovation</p>
-          </div>
+      <div style={{ 
+        padding: 24, 
+        borderBottom: '1px solid #4b5563',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12
+      }}>
+        <div style={{
+          width: 32,
+          height: 32,
+          backgroundColor: '#fff',
+          borderRadius: 6,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <Text strong style={{ color: '#1890ff', fontSize: 14 }}>I</Text>
+        </div>
+        <div>
+          <Title level={4} style={{ margin: 0, color: '#fff' }}>INFINITI</Title>
+          <Text style={{ fontSize: 12, color: '#d1d5db' }}>
+            Inspiring Travel Innovation
+          </Text>
         </div>
       </div>
 
       {/* Navigation Menu */}
-      <nav className="flex-1 py-4">
-        <div className="space-y-1">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeMenu === item.id;
-            
-            return (
-              <button
-                key={item.id}
-                onClick={() => setActiveMenu(item.id)}
-                className={`w-full flex items-center px-6 py-3 text-left transition-colors ${
-                  isActive 
-                    ? "text-white infiniti-sidebar-active" 
-                    : "text-gray-300 hover:text-white hover:infiniti-sidebar-hover"
-                }`}
-              >
-                <Icon className="w-5 h-5 mr-3" />
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </nav>
+      <Menu
+        mode="inline"
+        selectedKeys={[selectedKey]}
+        onClick={({ key }) => setSelectedKey(key)}
+        style={{
+          backgroundColor: 'transparent',
+          border: 'none',
+          paddingTop: 16,
+        }}
+        theme="dark"
+        items={menuItems.map(item => ({
+          key: item.key,
+          icon: item.icon,
+          label: item.label,
+          style: {
+            margin: '4px 16px',
+            borderRadius: 6,
+            height: 48,
+            lineHeight: '48px',
+          }
+        }))}
+      />
 
       {/* User Profile Section */}
-      <div className="p-6 border-t border-gray-600">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center">
-            <span className="text-white font-medium">JD</span>
-          </div>
-          <div>
-            <p className="font-medium">John Doe</p>
-            <p className="text-xs text-gray-300">Admin</p>
-          </div>
+      <div style={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        padding: 24,
+        borderTop: '1px solid #4b5563',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12
+      }}>
+        <Avatar 
+          size={40} 
+          style={{ backgroundColor: '#6b7280' }}
+        >
+          JD
+        </Avatar>
+        <div>
+          <Text strong style={{ color: '#fff', display: 'block' }}>John Doe</Text>
+          <Text style={{ fontSize: 12, color: '#d1d5db' }}>Admin</Text>
         </div>
       </div>
-    </div>
+    </Sider>
   );
 }

@@ -1,11 +1,16 @@
+
 import { useQuery } from "@tanstack/react-query";
+import { Layout, Typography, Button, Select, Space, Spin } from "antd";
+import { FilterOutlined, CalendarOutlined } from "@ant-design/icons";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { MetricsCards } from "@/components/dashboard/metrics-cards";
 import { ExpenseCharts } from "@/components/dashboard/expense-charts";
 import { TopExpenses } from "@/components/dashboard/top-expenses";
 import { AlertsInsights } from "@/components/dashboard/alerts-insights";
-import { Button } from "@/components/ui/button";
-import { Filter, Calendar } from "lucide-react";
+
+const { Header, Content } = Layout;
+const { Title, Text } = Typography;
+const { Option } = Select;
 
 export default function Dashboard() {
   const { data: metrics, isLoading } = useQuery({
@@ -14,53 +19,88 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="text-lg">Loading dashboard...</div>
-      </div>
+      <Layout style={{ minHeight: '100vh' }}>
+        <div style={{ 
+          display: 'flex', 
+          height: '100vh', 
+          alignItems: 'center', 
+          justifyContent: 'center' 
+        }}>
+          <Spin size="large" />
+          <Text style={{ marginLeft: 16, fontSize: 18 }}>Loading dashboard...</Text>
+        </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <Layout style={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
       <Sidebar />
       
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header className="bg-white border-b border-gray-200 px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">Travel Expense Dashboard</h2>
-              <p className="text-sm text-gray-500">Monitor and analyze your corporate travel expenses across all vendors</p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <Calendar className="w-4 h-4 text-gray-400" />
-                <span className="text-sm text-gray-600">Jan 01, 2023 - Jul 15, 2025</span>
-              </div>
-              <Button variant="default" size="sm">
-                <Filter className="w-4 h-4 mr-2" />
-                Filters
-              </Button>
-              <select className="px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                <option>All Vendors</option>
-                <option>AirCorp</option>
-                <option>GlobalStay</option>
-                <option>RideShare</option>
-              </select>
-            </div>
+      <Layout style={{ marginLeft: 256 }}>
+        <Header style={{ 
+          backgroundColor: '#fff', 
+          borderBottom: '1px solid #f0f0f0',
+          padding: '0 32px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+          <div>
+            <Title level={2} style={{ margin: 0, color: '#262626' }}>
+              Travel Expense Dashboard
+            </Title>
+            <Text type="secondary">
+              Monitor and analyze your corporate travel expenses across all vendors
+            </Text>
           </div>
-        </header>
+          
+          <Space size="middle">
+            <Space>
+              <CalendarOutlined style={{ color: '#8c8c8c' }} />
+              <Text type="secondary">Jan 01, 2023 - Jul 15, 2025</Text>
+            </Space>
+            
+            <Button 
+              type="primary" 
+              icon={<FilterOutlined />}
+              size="middle"
+            >
+              Filters
+            </Button>
+            
+            <Select 
+              defaultValue="all" 
+              style={{ width: 120 }}
+              size="middle"
+            >
+              <Option value="all">All Vendors</Option>
+              <Option value="aircorp">AirCorp</Option>
+              <Option value="globalstay">GlobalStay</Option>
+              <Option value="rideshare">RideShare</Option>
+            </Select>
+          </Space>
+        </Header>
 
-        {/* Main Content */}
-        <main className="flex-1 overflow-y-auto p-8">
+        <Content style={{ 
+          padding: 32, 
+          overflow: 'auto',
+          backgroundColor: '#f5f5f5'
+        }}>
           <MetricsCards metrics={metrics} />
           <ExpenseCharts metrics={metrics} />
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: '2fr 1fr',
+            gap: 32,
+            marginTop: 32
+          }}>
             <TopExpenses expenses={metrics?.topExpenses || []} />
             <AlertsInsights />
           </div>
-        </main>
-      </div>
-    </div>
+        </Content>
+      </Layout>
+    </Layout>
   );
 }
