@@ -1,12 +1,17 @@
 
 import { useQuery } from "@tanstack/react-query";
-import { Filter, Calendar } from "lucide-react";
+import { Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { MetricsCards } from "@/components/dashboard/metrics-cards";
 import { ExpenseCharts } from "@/components/dashboard/expense-charts";
 import { TopExpenses } from "@/components/dashboard/top-expenses";
 import { AlertsInsights } from "@/components/dashboard/alerts-insights";
+import { DatePicker, Select, Space } from "antd";
+import { CalendarOutlined } from "@ant-design/icons";
+
+const { RangePicker } = DatePicker;
+const { Option } = Select;
 
 export default function Dashboard() {
   const { data: metrics, isLoading } = useQuery({
@@ -40,15 +45,31 @@ export default function Dashboard() {
           </div>
           
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-gray-400" />
-              <span className="text-gray-600">Jan 01, 2023 - Jul 15, 2025</span>
-            </div>
-            
-            <Button className="flex items-center gap-2">
-              <Filter className="w-4 h-4" />
-              Filters
-            </Button>
+            <Space size="middle">
+              <RangePicker
+                suffixIcon={<CalendarOutlined />}
+                defaultValue={[
+                  // Using moment is deprecated, but for demo purposes
+                  null, null
+                ]}
+                placeholder={['Jan 01, 2023', 'Jan 27, 2023']}
+                style={{ width: 240 }}
+              />
+              
+              <Select
+                defaultValue="All Vendors"
+                style={{ width: 140 }}
+              >
+                <Option value="all">All Vendors</Option>
+                <Option value="airlines">Airlines</Option>
+                <Option value="hotels">Hotels</Option>
+              </Select>
+              
+              <Button className="flex items-center gap-2">
+                <Filter className="w-4 h-4" />
+                Filters
+              </Button>
+            </Space>
           </div>
         </header>
 
