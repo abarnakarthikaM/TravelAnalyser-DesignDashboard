@@ -7,16 +7,34 @@ import { MetricsCards } from "@/components/dashboard/metrics-cards";
 import { ExpenseCharts } from "@/components/dashboard/expense-charts";
 import { TopExpenses } from "@/components/dashboard/top-expenses";
 import { AlertsInsights } from "@/components/dashboard/alerts-insights";
-import { DatePicker, Select, Space } from "antd";
+import { DatePicker, Select, Space, Tabs } from "antd";
 import { CalendarOutlined } from "@ant-design/icons";
+import { useState } from "react";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 export default function Dashboard() {
+  const [activeTab, setActiveTab] = useState('expense-breakdown');
+  
   const { data: metrics, isLoading } = useQuery({
     queryKey: ["/api/dashboard/metrics"],
   });
+
+  const tabItems = [
+    {
+      key: 'expense-breakdown',
+      label: 'Expense Breakdown',
+    },
+    {
+      key: 'vendor-performance',
+      label: 'Vendor Performance',
+    },
+    {
+      key: 'compliance',
+      label: 'Compliance',
+    },
+  ];
 
   if (isLoading) {
     return (
@@ -75,7 +93,34 @@ export default function Dashboard() {
 
         <main className="p-8">
           <MetricsCards metrics={metrics} />
-          <ExpenseCharts metrics={metrics} />
+          
+          <div className="mb-8">
+            <Tabs
+              activeKey={activeTab}
+              onChange={setActiveTab}
+              items={tabItems}
+              size="large"
+              style={{ marginBottom: 24 }}
+            />
+            
+            {activeTab === 'expense-breakdown' && (
+              <ExpenseCharts metrics={metrics} />
+            )}
+            
+            {activeTab === 'vendor-performance' && (
+              <div className="bg-white rounded-lg p-8 text-center" style={{ minHeight: 400 }}>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Vendor Performance</h3>
+                <p className="text-gray-600">Vendor performance metrics coming soon...</p>
+              </div>
+            )}
+            
+            {activeTab === 'compliance' && (
+              <div className="bg-white rounded-lg p-8 text-center" style={{ minHeight: 400 }}>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Compliance</h3>
+                <p className="text-gray-600">Compliance metrics coming soon...</p>
+              </div>
+            )}
+          </div>
           
           <div className="grid grid-cols-3 gap-8 mt-8">
             <div className="col-span-2">
