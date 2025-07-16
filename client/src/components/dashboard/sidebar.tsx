@@ -77,6 +77,7 @@ export function Sidebar() {
     if (location.pathname === '/compliance-metrics') return 'compliance';
     if (location.pathname === '/ai-insights') return 'insights';
     if (location.pathname === '/transactions') return 'transactions';
+    if (location.pathname === '/settings') return 'settings';
     return 'dashboard';
   };
 
@@ -102,6 +103,9 @@ export function Sidebar() {
         break;
       case 'transactions':
         navigate('/transactions');
+        break;
+      case 'settings':
+        navigate('/settings');
         break;
       default:
         break;
