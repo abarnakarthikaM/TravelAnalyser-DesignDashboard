@@ -9,6 +9,7 @@ import SpendingTrends from "@/pages/spending-trends";
 import TopSpenders from "@/pages/top-spenders";
 import ComplianceMetrics from "@/pages/compliance-metrics";
 import AIInsights from "@/pages/ai-insights";
+import Transactions from "@/pages/transactions";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/top-spenders" element={<TopSpenders />} />
           <Route path="/compliance-metrics" element={<ComplianceMetrics />} />
           <Route path="/ai-insights" element={<AIInsights />} />
+          <Route path="/transactions" element={<Transactions />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

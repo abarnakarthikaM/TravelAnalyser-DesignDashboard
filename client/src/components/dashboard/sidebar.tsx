@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Layout, Menu, Avatar, Typography } from 'antd';
 import type { MenuProps } from 'antd';
@@ -77,6 +76,7 @@ export function Sidebar() {
     if (location.pathname === '/top-spenders') return 'spenders';
     if (location.pathname === '/compliance-metrics') return 'compliance';
     if (location.pathname === '/ai-insights') return 'insights';
+    if (location.pathname === '/transactions') return 'transactions';
     return 'dashboard';
   };
 
@@ -99,6 +99,9 @@ export function Sidebar() {
         break;
       case 'insights':
         navigate('/ai-insights');
+        break;
+      case 'transactions':
+        navigate('/transactions');
         break;
       default:
         break;
