@@ -7,8 +7,8 @@ import {
   DownloadOutlined,
   CheckCircleOutlined,
   ExclamationCircleOutlined,
-  TrendingUpOutlined,
-  TrendingDownOutlined
+  RiseOutlined,
+  FallOutlined
 } from '@ant-design/icons';
 import { Sidebar } from '@/components/dashboard/sidebar';
 
@@ -52,12 +52,12 @@ const AIInsights = () => {
     {
       title: 'Improving Departments',
       description: 'Sales team improved compliance from 72% to 91% after training.',
-      icon: <TrendingUpOutlined style={{ color: '#1890ff' }} />,
+      icon: <RiseOutlined style={{ color: '#1890ff' }} />,
     },
     {
       title: 'Needs Improvement',
       description: 'Research team compliance dropped to 68% in the last quarter.',
-      icon: <TrendingDownOutlined style={{ color: '#faad14' }} />,
+      icon: <FallOutlined style={{ color: '#faad14' }} />,
     },
   ];
 
