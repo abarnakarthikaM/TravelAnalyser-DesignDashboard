@@ -1,22 +1,18 @@
 
 import React from 'react';
+import { Layout, Typography, Button, Space, Card, Row, Col, Tabs, Badge, Progress } from 'antd';
 import { 
-  Calendar, 
-  Filter, 
-  Download,
-  CheckCircle,
-  AlertCircle,
-  TrendingUp,
-  TrendingDown
-} from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+  CalendarOutlined, 
+  FilterOutlined, 
+  DownloadOutlined,
+  CheckCircleOutlined,
+  ExclamationCircleOutlined,
+  TrendingUpOutlined,
+  TrendingDownOutlined
+} from '@ant-design/icons';
 import { Sidebar } from '@/components/dashboard/sidebar';
 
-// Updated to use shadcn/ui components
+const { Title, Text } = Typography;
 
 const AIInsights = () => {
   const tabItems = [

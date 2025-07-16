@@ -1,14 +1,11 @@
 
 import React from 'react';
-import { Download, Filter, Calendar, Info, CheckCircle, AlertTriangle } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
+import { Layout, Typography, Card, Row, Col, Progress, Table, Tag, Button, Space } from 'antd';
+import { DownloadOutlined, FilterOutlined, CalendarOutlined, InfoCircleOutlined, CheckCircleOutlined, WarningOutlined } from '@ant-design/icons';
 import { Sidebar } from '@/components/dashboard/sidebar';
 
-// Updated to use shadcn/ui components
+const { Content } = Layout;
+const { Title, Text } = Typography;
 
 export default function VendorComparison() {
   // Sample data for the metrics cards
