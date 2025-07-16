@@ -1,11 +1,14 @@
 
 import React from 'react';
-import { Layout, Typography, Button, Space, Row, Col, Card, Progress, Tabs, Tag } from 'antd';
-import { CalendarOutlined, FilterOutlined, DownloadOutlined, CheckCircleOutlined, ExclamationCircleOutlined, WarningOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { Calendar, Filter, Download, CheckCircle, AlertCircle, AlertTriangle, Info } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Sidebar } from '@/components/dashboard/sidebar';
 
-const { Content } = Layout;
-const { Title, Text } = Typography;
+// Updated to use shadcn/ui components
 
 export default function ComplianceMetrics() {
   // Metrics data

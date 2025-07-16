@@ -1,12 +1,14 @@
 
 import React from 'react';
-import { Layout, Typography, Card, Row, Col, Select, Button, Space, Table, Tag } from 'antd';
-import { CalendarOutlined, FilterOutlined, DownloadOutlined, RiseOutlined, FallOutlined } from '@ant-design/icons';
+import { Calendar, Filter, Download, TrendingUp, TrendingDown } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 import { Sidebar } from '@/components/dashboard/sidebar';
 
-const { Content } = Layout;
-const { Title, Text } = Typography;
-const { Option } = Select;
+// Updated to use shadcn/ui components
 
 const SpendingTrends = () => {
   // Metrics data for the top cards

@@ -1,12 +1,13 @@
 
 import React from 'react';
-import { Layout, Typography, Row, Col, Card, Progress, Tabs, Button, Space } from 'antd';
-import { CalendarOutlined, FilterOutlined, DownloadOutlined } from '@ant-design/icons';
+import { Calendar, Filter, Download } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Sidebar } from '@/components/dashboard/sidebar';
 
-const { Content } = Layout;
-const { Title, Text } = Typography;
-const { TabPane } = Tabs;
+// Updated to use shadcn/ui components
 
 const TopSpenders = () => {
   // Department metrics data
