@@ -116,7 +116,7 @@ export function Sidebar() {
     <Sider
       width={256}
       style={{
-        background: 'linear-gradient(to bottom, #374151, #4b5563)',
+        background: '#0a2559',
         height: '100vh',
         position: 'fixed',
         left: 0,
@@ -245,7 +245,7 @@ export function Sidebar() {
             border-right-color: #1a3a7a !important;
           }
           .ant-menu-item:hover {
-            background-color: #4b5563 !important;
+            background-color: #1a3a7a !important;
             color: #ffffff !important;
           }
           .ant-menu-dark .ant-menu-item {

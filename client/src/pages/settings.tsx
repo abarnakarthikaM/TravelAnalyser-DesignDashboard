@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Layout, Typography, Card, Row, Col, Input, Button, Select, Avatar, Space, Tabs } from 'antd';
 import { 
   UserOutlined, 
-  BuildingOutlined, 
+   
   FileTextOutlined, 
   CreditCardOutlined, 
   BellOutlined, 
@@ -35,7 +35,7 @@ export default function Settings() {
       key: 'company',
       label: (
         <Space>
-          <BuildingOutlined />
+
           Company
         </Space>
       ),
