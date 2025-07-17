@@ -1,6 +1,5 @@
-
-import React from 'react';
-import { Layout, Typography, Button, Space, Row, Col, Card, Progress, Tabs, Tag } from 'antd';
+import React, { useState } from 'react';
+import { Layout, Typography, Button, Space, Row, Col, Card, Progress, Tabs, Tag, Table } from 'antd';
 import { CalendarOutlined, FilterOutlined, DownloadOutlined, CheckCircleOutlined, ExclamationCircleOutlined, WarningOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { Sidebar } from '@/components/dashboard/sidebar';
 
@@ -109,10 +108,130 @@ export default function ComplianceMetrics() {
     }
   ];
 
+    const [activeTab, setActiveTab] = useState('overview');
+
+    const violationData = [
+        {
+            key: '1',
+            policy: 'Advance Booking',
+            employee: 'John Doe',
+            department: 'Sales',
+            date: '2024-01-15',
+            cost: '$250',
+            status: 'Open',
+        },
+        {
+            key: '2',
+            policy: 'Lodging Limits',
+            employee: 'Jane Smith',
+            department: 'Marketing',
+            date: '2024-02-01',
+            cost: '$300',
+            status: 'In Progress',
+        },
+        {
+            key: '3',
+            policy: 'Expense Documentation',
+            employee: 'Alice Johnson',
+            department: 'Finance',
+            date: '2024-02-10',
+            cost: '$150',
+            status: 'Resolved',
+        },
+    ];
+
+    const violationColumns = [
+        {
+            title: 'Policy',
+            dataIndex: 'policy',
+            key: 'policy',
+        },
+        {
+            title: 'Employee',
+            dataIndex: 'employee',
+            key: 'employee',
+        },
+        {
+            title: 'Department',
+            dataIndex: 'department',
+            key: 'department',
+        },
+        {
+            title: 'Date',
+            dataIndex: 'date',
+            key: 'date',
+        },
+        {
+            title: 'Cost',
+            dataIndex: 'cost',
+            key: 'cost',
+        },
+        {
+            title: 'Status',
+            dataIndex: 'status',
+            key: 'status',
+            render: (text) => {
+                let color = text === 'Open' ? 'red' : text === 'Resolved' ? 'green' : 'blue';
+                return <Tag color={color}>{text}</Tag>;
+            },
+            key: 'status',
+        },
+    ];
+
+    const TabsContent = () => {
+        if (activeTab === 'overview') {
+            return (
+                <div>
+                    Compliance Overview Content
+                </div>
+            );
+        }
+
+        if (activeTab === 'violations') {
+            return (
+                <Row gutter={[24, 24]}>
+                    <Col xs={24} md={16}>
+                        <Title level={4}>Policy Violation Details</Title>
+                        <Table columns={violationColumns} dataSource={violationData} />
+                    </Col>
+                    <Col xs={24} md={8}>
+                        <Card title="Violation Types">
+                            <div>
+                                <p>Advance Booking: 50</p>
+                                <p>Lodging Limits: 30</p>
+                                <p>Expense Documentation: 20</p>
+                            </div>
+                        </Card>
+                        <Card title="Cost Impact" style={{ marginTop: '24px' }}>
+                            <div>
+                                <p>Total Cost: $700</p>
+                                <p>Average Cost: $233.33</p>
+                            </div>
+                        </Card>
+                    </Col>
+                </Row>
+            );
+        }
+
+        if (activeTab === 'department') {
+            return (
+                <div>
+                    By Department Content
+                </div>
+            );
+        }
+
+        return (
+            <div>
+                Trends & Analysis Content
+            </div>
+        );
+    };
+
   return (
     <Layout style={{ minHeight: '100vh', background: '#f5f5f5' }}>
       <Sidebar />
-      
+
       <Layout style={{ marginLeft: 256 }}>
         {/* Header */}
         <div style={{
@@ -131,7 +250,7 @@ export default function ComplianceMetrics() {
               Monitor and improve travel policy compliance across your organization
             </Text>
           </div>
-          
+
           <Space>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#8c8c8c' }}>
               <CalendarOutlined />
@@ -154,11 +273,11 @@ export default function ComplianceMetrics() {
                     </Title>
                     {metric.icon}
                   </div>
-                  
+
                   <Title level={1} style={{ margin: 0, marginBottom: 8, fontSize: 32 }}>
                     {metric.value}
                   </Title>
-                  
+
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
                     <Text style={{ 
                       color: metric.changeType === 'positive' ? '#52c41a' : '#ff4d4f',
@@ -189,52 +308,14 @@ export default function ComplianceMetrics() {
           {/* Tabs Section */}
           <Card style={{ marginBottom: 32 }}>
             <Tabs 
-              defaultActiveKey="overview" 
-              items={tabItems}
-              style={{ marginBottom: 24 }}
-            />
+            activeKey={activeTab}
+            onChange={setActiveTab}
+            items={tabItems}
+            style={{ marginBottom: 24 }}
+          />
 
-            {/* Compliance by Policy Category */}
-            <div style={{ marginBottom: 32 }}>
-              <Title level={3} style={{ marginBottom: 8 }}>
-                Compliance by Policy Category
-              </Title>
-              <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
-                Breakdown of compliance across different policy areas
-              </Text>
-
-              <div style={{ maxWidth: 800 }}>
-                {policyComplianceData.map((policy, index) => (
-                  <div key={index} style={{ marginBottom: 20 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                        <Text style={{ fontWeight: 500, minWidth: 150 }}>{policy.category}</Text>
-                        <Tag color={policy.status === 'Excellent' ? 'green' : policy.status === 'Good' ? 'blue' : 'orange'}>
-                          {policy.status}
-                        </Tag>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                        <Text style={{ fontWeight: 'bold' }}>{policy.percentage}%</Text>
-                        <Text style={{ 
-                          color: policy.change.startsWith('+') ? '#52c41a' : '#ff4d4f',
-                          fontWeight: 500,
-                          minWidth: 50,
-                          textAlign: 'right'
-                        }}>
-                          {policy.change}
-                        </Text>
-                      </div>
-                    </div>
-                    <Progress 
-                      percent={policy.percentage} 
-                      strokeColor={policy.color}
-                      showInfo={false}
-                      strokeWidth={8}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
+          {/* Tab Content */}
+          <TabsContent />
           </Card>
 
           {/* Bottom Section - Employee Lists */}
@@ -247,7 +328,7 @@ export default function ComplianceMetrics() {
                 <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
                   Employees with highest policy adherence
                 </Text>
-                
+
                 <div style={{ maxHeight: 280, overflowY: 'auto' }}>
                   {topCompliantEmployees.map((employee, index) => (
                     <div key={index} style={{ 
@@ -278,7 +359,7 @@ export default function ComplianceMetrics() {
                 <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
                   Employees with lowest policy adherence
                 </Text>
-                
+
                 <div style={{ maxHeight: 280, overflowY: 'auto' }}>
                   {needsImprovementEmployees.map((employee, index) => (
                     <div key={index} style={{ 
