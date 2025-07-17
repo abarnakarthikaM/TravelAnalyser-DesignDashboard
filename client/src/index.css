@@ -123,45 +123,38 @@ html, body, #root {
   }
 
   /* Custom tabs styling for top spenders page */
-  .custom-tabs {
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    display: inline-block;
-    overflow: hidden;
-  }
-
   .custom-tabs .ant-tabs-nav {
     margin-bottom: 0;
-    background: transparent;
-  }
-
-  .custom-tabs .ant-tabs-nav-wrap {
-    background: transparent;
-  }
-
-  .custom-tabs .ant-tabs-nav-list {
-    background: transparent;
   }
 
   .custom-tabs .ant-tabs-tab {
     background-color: transparent;
-    border: none;
+    border: 1px solid #d1d5db;
     border-radius: 0;
-    margin: 0;
+    margin-right: 0;
     padding: 8px 20px;
     color: #6b7280;
     font-weight: 500;
-    position: relative;
-    border-right: 1px solid #d1d5db;
+  }
+
+  .custom-tabs .ant-tabs-tab:first-child {
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
   }
 
   .custom-tabs .ant-tabs-tab:last-child {
-    border-right: none;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+  }
+
+  .custom-tabs .ant-tabs-tab + .ant-tabs-tab {
+    border-left: none;
   }
 
   .custom-tabs .ant-tabs-tab-active {
-    background-color: #0a2559;
+    background-color: #1e3a8a;
     color: white;
+    border-color: #1e3a8a;
     z-index: 1;
   }
 
