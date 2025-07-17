@@ -103,197 +103,301 @@ const TopSpenders = () => {
         <Content style={{ padding: '32px' }}>
           {/* Tabs */}
           <Tabs defaultActiveKey="department" style={{ marginBottom: 32 }}>
-            <TabPane tab="By Department" key="department" />
-            <TabPane tab="By Individual" key="individual" />
-            <TabPane tab="By Category" key="category" />
-          </Tabs>
+            <TabPane tab="By Department" key="department">
+              {/* Department content - existing code */}
+              {/* Department Metrics Cards */}
+              <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
+                {departmentMetrics.map((metric, index) => (
+                  <Col xs={24} lg={6} key={index}>
+                    <Card style={{ height: '100%' }}>
+                      <Title level={4} style={{ marginBottom: 16, fontSize: 16 }}>
+                        {metric.department}
+                      </Title>
+                      
+                      <Title level={2} style={{ margin: 0, marginBottom: 8, color: '#1890ff' }}>
+                        {metric.amount}
+                      </Title>
+                      
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <Text style={{ 
+                          color: metric.changeType === 'positive' ? '#52c41a' : '#ff4d4f',
+                          fontWeight: 500
+                        }}>
+                          {metric.change}
+                        </Text>
+                        <Text style={{ color: '#8c8c8c', fontSize: 12 }}>
+                          {metric.subtitle}
+                        </Text>
+                      </div>
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
 
-          {/* Department Metrics Cards */}
-          <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
-            {departmentMetrics.map((metric, index) => (
-              <Col xs={24} lg={6} key={index}>
-                <Card style={{ height: '100%' }}>
-                  <Title level={4} style={{ marginBottom: 16, fontSize: 16 }}>
-                    {metric.department}
-                  </Title>
-                  
-                  <Title level={2} style={{ margin: 0, marginBottom: 8, color: '#1890ff' }}>
-                    {metric.amount}
-                  </Title>
-                  
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <Text style={{ 
-                      color: metric.changeType === 'positive' ? '#52c41a' : '#ff4d4f',
-                      fontWeight: 500
-                    }}>
-                      {metric.change}
-                    </Text>
-                    <Text style={{ color: '#8c8c8c', fontSize: 12 }}>
-                      {metric.subtitle}
-                    </Text>
-                  </div>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-
-          {/* Department Spending Breakdown */}
-          <Card style={{ marginBottom: 32 }}>
-            <Title level={4} style={{ marginBottom: 16 }}>
-              Department Spending Breakdown
-            </Title>
-            <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
-              Detailed analysis of departmental travel expenses
-            </Text>
-            
-            <div style={{ marginBottom: 24 }}>
-              {departmentBreakdown.map((dept, index) => (
-                <div key={index} style={{ marginBottom: 20 }}>
-                  <div style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center',
-                    marginBottom: 8
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                      <Text style={{ fontWeight: 500, minWidth: 120 }}>{dept.department}</Text>
-                      <Text style={{ 
-                        color: dept.change.startsWith('+') ? '#52c41a' : '#ff4d4f',
-                        fontWeight: 500,
-                        fontSize: 12
+              {/* Department Spending Breakdown */}
+              <Card style={{ marginBottom: 32 }}>
+                <Title level={4} style={{ marginBottom: 16 }}>
+                  Department Spending Breakdown
+                </Title>
+                <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
+                  Detailed analysis of departmental travel expenses
+                </Text>
+                
+                <div style={{ marginBottom: 24 }}>
+                  {departmentBreakdown.map((dept, index) => (
+                    <div key={index} style={{ marginBottom: 20 }}>
+                      <div style={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'center',
+                        marginBottom: 8
                       }}>
-                        {dept.change}
-                      </Text>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <Text style={{ fontWeight: 600, fontSize: 16 }}>{dept.amount}</Text>
-                      <br />
-                      <Text style={{ color: '#8c8c8c', fontSize: 12 }}>{dept.percentage}%</Text>
-                    </div>
-                  </div>
-                  <Progress 
-                    percent={dept.percentage} 
-                    showInfo={false}
-                    strokeColor={getProgressColor(dept.change)}
-                    style={{ marginBottom: 4 }}
-                  />
-                </div>
-              ))}
-            </div>
-
-            {/* Chart Placeholder */}
-            <div style={{ 
-              height: 200, 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              backgroundColor: '#fafafa',
-              borderRadius: 6,
-              marginTop: 24
-            }}>
-              <Text style={{ color: '#8c8c8c' }}>
-                Department spending comparison chart would appear here
-              </Text>
-            </div>
-          </Card>
-
-          {/* Bottom Row - Categories and Trends */}
-          <Row gutter={[24, 24]}>
-            {/* Top Expense Categories by Department */}
-            <Col xs={24} lg={12}>
-              <Card style={{ height: 600 }}>
-                <Title level={4} style={{ marginBottom: 16 }}>
-                  Top Expense Categories by Department
-                </Title>
-                <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
-                  Breakdown of major expense types
-                </Text>
-                
-                <div style={{ marginBottom: 32 }}>
-                  <Text style={{ fontWeight: 600, fontSize: 16, display: 'block', marginBottom: 16 }}>
-                    Sales Department
-                  </Text>
-                  {salesCategories.map((category, index) => (
-                    <div key={index} style={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between', 
-                      alignItems: 'center',
-                      marginBottom: 12,
-                      padding: '8px 0'
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                        <div style={{
-                          width: 8,
-                          height: 8,
-                          borderRadius: '50%',
-                          backgroundColor: index === 0 ? '#1890ff' : index === 1 ? '#ff4d4f' : '#52c41a'
-                        }} />
-                        <Text>{category.category}</Text>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                          <Text style={{ fontWeight: 500, minWidth: 120 }}>{dept.department}</Text>
+                          <Text style={{ 
+                            color: dept.change.startsWith('+') ? '#52c41a' : '#ff4d4f',
+                            fontWeight: 500,
+                            fontSize: 12
+                          }}>
+                            {dept.change}
+                          </Text>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <Text style={{ fontWeight: 600, fontSize: 16 }}>{dept.amount}</Text>
+                          <br />
+                          <Text style={{ color: '#8c8c8c', fontSize: 12 }}>{dept.percentage}%</Text>
+                        </div>
                       </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <Text style={{ fontWeight: 600 }}>{category.amount}</Text>
-                        <Text style={{ color: '#8c8c8c', marginLeft: 8 }}>({category.percentage})</Text>
-                      </div>
+                      <Progress 
+                        percent={dept.percentage} 
+                        showInfo={false}
+                        strokeColor={getProgressColor(dept.change)}
+                        style={{ marginBottom: 4 }}
+                      />
                     </div>
                   ))}
                 </div>
 
-                <div>
-                  <Text style={{ fontWeight: 600, fontSize: 16, display: 'block', marginBottom: 16 }}>
-                    Engineering Department
-                  </Text>
-                  {engineeringCategories.map((category, index) => (
-                    <div key={index} style={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between', 
-                      alignItems: 'center',
-                      marginBottom: 12,
-                      padding: '8px 0'
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                        <div style={{
-                          width: 8,
-                          height: 8,
-                          borderRadius: '50%',
-                          backgroundColor: index === 0 ? '#1890ff' : index === 1 ? '#ff4d4f' : '#52c41a'
-                        }} />
-                        <Text>{category.category}</Text>
-                      </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <Text style={{ fontWeight: 600 }}>{category.amount}</Text>
-                        <Text style={{ color: '#8c8c8c', marginLeft: 8 }}>({category.percentage})</Text>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            </Col>
-
-            {/* Department Spending Trends */}
-            <Col xs={24} lg={12}>
-              <Card style={{ height: 600 }}>
-                <Title level={4} style={{ marginBottom: 16 }}>
-                  Department Spending Trends
-                </Title>
-                <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
-                  6-month spending pattern analysis
-                </Text>
-                
+                {/* Chart Placeholder */}
                 <div style={{ 
-                  height: 400, 
+                  height: 200, 
                   display: 'flex', 
                   alignItems: 'center', 
                   justifyContent: 'center',
                   backgroundColor: '#fafafa',
-                  borderRadius: 6
+                  borderRadius: 6,
+                  marginTop: 24
                 }}>
                   <Text style={{ color: '#8c8c8c' }}>
-                    Department spending trend chart would appear here
+                    Department spending comparison chart would appear here
                   </Text>
                 </div>
               </Card>
-            </Col>
-          </Row>
+            </TabPane>
+            
+            <TabPane tab="By Individual" key="individual">
+              {/* Top Individual Spenders */}
+              <Card style={{ marginBottom: 32 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+                  <div>
+                    <Title level={4} style={{ marginBottom: 8 }}>
+                      Top Individual Spenders
+                    </Title>
+                    <Text style={{ color: '#8c8c8c' }}>
+                      Employees with highest travel expenses
+                    </Text>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Text style={{ color: '#8c8c8c', fontSize: 14 }}>Sort by:</Text>
+                    <select style={{ 
+                      padding: '4px 8px', 
+                      border: '1px solid #d9d9d9', 
+                      borderRadius: 4,
+                      fontSize: 14
+                    }}>
+                      <option>Total Spend</option>
+                      <option>Trip Count</option>
+                      <option>Avg per Trip</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Individual Spenders List */}
+                <div style={{ marginBottom: 32 }}>
+                  {[
+                    { rank: 1, name: 'Sarah Johnson', department: 'Sales', role: 'Sales Director', trips: 18, avgPerTrip: 2366, totalSpend: 42580 },
+                    { rank: 2, name: 'Michael Chen', department: 'Executive', role: 'VP of Business Development', trips: 12, avgPerTrip: 3229, totalSpend: 38750 },
+                    { rank: 3, name: 'David Rodriguez', department: 'Sales', role: 'Senior Account Manager', trips: 15, avgPerTrip: 2361, totalSpend: 35420 },
+                    { rank: 4, name: 'Emily Wilson', department: 'Marketing', role: 'Marketing Director', trips: 10, avgPerTrip: 3215, totalSpend: 32150 },
+                    { rank: 5, name: 'James Taylor', department: 'Engineering', role: 'Chief Technology Officer', trips: 8, avgPerTrip: 3621, totalSpend: 28970 }
+                  ].map((person) => (
+                    <div key={person.rank} style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      padding: '16px 0',
+                      borderBottom: '1px solid #f0f0f0'
+                    }}>
+                      <div style={{ 
+                        width: 32, 
+                        height: 32, 
+                        backgroundColor: '#1890ff', 
+                        borderRadius: '50%', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                        marginRight: 16
+                      }}>
+                        <Text style={{ color: 'white', fontWeight: 600 }}>{person.rank}</Text>
+                      </div>
+                      
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                          <Text style={{ fontWeight: 600, fontSize: 16 }}>{person.name}</Text>
+                          <span style={{ 
+                            backgroundColor: person.department === 'Sales' ? '#e6f7ff' : 
+                                           person.department === 'Executive' ? '#f6ffed' :
+                                           person.department === 'Marketing' ? '#fff2e6' : '#f0f5ff',
+                            color: person.department === 'Sales' ? '#1890ff' : 
+                                   person.department === 'Executive' ? '#52c41a' :
+                                   person.department === 'Marketing' ? '#fa8c16' : '#722ed1',
+                            padding: '2px 8px',
+                            borderRadius: 4,
+                            fontSize: 12,
+                            fontWeight: 500
+                          }}>
+                            {person.department}
+                          </span>
+                        </div>
+                        <Text style={{ color: '#8c8c8c', fontSize: 14 }}>{person.role}</Text>
+                        <div style={{ marginTop: 4 }}>
+                          <Text style={{ color: '#595959', fontSize: 12 }}>
+                            Trips: {person.trips} | Avg per trip: ${person.avgPerTrip.toLocaleString()}
+                          </Text>
+                        </div>
+                      </div>
+                      
+                      <div style={{ textAlign: 'right' }}>
+                        <Text style={{ fontWeight: 600, fontSize: 18 }}>
+                          ${person.totalSpend.toLocaleString()}
+                        </Text>
+                        <br />
+                        <Text style={{ color: '#8c8c8c', fontSize: 12 }}>Total spend</Text>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+
+              {/* Bottom Charts Row */}
+              <Row gutter={[24, 24]}>
+                {/* Expense Distribution by Role */}
+                <Col xs={24} lg={12}>
+                  <Card style={{ height: 400 }}>
+                    <Title level={4} style={{ marginBottom: 16 }}>
+                      Expense Distribution by Role
+                    </Title>
+                    <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
+                      Spending patterns across job functions
+                    </Text>
+                    
+                    <div style={{ marginBottom: 24 }}>
+                      {[
+                        { role: 'Directors & VPs', amount: 425780, percentage: 34 },
+                        { role: 'Managers', amount: 312142, percentage: 25 },
+                        { role: 'Sales Representatives', amount: 249713, percentage: 20 },
+                        { role: 'Engineers', amount: 174799, percentage: 14 },
+                        { role: 'Other Roles', amount: 86133, percentage: 7 }
+                      ].map((item, index) => (
+                        <div key={index} style={{ marginBottom: 16 }}>
+                          <div style={{ 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            alignItems: 'center',
+                            marginBottom: 8
+                          }}>
+                            <Text style={{ fontWeight: 500 }}>{item.role}</Text>
+                            <Text style={{ fontWeight: 600 }}>${item.amount.toLocaleString()}</Text>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <Progress 
+                              percent={item.percentage} 
+                              showInfo={false}
+                              strokeColor={`hsl(${210 + index * 30}, 70%, 50%)`}
+                              style={{ flex: 1 }}
+                            />
+                            <Text style={{ color: '#8c8c8c', fontSize: 12, minWidth: 40 }}>
+                              {item.percentage}% of total expenses
+                            </Text>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+                </Col>
+
+                {/* Policy Compliance by Top Spenders */}
+                <Col xs={24} lg={12}>
+                  <Card style={{ height: 400 }}>
+                    <Title level={4} style={{ marginBottom: 16 }}>
+                      Policy Compliance by Top Spenders
+                    </Title>
+                    <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
+                      Adherence to travel policies
+                    </Text>
+                    
+                    <div style={{ marginBottom: 24 }}>
+                      {[
+                        { name: 'Sarah Johnson', compliance: 92, status: 'Excellent' },
+                        { name: 'Michael Chen', compliance: 88, status: 'Good' },
+                        { name: 'David Rodriguez', compliance: 76, status: 'Needs Improvement' },
+                        { name: 'Emily Wilson', compliance: 95, status: 'Excellent' },
+                        { name: 'James Taylor', compliance: 90, status: 'Good' }
+                      ].map((person, index) => (
+                        <div key={index} style={{ marginBottom: 20 }}>
+                          <div style={{ 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            alignItems: 'center',
+                            marginBottom: 8
+                          }}>
+                            <Text style={{ fontWeight: 500 }}>{person.name}</Text>
+                            <span style={{ 
+                              backgroundColor: person.status === 'Excellent' ? '#f6ffed' : 
+                                             person.status === 'Good' ? '#e6f7ff' : '#fff2e6',
+                              color: person.status === 'Excellent' ? '#52c41a' : 
+                                     person.status === 'Good' ? '#1890ff' : '#fa8c16',
+                              padding: '2px 8px',
+                              borderRadius: 4,
+                              fontSize: 12,
+                              fontWeight: 500
+                            }}>
+                              {person.status}
+                            </span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <Progress 
+                              percent={person.compliance} 
+                              showInfo={false}
+                              strokeColor={person.status === 'Excellent' ? '#52c41a' : 
+                                         person.status === 'Good' ? '#1890ff' : '#fa8c16'}
+                              style={{ flex: 1 }}
+                            />
+                            <Text style={{ color: '#8c8c8c', fontSize: 12, minWidth: 60 }}>
+                              {person.compliance}% policy compliance
+                            </Text>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+                </Col>
+              </Row>
+            </TabPane>
+            
+            <TabPane tab="By Category" key="category" />
+          </Tabs>
+
+          
         </Content>
       </Layout>
     </Layout>
