@@ -138,6 +138,71 @@ export default function ComplianceMetrics() {
               ))}
             </div>
           </div>
+
+          {/* Employee Lists Section */}
+          <Row gutter={[24, 24]}>
+            <Col xs={24} lg={12}>
+              <Card style={{ height: 400 }}>
+                <Title level={4} style={{ marginBottom: 8 }}>
+                  Top Compliant Employees
+                </Title>
+                <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
+                  Employees with highest policy adherence
+                </Text>
+                
+                <div style={{ maxHeight: 280, overflowY: 'auto' }}>
+                  {topCompliantEmployees.map((employee, index) => (
+                    <div key={index} style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      alignItems: 'center',
+                      padding: '12px 0',
+                      borderBottom: index < topCompliantEmployees.length - 1 ? '1px solid #f0f0f0' : 'none'
+                    }}>
+                      <div>
+                        <Text style={{ fontWeight: 500, display: 'block' }}>{employee.name}</Text>
+                        <Text style={{ color: '#8c8c8c', fontSize: 12 }}>{employee.department}</Text>
+                      </div>
+                      <Tag color={getComplianceColor(employee.compliance)} style={{ fontWeight: 'bold' }}>
+                        {employee.compliance}%
+                      </Tag>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </Col>
+
+            <Col xs={24} lg={12}>
+              <Card style={{ height: 400 }}>
+                <Title level={4} style={{ marginBottom: 8 }}>
+                  Needs Improvement
+                </Title>
+                <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
+                  Employees with lowest policy adherence
+                </Text>
+                
+                <div style={{ maxHeight: 280, overflowY: 'auto' }}>
+                  {needsImprovementEmployees.map((employee, index) => (
+                    <div key={index} style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      alignItems: 'center',
+                      padding: '12px 0',
+                      borderBottom: index < needsImprovementEmployees.length - 1 ? '1px solid #f0f0f0' : 'none'
+                    }}>
+                      <div>
+                        <Text style={{ fontWeight: 500, display: 'block' }}>{employee.name}</Text>
+                        <Text style={{ color: '#8c8c8c', fontSize: 12 }}>{employee.department}</Text>
+                      </div>
+                      <Tag color={getComplianceColor(employee.compliance)} style={{ fontWeight: 'bold' }}>
+                        {employee.compliance}%
+                      </Tag>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </Col>
+          </Row>
         </div>
       )
     },
@@ -243,70 +308,7 @@ export default function ComplianceMetrics() {
             />
           </Card>
 
-          {/* Bottom Section - Employee Lists */}
-          <Row gutter={[24, 24]}>
-            <Col xs={24} lg={12}>
-              <Card style={{ height: 400 }}>
-                <Title level={4} style={{ marginBottom: 8 }}>
-                  Top Compliant Employees
-                </Title>
-                <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
-                  Employees with highest policy adherence
-                </Text>
-                
-                <div style={{ maxHeight: 280, overflowY: 'auto' }}>
-                  {topCompliantEmployees.map((employee, index) => (
-                    <div key={index} style={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between', 
-                      alignItems: 'center',
-                      padding: '12px 0',
-                      borderBottom: index < topCompliantEmployees.length - 1 ? '1px solid #f0f0f0' : 'none'
-                    }}>
-                      <div>
-                        <Text style={{ fontWeight: 500, display: 'block' }}>{employee.name}</Text>
-                        <Text style={{ color: '#8c8c8c', fontSize: 12 }}>{employee.department}</Text>
-                      </div>
-                      <Tag color={getComplianceColor(employee.compliance)} style={{ fontWeight: 'bold' }}>
-                        {employee.compliance}%
-                      </Tag>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            </Col>
-
-            <Col xs={24} lg={12}>
-              <Card style={{ height: 400 }}>
-                <Title level={4} style={{ marginBottom: 8 }}>
-                  Needs Improvement
-                </Title>
-                <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
-                  Employees with lowest policy adherence
-                </Text>
-                
-                <div style={{ maxHeight: 280, overflowY: 'auto' }}>
-                  {needsImprovementEmployees.map((employee, index) => (
-                    <div key={index} style={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between', 
-                      alignItems: 'center',
-                      padding: '12px 0',
-                      borderBottom: index < needsImprovementEmployees.length - 1 ? '1px solid #f0f0f0' : 'none'
-                    }}>
-                      <div>
-                        <Text style={{ fontWeight: 500, display: 'block' }}>{employee.name}</Text>
-                        <Text style={{ color: '#8c8c8c', fontSize: 12 }}>{employee.department}</Text>
-                      </div>
-                      <Tag color={getComplianceColor(employee.compliance)} style={{ fontWeight: 'bold' }}>
-                        {employee.compliance}%
-                      </Tag>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            </Col>
-          </Row>
+          
         </Content>
       </Layout>
     </Layout>
