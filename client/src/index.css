@@ -53,6 +53,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -76,7 +77,9 @@ code {
   box-sizing: border-box;
 }
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
 }
 
@@ -117,56 +120,65 @@ html, body, #root {
 }
 
 .dashboard-tab.active {
-    background-color: #1f2937;
-    color: white;
-    border-radius: 4px;
-  }
+  background-color: #0c265a;
+  color: white;
+  border-radius: 4px;
+}
 
-  /* Custom tabs styling for top spenders page */
-  .custom-tabs .ant-tabs-nav {
-    margin-bottom: 0;
-  }
+/* Custom tabs styling for top spenders page */
+.custom-tabs .ant-tabs-nav {
+  margin-bottom: 0;
+}
 
-  .custom-tabs .ant-tabs-tab {
-    background-color: transparent;
-    border: 1px solid #d1d5db;
-    border-radius: 0;
-    margin-right: 0;
-    padding: 8px 20px;
-    color: #6b7280;
-    font-weight: 500;
-  }
+.custom-tabs .ant-tabs-tab {
+  background-color: transparent;
+  border: 1px solid #d1d5db;
+  border-radius: 0;
+  margin-right: 0;
+  padding: 6px 20px;
+  color: #6b7280;
+  font-weight: 500;
+}
 
-  .custom-tabs .ant-tabs-tab:first-child {
-    border-top-left-radius: 6px;
-    border-bottom-left-radius: 6px;
-  }
+.custom-tabs .ant-tabs-tab:first-child {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
 
-  .custom-tabs .ant-tabs-tab:last-child {
-    border-top-right-radius: 6px;
-    border-bottom-right-radius: 6px;
-  }
+.custom-tabs .ant-tabs-tab:last-child {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
 
-  .custom-tabs .ant-tabs-tab + .ant-tabs-tab {
-    border-left: none;
-  }
+.custom-tabs .ant-tabs-tab+.ant-tabs-tab {
+  border-left: none;
+}
 
-  .custom-tabs .ant-tabs-tab-active {
-    background-color: #1e3a8a;
-    color: white;
-    border-color: #1e3a8a;
-    z-index: 1;
-  }
+.custom-tabs .ant-tabs-tab-active {
+  background-color: #0a2559;
+  color: white;
+  border-radius: 3px;
+  z-index: 1;
+}
 
-  .custom-tabs .ant-tabs-tab:hover:not(.ant-tabs-tab-active) {
-    background-color: #f3f4f6;
-    color: #374151;
-  }
+.custom-tabs .ant-tabs-tab:hover:not(.ant-tabs-tab-active) {
+  background-color: #f3f4f6;
+  color: #374151;
+}
 
-  .custom-tabs .ant-tabs-ink-bar {
-    display: none;
-  }
+.custom-tabs .ant-tabs-ink-bar {
+  display: none;
+}
 
-  .custom-tabs .ant-tabs-content-holder {
-    border: none;
-  }
+.custom-tabs .ant-tabs-content-holder {
+  border: none;
+}
+
+.cls-topspender .ant-tabs-nav-list {
+  border: 1px solid #ccc;
+  margin-bottom: 15px;
+}
+
+.cls-topspender .ant-tabs-tab {
+  border: unset;
+}

@@ -149,12 +149,12 @@ const TopSpenders = () => {
           </Space>
         </div>
 
-        <Content style={{ padding: "32px", border: "1px solid #ccc" }}>
+        <Content style={{ padding: "32px"}}>
           {/* Tabs */}
           <Tabs
             defaultActiveKey="category"
             style={{ marginBottom: 32 }}
-            className="custom-tabs"
+            className="custom-tabs cls-topspender"
           >
             <TabPane tab="By Department" key="department">
               {/* Department content - existing code */}
