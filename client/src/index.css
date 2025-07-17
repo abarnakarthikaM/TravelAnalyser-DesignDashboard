@@ -156,7 +156,7 @@ body,
 
 .custom-tabs .ant-tabs-tab-active {
   background-color: #0a2559;
-  color: white;
+  color: #fff;
   border-radius: 3px;
   z-index: 1;
 }
