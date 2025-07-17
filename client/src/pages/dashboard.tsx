@@ -178,6 +178,91 @@ function VendorPerformanceTab() {
             </div>
           </div>
         </div>
+        
+        {/* Vendor Performance Cards */}
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', 
+          gap: 16, 
+          marginTop: 24 
+        }}>
+          {getChartData(selectedVendorTab).map((vendor, index) => {
+            // Determine performance categories
+            const getPerformanceCategory = (efficiency: number, satisfaction: number) => {
+              if (efficiency >= 90 && satisfaction >= 85) return { title: 'Top Performer', color: '#10b981' };
+              if (efficiency >= 85 && satisfaction >= 80) return { title: 'Most Cost-Effective', color: '#3b82f6' };
+              if (satisfaction >= 80) return { title: 'Highest Satisfaction', color: '#8b5cf6' };
+              return { title: 'Needs Improvement', color: '#ef4444' };
+            };
+            
+            const category = getPerformanceCategory(vendor.efficiency, vendor.satisfaction);
+            
+            return (
+              <div
+                key={vendor.name}
+                style={{
+                  backgroundColor: '#fff',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '8px',
+                  padding: '20px',
+                  boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
+                }}
+              >
+                <div style={{ marginBottom: 12 }}>
+                  <div style={{
+                    fontSize: 12,
+                    color: '#6b7280',
+                    fontWeight: 500,
+                    marginBottom: 4
+                  }}>
+                    {category.title}
+                  </div>
+                  <div style={{
+                    fontSize: 18,
+                    fontWeight: 600,
+                    color: '#1f2937'
+                  }}>
+                    {vendor.name}
+                  </div>
+                </div>
+                
+                <div style={{ marginBottom: 8 }}>
+                  <div style={{
+                    fontSize: 12,
+                    color: '#6b7280',
+                    marginBottom: 4
+                  }}>
+                    Cost Efficiency
+                  </div>
+                  <div style={{
+                    fontSize: 16,
+                    fontWeight: 600,
+                    color: category.color
+                  }}>
+                    {vendor.efficiency}%
+                  </div>
+                </div>
+                
+                <div>
+                  <div style={{
+                    fontSize: 12,
+                    color: '#6b7280',
+                    marginBottom: 4
+                  }}>
+                    Satisfaction Rate
+                  </div>
+                  <div style={{
+                    fontSize: 16,
+                    fontWeight: 600,
+                    color: category.color
+                  }}>
+                    {vendor.satisfaction}%
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
