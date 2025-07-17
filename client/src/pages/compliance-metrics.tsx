@@ -4,6 +4,7 @@ import { Layout, Typography, Button, Space, Row, Col, Card, Progress, Tabs, Tag 
 import { CalendarOutlined, FilterOutlined, DownloadOutlined, CheckCircleOutlined, ExclamationCircleOutlined, WarningOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { Sidebar } from '@/components/dashboard/sidebar';
 import { PolicyViolations } from '@/components/dashboard/policy-violations';
+import { DepartmentCompliance } from '@/components/dashboard/department-compliance';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -214,7 +215,7 @@ export default function ComplianceMetrics() {
     {
       key: 'department',
       label: 'By Department',
-      children: <div style={{ padding: 24 }}>Department view content</div>
+      children: <DepartmentCompliance />
     },
     {
       key: 'trends',
