@@ -12,6 +12,177 @@ import { CalendarOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 
+// Vendor Performance Tab Component
+function VendorPerformanceTab() {
+  const [selectedVendorTab, setSelectedVendorTab] = useState('all-vendors');
+  
+  const vendorTabs = [
+    { key: 'all-vendors', label: 'All Vendors' },
+    { key: 'airlines', label: 'Airlines' },
+    { key: 'hotels', label: 'Hotels' },
+    { key: 'transport', label: 'Transport' },
+  ];
+
+  const getChartData = (vendorType: string) => {
+    const data = {
+      'all-vendors': [
+        { name: 'AirCorp', efficiency: 85, satisfaction: 75 },
+        { name: 'TravelEase', efficiency: 92, satisfaction: 68 },
+        { name: 'GlobalStay', efficiency: 78, satisfaction: 85 },
+        { name: 'RideShare', efficiency: 88, satisfaction: 70 }
+      ],
+      'airlines': [
+        { name: 'AirCorp', efficiency: 85, satisfaction: 75 },
+        { name: 'SkyJet', efficiency: 90, satisfaction: 72 },
+        { name: 'GlobalAir', efficiency: 82, satisfaction: 78 }
+      ],
+      'hotels': [
+        { name: 'GlobalStay', efficiency: 78, satisfaction: 85 },
+        { name: 'HotelPlus', efficiency: 88, satisfaction: 82 },
+        { name: 'ComfortInn', efficiency: 75, satisfaction: 80 }
+      ],
+      'transport': [
+        { name: 'RideShare', efficiency: 88, satisfaction: 70 },
+        { name: 'CabCorp', efficiency: 85, satisfaction: 75 },
+        { name: 'TransportEase', efficiency: 80, satisfaction: 72 }
+      ]
+    };
+    return data[vendorType as keyof typeof data] || data['all-vendors'];
+  };
+
+  return (
+    <div className="bg-white rounded-lg" style={{ minHeight: 400, border: '1px solid #d1d5db' }}>
+      <div style={{ padding: '24px 24px 0' }}>
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">Vendor Performance</h3>
+        <p className="text-gray-600 mb-6">Compare performance metrics across vendors</p>
+        
+        {/* Filter tabs and dropdown */}
+        <div className="flex items-center justify-between mb-6">
+          <div 
+            className="vendor-tabs-container"
+            style={{
+              backgroundColor: '#f5f5f5',
+              padding: '4px',
+              borderRadius: '8px',
+              border: '1px solid #e5e7eb',
+              display: 'flex',
+              gap: '2px'
+            }}
+          >
+            {vendorTabs.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setSelectedVendorTab(tab.key)}
+                style={{
+                  padding: '8px 16px',
+                  fontSize: '14px',
+                  fontWeight: selectedVendorTab === tab.key ? '500' : '400',
+                  color: selectedVendorTab === tab.key ? '#374151' : '#6b7280',
+                  backgroundColor: selectedVendorTab === tab.key ? '#fff' : 'transparent',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: selectedVendorTab === tab.key ? '0 1px 2px 0 rgba(0, 0, 0, 0.05)' : 'none'
+                }}
+                onMouseEnter={(e) => {
+                  if (selectedVendorTab !== tab.key) {
+                    e.currentTarget.style.backgroundColor = '#e5e7eb';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (selectedVendorTab !== tab.key) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+          
+          <Select
+            defaultValue="Performance"
+            style={{ width: 140 }}
+            options={[
+              { value: 'performance', label: 'Performance' },
+              { value: 'cost', label: 'Cost' },
+              { value: 'satisfaction', label: 'Satisfaction' },
+            ]}
+          />
+        </div>
+      </div>
+      
+      {/* Chart area */}
+      <div style={{ padding: '0 24px 24px' }}>
+        <div style={{ height: 350, position: 'relative' }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={getChartData(selectedVendorTab)}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+              <XAxis
+                dataKey="name"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 12, fill: '#6b7280' }}
+              />
+              <YAxis
+                domain={[0, 100]}
+                tickFormatter={(value) => `${value}%`}
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 12, fill: '#6b7280' }}
+              />
+              <Bar
+                dataKey="efficiency"
+                fill="#4F46E5"
+                radius={[4, 4, 0, 0]}
+                maxBarSize={60}
+              />
+              <Bar
+                dataKey="satisfaction"
+                fill="#EC4899"
+                radius={[4, 4, 0, 0]}
+                maxBarSize={60}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+          
+          {/* Legend */}
+          <div style={{ 
+            position: 'absolute', 
+            top: 10, 
+            right: 30,
+            display: 'flex',
+            gap: 20
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{
+                width: 12,
+                height: 12,
+                backgroundColor: '#4F46E5',
+                borderRadius: 2
+              }}></div>
+              <span style={{ fontSize: 12, color: '#6b7280' }}>Cost Efficiency</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{
+                width: 12,
+                height: 12,
+                backgroundColor: '#EC4899',
+                borderRadius: 2
+              }}></div>
+              <span style={{ fontSize: 12, color: '#6b7280' }}>Satisfaction</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
@@ -116,113 +287,10 @@ export default function Dashboard() {
             )}
             
             {activeTab === 'vendor-performance' && (
-              <div className="bg-white rounded-lg" style={{ minHeight: 400, border: '1px solid #d1d5db' }}>
-                <div style={{ padding: '24px 24px 0' }}>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Vendor Performance</h3>
-                  <p className="text-gray-600 mb-6">Compare performance metrics across vendors</p>
-                  
-                  {/* Filter tabs and dropdown */}
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-1">
-                      <button className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-md border">
-                        All Vendors
-                      </button>
-                      <button className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
-                        Airlines
-                      </button>
-                      <button className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
-                        Hotels
-                      </button>
-                      <button className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
-                        Transport
-                      </button>
-                    </div>
-                    
-                    <Select
-                      defaultValue="Performance"
-                      style={{ width: 140 }}
-                      options={[
-                        { value: 'performance', label: 'Performance' },
-                        { value: 'cost', label: 'Cost' },
-                        { value: 'satisfaction', label: 'Satisfaction' },
-                      ]}
-                    />
-                  </div>
-                </div>
-                
-                {/* Chart area */}
-                <div style={{ padding: '0 24px 24px' }}>
-                  <div style={{ height: 350, position: 'relative' }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={[
-                          { name: 'AirCorp', efficiency: 85, satisfaction: 75 },
-                          { name: 'TravelEase', efficiency: 92, satisfaction: 68 },
-                          { name: 'GlobalStay', efficiency: 78, satisfaction: 85 },
-                          { name: 'RideShare', efficiency: 88, satisfaction: 70 }
-                        ]}
-                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-                        <XAxis
-                          dataKey="name"
-                          axisLine={false}
-                          tickLine={false}
-                          tick={{ fontSize: 12, fill: '#6b7280' }}
-                        />
-                        <YAxis
-                          domain={[0, 100]}
-                          tickFormatter={(value) => `${value}%`}
-                          axisLine={false}
-                          tickLine={false}
-                          tick={{ fontSize: 12, fill: '#6b7280' }}
-                        />
-                        <Bar
-                          dataKey="efficiency"
-                          fill="#4F46E5"
-                          radius={[4, 4, 0, 0]}
-                          maxBarSize={60}
-                        />
-                        <Bar
-                          dataKey="satisfaction"
-                          fill="#EC4899"
-                          radius={[4, 4, 0, 0]}
-                          maxBarSize={60}
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
-                    
-                    {/* Legend */}
-                    <div style={{ 
-                      position: 'absolute', 
-                      top: 10, 
-                      right: 30,
-                      display: 'flex',
-                      gap: 20
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <div style={{
-                          width: 12,
-                          height: 12,
-                          backgroundColor: '#4F46E5',
-                          borderRadius: 2
-                        }}></div>
-                        <span style={{ fontSize: 12, color: '#6b7280' }}>Cost Efficiency</span>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <div style={{
-                          width: 12,
-                          height: 12,
-                          backgroundColor: '#EC4899',
-                          borderRadius: 2
-                        }}></div>
-                        <span style={{ fontSize: 12, color: '#6b7280' }}>Satisfaction</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <VendorPerformanceTab />
             )}
+                
+                
             
             {activeTab === 'compliance' && (
               <div className="bg-white rounded-lg p-8 text-center" style={{ minHeight: 400 }}>
