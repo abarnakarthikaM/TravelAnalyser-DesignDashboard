@@ -95,37 +95,31 @@ export default function Dashboard() {
           <MetricsCards metrics={metrics} />
           
           <div className="mb-8">
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <Tabs
-                activeKey={activeTab}
-                onChange={setActiveTab}
-                items={tabItems}
-                size="large"
-                style={{ 
-                  marginBottom: 24,
-                  '--ant-primary-color': '#0a2559'
-                }}
-                className="custom-tabs"
-              />
-              
-              {activeTab === 'expense-breakdown' && (
-                <ExpenseCharts metrics={metrics} />
-              )}
-              
-              {activeTab === 'vendor-performance' && (
-                <div className="bg-white rounded-lg p-8 text-center" style={{ minHeight: 400 }}>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Vendor Performance</h3>
-                  <p className="text-gray-600">Vendor performance metrics coming soon...</p>
-                </div>
-              )}
-              
-              {activeTab === 'compliance' && (
-                <div className="bg-white rounded-lg p-8 text-center" style={{ minHeight: 400 }}>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Compliance</h3>
-                  <p className="text-gray-600">Compliance metrics coming soon...</p>
-                </div>
-              )}
-            </div>
+            <Tabs
+              activeKey={activeTab}
+              onChange={setActiveTab}
+              items={tabItems}
+              size="large"
+              style={{ marginBottom: 24 }}
+            />
+            
+            {activeTab === 'expense-breakdown' && (
+              <ExpenseCharts metrics={metrics} />
+            )}
+            
+            {activeTab === 'vendor-performance' && (
+              <div className="bg-white rounded-lg p-8 text-center" style={{ minHeight: 400 }}>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Vendor Performance</h3>
+                <p className="text-gray-600">Vendor performance metrics coming soon...</p>
+              </div>
+            )}
+            
+            {activeTab === 'compliance' && (
+              <div className="bg-white rounded-lg p-8 text-center" style={{ minHeight: 400 }}>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Compliance</h3>
+                <p className="text-gray-600">Compliance metrics coming soon...</p>
+              </div>
+            )}
           </div>
           
           <div className="grid grid-cols-3 gap-8 mt-8">
