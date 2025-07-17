@@ -95,13 +95,20 @@ export default function Dashboard() {
           <MetricsCards metrics={metrics} />
           
           <div className="mb-8">
-            <Tabs
-              activeKey={activeTab}
-              onChange={setActiveTab}
-              items={tabItems}
-              size="large"
-              style={{ marginBottom: 24 }}
-            />
+            {/* Custom Tab Navigation */}
+            <div className="dashboard-tabs-container mb-6">
+              <div className="dashboard-tabs">
+                {tabItems.map((tab) => (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActiveTab(tab.key)}
+                    className={`dashboard-tab ${activeTab === tab.key ? 'active' : ''}`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </div>
             
             {activeTab === 'expense-breakdown' && (
               <ExpenseCharts metrics={metrics} />

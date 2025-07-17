@@ -79,3 +79,45 @@ code {
 html, body, #root {
   height: 100%;
 }
+
+/* Dashboard Tab Styles */
+.dashboard-tabs-container {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.dashboard-tabs {
+  display: inline-flex;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  padding: 2px;
+  height: 40px;
+}
+
+.dashboard-tab {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  height: 36px;
+  display: flex;
+  align-items: center;
+}
+
+.dashboard-tab:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.dashboard-tab.active {
+  background: #0a2559;
+  color: white;
+  font-weight: 600;
+}
