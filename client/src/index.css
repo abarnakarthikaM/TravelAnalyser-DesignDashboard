@@ -25,7 +25,7 @@
     --ring: 222.2 84% 4.9%;
     --radius: 0.5rem;
   }
- 
+
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
@@ -117,7 +117,56 @@ html, body, #root {
 }
 
 .dashboard-tab.active {
-  background: #0a2559;
-  color: white;
-  font-weight: 600;
-}
+    background-color: #1f2937;
+    color: white;
+    border-radius: 4px;
+  }
+
+  /* Custom tabs styling for top spenders page */
+  .custom-tabs .ant-tabs-nav {
+    margin-bottom: 0;
+  }
+
+  .custom-tabs .ant-tabs-tab {
+    background-color: transparent;
+    border: 1px solid #d1d5db;
+    border-radius: 0;
+    margin-right: 0;
+    padding: 8px 20px;
+    color: #6b7280;
+    font-weight: 500;
+  }
+
+  .custom-tabs .ant-tabs-tab:first-child {
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+  }
+
+  .custom-tabs .ant-tabs-tab:last-child {
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+  }
+
+  .custom-tabs .ant-tabs-tab + .ant-tabs-tab {
+    border-left: none;
+  }
+
+  .custom-tabs .ant-tabs-tab-active {
+    background-color: #1e3a8a;
+    color: white;
+    border-color: #1e3a8a;
+    z-index: 1;
+  }
+
+  .custom-tabs .ant-tabs-tab:hover:not(.ant-tabs-tab-active) {
+    background-color: #f3f4f6;
+    color: #374151;
+  }
+
+  .custom-tabs .ant-tabs-ink-bar {
+    display: none;
+  }
+
+  .custom-tabs .ant-tabs-content-holder {
+    border: none;
+  }
