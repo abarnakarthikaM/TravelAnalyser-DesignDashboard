@@ -1,4 +1,7 @@
+
 import { Card, Row, Col, Typography } from "antd";
+import { useState } from "react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
 const { Title } = Typography;
 
@@ -12,55 +15,185 @@ interface ExpenseChartsProps {
 }
 
 export function ExpenseCharts({ metrics }: ExpenseChartsProps) {
+  const [selectedPeriod, setSelectedPeriod] = useState('Monthly');
+
+  // Monthly expense trend data
+  const monthlyData = [
+    { month: 'Jan', amount: 65000 },
+    { month: 'Feb', amount: 85000 },
+    { month: 'Mar', amount: 45000 },
+    { month: 'Apr', amount: 75000 },
+    { month: 'May', amount: 55000 },
+  ];
+
+  // Pie chart data for expense distribution
+  const distributionData = [
+    { name: 'Air Travel', value: 45, color: '#4F46E5' },
+    { name: 'Hotels', value: 35, color: '#8B5CF6' },
+    { name: 'Ground Transport', value: 20, color: '#EC4899' },
+  ];
+
+  const COLORS = ['#4F46E5', '#8B5CF6', '#EC4899'];
+
+  const formatYAxis = (value: number) => {
+    return `$${value / 1000}k`;
+  };
+
+  const formatTooltip = (value: number, name: string) => {
+    return [`$${value.toLocaleString()}`, name];
+  };
+
+  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+      <text 
+        x={x} 
+        y={y} 
+        fill="white" 
+        textAnchor={x > cx ? 'start' : 'end'} 
+        dominantBaseline="central"
+        fontSize={12}
+        fontWeight={500}
+      >
+        {`${(percent * 100).toFixed(0)}%`}
+      </text>
+    );
+  };
+
   return (
     <div>
       <div style={{ marginBottom: 24 }}>
-        <Title level={3} style={{ marginBottom: 8 }}>
+        <Title level={3} style={{ marginBottom: 8, color: '#1f2937', fontWeight: 600 }}>
           Expense Breakdown
         </Title>
-        <p style={{ color: '#8c8c8c', margin: 0 }}>
+        <p style={{ color: '#6b7280', margin: 0, fontSize: 14 }}>
           View your expense distribution across categories
         </p>
       </div>
-      
-      <Card 
-        bordered={false}
-        style={{ 
-          height: 400,
-          boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02)'
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <Title level={4} style={{ margin: 0 }}>
-            Expense Distribution
-          </Title>
-          <div style={{ display: 'flex', gap: 16, fontSize: 12 }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span style={{ width: 12, height: 12, backgroundColor: '#1890ff', borderRadius: '50%' }}></span>
-              Air Travel
-            </span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span style={{ width: 12, height: 12, backgroundColor: '#52c41a', borderRadius: '50%' }}></span>
-              Hotels
-            </span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span style={{ width: 12, height: 12, backgroundColor: '#fa8c16', borderRadius: '50%' }}></span>
-              Ground Transport
-            </span>
-          </div>
+
+      {/* Time Period Tabs */}
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ display: 'flex', gap: 0 }}>
+          {['Monthly', 'Quarterly', 'Yearly'].map((period) => (
+            <button
+              key={period}
+              onClick={() => setSelectedPeriod(period)}
+              style={{
+                padding: '8px 16px',
+                border: 'none',
+                background: selectedPeriod === period ? '#1f2937' : 'transparent',
+                color: selectedPeriod === period ? 'white' : '#6b7280',
+                fontSize: 14,
+                fontWeight: selectedPeriod === period ? 500 : 400,
+                cursor: 'pointer',
+                borderRadius: selectedPeriod === period ? '4px' : '0',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              {period}
+            </button>
+          ))}
         </div>
-        <div style={{ 
-          height: 300, 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center',
-          backgroundColor: '#fafafa',
-          borderRadius: 6,
-          color: '#8c8c8c'
-        }}>
-          Pie Chart Placeholder
+      </div>
+
+      {/* Legend */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 24, gap: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ width: 8, height: 8, backgroundColor: '#4F46E5', borderRadius: '50%' }}></div>
+          <span style={{ fontSize: 12, color: '#6b7280' }}>Air Travel</span>
         </div>
-      </Card>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ width: 8, height: 8, backgroundColor: '#8B5CF6', borderRadius: '50%' }}></div>
+          <span style={{ fontSize: 12, color: '#6b7280' }}>Hotels</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ width: 8, height: 8, backgroundColor: '#EC4899', borderRadius: '50%' }}></div>
+          <span style={{ fontSize: 12, color: '#6b7280' }}>Ground Transport</span>
+        </div>
+      </div>
+
+      <Row gutter={24}>
+        {/* Monthly Expense Trend Chart */}
+        <Col xs={24} lg={12}>
+          <Card 
+            bordered={false}
+            style={{ 
+              height: 350,
+              boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'
+            }}
+          >
+            <div style={{ marginBottom: 20 }}>
+              <Title level={4} style={{ margin: 0, fontSize: 16, fontWeight: 600, color: '#1f2937' }}>
+                Monthly Expense Trend
+              </Title>
+            </div>
+            
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={monthlyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+                <XAxis 
+                  dataKey="month" 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 12, fill: '#6b7280' }}
+                />
+                <YAxis 
+                  tickFormatter={formatYAxis}
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 12, fill: '#6b7280' }}
+                />
+                <Bar 
+                  dataKey="amount" 
+                  fill="#4F46E5" 
+                  radius={[4, 4, 0, 0]}
+                  maxBarSize={40}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
+        </Col>
+
+        {/* Expense Distribution Pie Chart */}
+        <Col xs={24} lg={12}>
+          <Card 
+            bordered={false}
+            style={{ 
+              height: 350,
+              boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'
+            }}
+          >
+            <div style={{ marginBottom: 20 }}>
+              <Title level={4} style={{ margin: 0, fontSize: 16, fontWeight: 600, color: '#1f2937' }}>
+                Expense Distribution
+              </Title>
+            </div>
+            
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
+                <Pie
+                  data={distributionData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={renderCustomizedLabel}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {distributionData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+          </Card>
+        </Col>
+      </Row>
     </div>
   );
 }
