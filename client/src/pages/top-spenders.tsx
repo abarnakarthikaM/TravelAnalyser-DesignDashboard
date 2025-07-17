@@ -394,7 +394,332 @@ const TopSpenders = () => {
               </Row>
             </TabPane>
             
-            <TabPane tab="By Category" key="category" />
+            <TabPane tab="By Category" key="category">
+              {/* Category Summary Cards */}
+              <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
+                {/* Air Travel Card */}
+                <Col xs={24} lg={8}>
+                  <Card style={{ height: '100%' }}>
+                    <Title level={4} style={{ marginBottom: 8, fontSize: 16, fontWeight: 600 }}>
+                      Air Travel
+                    </Title>
+                    <Title level={2} style={{ margin: 0, marginBottom: 8, color: '#1f2937', fontSize: 32 }}>
+                      $567,890
+                    </Title>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+                      <Text style={{ color: '#52c41a', fontWeight: 500, fontSize: 14 }}>
+                        +8.2%
+                      </Text>
+                      <Text style={{ color: '#8c8c8c', fontSize: 12 }}>
+                        from previous period
+                      </Text>
+                    </div>
+                    
+                    <div style={{ marginBottom: 12 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                        <Text style={{ fontSize: 14, fontWeight: 500 }}>International Flights</Text>
+                        <Text style={{ fontSize: 14, fontWeight: 600 }}>$340,734 (60%)</Text>
+                      </div>
+                      <Progress percent={60} showInfo={false} strokeColor="#1890ff" strokeWidth={6} />
+                    </div>
+                    
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                        <Text style={{ fontSize: 14, fontWeight: 500 }}>Domestic Flights</Text>
+                        <Text style={{ fontSize: 14, fontWeight: 600 }}>$227,156 (40%)</Text>
+                      </div>
+                      <Progress percent={40} showInfo={false} strokeColor="#52c41a" strokeWidth={6} />
+                    </div>
+                  </Card>
+                </Col>
+
+                {/* Hotel Stays Card */}
+                <Col xs={24} lg={8}>
+                  <Card style={{ height: '100%' }}>
+                    <Title level={4} style={{ marginBottom: 8, fontSize: 16, fontWeight: 600 }}>
+                      Hotel Stays
+                    </Title>
+                    <Title level={2} style={{ margin: 0, marginBottom: 8, color: '#1f2937', fontSize: 32 }}>
+                      $432,156
+                    </Title>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+                      <Text style={{ color: '#52c41a', fontWeight: 500, fontSize: 14 }}>
+                        +5.1%
+                      </Text>
+                      <Text style={{ color: '#8c8c8c', fontSize: 12 }}>
+                        from previous period
+                      </Text>
+                    </div>
+                    
+                    <div style={{ marginBottom: 12 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                        <Text style={{ fontSize: 14, fontWeight: 500 }}>Premium Hotels</Text>
+                        <Text style={{ fontSize: 14, fontWeight: 600 }}>$172,862 (40%)</Text>
+                      </div>
+                      <Progress percent={40} showInfo={false} strokeColor="#722ed1" strokeWidth={6} />
+                    </div>
+                    
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                        <Text style={{ fontSize: 14, fontWeight: 500 }}>Standard Hotels</Text>
+                        <Text style={{ fontSize: 14, fontWeight: 600 }}>$259,294 (60%)</Text>
+                      </div>
+                      <Progress percent={60} showInfo={false} strokeColor="#fa8c16" strokeWidth={6} />
+                    </div>
+                  </Card>
+                </Col>
+
+                {/* Ground Transport Card */}
+                <Col xs={24} lg={8}>
+                  <Card style={{ height: '100%' }}>
+                    <Title level={4} style={{ marginBottom: 8, fontSize: 16, fontWeight: 600 }}>
+                      Ground Transport
+                    </Title>
+                    <Title level={2} style={{ margin: 0, marginBottom: 8, color: '#1f2937', fontSize: 32 }}>
+                      $248,521
+                    </Title>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+                      <Text style={{ color: '#52c41a', fontWeight: 500, fontSize: 14 }}>
+                        +18.7%
+                      </Text>
+                      <Text style={{ color: '#8c8c8c', fontSize: 12 }}>
+                        from previous period
+                      </Text>
+                    </div>
+                    
+                    <div style={{ marginBottom: 12 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                        <Text style={{ fontSize: 14, fontWeight: 500 }}>Ride Sharing</Text>
+                        <Text style={{ fontSize: 14, fontWeight: 600 }}>$149,113 (60%)</Text>
+                      </div>
+                      <Progress percent={60} showInfo={false} strokeColor="#13c2c2" strokeWidth={6} />
+                    </div>
+                    
+                    <div style={{ marginBottom: 12 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                        <Text style={{ fontSize: 14, fontWeight: 500 }}>Car Rentals</Text>
+                        <Text style={{ fontSize: 14, fontWeight: 600 }}>$74,556 (30%)</Text>
+                      </div>
+                      <Progress percent={30} showInfo={false} strokeColor="#eb2f96" strokeWidth={6} />
+                    </div>
+                    
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                        <Text style={{ fontSize: 14, fontWeight: 500 }}>Taxis & Other</Text>
+                        <Text style={{ fontSize: 14, fontWeight: 600 }}>$24,852 (10%)</Text>
+                      </div>
+                      <Progress percent={10} showInfo={false} strokeColor="#f5222d" strokeWidth={6} />
+                    </div>
+                  </Card>
+                </Col>
+              </Row>
+
+              {/* Category Spending by Department Table */}
+              <Card style={{ marginBottom: 32 }}>
+                <Title level={4} style={{ marginBottom: 8 }}>
+                  Category Spending by Department
+                </Title>
+                <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
+                  Breakdown of expense categories across departments
+                </Text>
+                
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '2px solid #f0f0f0' }}>
+                        <th style={{ 
+                          padding: '12px 16px', 
+                          textAlign: 'left', 
+                          fontWeight: 600, 
+                          color: '#1f2937',
+                          backgroundColor: '#fafafa'
+                        }}>
+                          Department
+                        </th>
+                        <th style={{ 
+                          padding: '12px 16px', 
+                          textAlign: 'right', 
+                          fontWeight: 600, 
+                          color: '#1f2937',
+                          backgroundColor: '#fafafa'
+                        }}>
+                          Air Travel
+                        </th>
+                        <th style={{ 
+                          padding: '12px 16px', 
+                          textAlign: 'right', 
+                          fontWeight: 600, 
+                          color: '#1f2937',
+                          backgroundColor: '#fafafa'
+                        }}>
+                          Hotels
+                        </th>
+                        <th style={{ 
+                          padding: '12px 16px', 
+                          textAlign: 'right', 
+                          fontWeight: 600, 
+                          color: '#1f2937',
+                          backgroundColor: '#fafafa'
+                        }}>
+                          Ground Transport
+                        </th>
+                        <th style={{ 
+                          padding: '12px 16px', 
+                          textAlign: 'right', 
+                          fontWeight: 600, 
+                          color: '#1f2937',
+                          backgroundColor: '#fafafa'
+                        }}>
+                          Total
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[
+                        { department: 'Sales', airTravel: '$262,199', hotels: '$157,319', groundTransport: '$104,880', total: '$524,398' },
+                        { department: 'Engineering', airTravel: '$143,585', hotels: '$114,868', groundTransport: '$28,717', total: '$287,170' },
+                        { department: 'Marketing', airTravel: '$89,897', hotels: '$101,134', groundTransport: '$33,711', total: '$224,742' },
+                        { department: 'Executive', airTravel: '$49,943', hotels: '$37,457', groundTransport: '$37,457', total: '$124,857' },
+                        { department: 'Other Departments', airTravel: '$22,266', hotels: '$21,378', groundTransport: '$43,756', total: '$87,400' }
+                      ].map((row, index) => (
+                        <tr key={index} style={{ borderBottom: '1px solid #f0f0f0' }}>
+                          <td style={{ 
+                            padding: '16px', 
+                            fontWeight: 500, 
+                            color: '#1f2937'
+                          }}>
+                            {row.department}
+                          </td>
+                          <td style={{ 
+                            padding: '16px', 
+                            textAlign: 'right', 
+                            fontWeight: 500,
+                            color: '#595959'
+                          }}>
+                            {row.airTravel}
+                          </td>
+                          <td style={{ 
+                            padding: '16px', 
+                            textAlign: 'right', 
+                            fontWeight: 500,
+                            color: '#595959'
+                          }}>
+                            {row.hotels}
+                          </td>
+                          <td style={{ 
+                            padding: '16px', 
+                            textAlign: 'right', 
+                            fontWeight: 500,
+                            color: '#595959'
+                          }}>
+                            {row.groundTransport}
+                          </td>
+                          <td style={{ 
+                            padding: '16px', 
+                            textAlign: 'right', 
+                            fontWeight: 600,
+                            color: '#1f2937'
+                          }}>
+                            {row.total}
+                          </td>
+                        </tr>
+                      ))}
+                      {/* Total Row */}
+                      <tr style={{ 
+                        borderTop: '2px solid #d9d9d9',
+                        backgroundColor: '#fafafa',
+                        fontWeight: 600
+                      }}>
+                        <td style={{ 
+                          padding: '16px', 
+                          fontWeight: 600, 
+                          color: '#1f2937'
+                        }}>
+                          Total
+                        </td>
+                        <td style={{ 
+                          padding: '16px', 
+                          textAlign: 'right', 
+                          fontWeight: 600,
+                          color: '#1f2937'
+                        }}>
+                          $567,890
+                        </td>
+                        <td style={{ 
+                          padding: '16px', 
+                          textAlign: 'right', 
+                          fontWeight: 600,
+                          color: '#1f2937'
+                        }}>
+                          $432,156
+                        </td>
+                        <td style={{ 
+                          padding: '16px', 
+                          textAlign: 'right', 
+                          fontWeight: 600,
+                          color: '#1f2937'
+                        }}>
+                          $248,521
+                        </td>
+                        <td style={{ 
+                          padding: '16px', 
+                          textAlign: 'right', 
+                          fontWeight: 600,
+                          color: '#1f2937'
+                        }}>
+                          $1,248,567
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </Card>
+
+              {/* Chart Placeholder */}
+              <Card style={{ marginBottom: 32 }}>
+                <div style={{ 
+                  height: 300, 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  backgroundColor: '#fafafa',
+                  borderRadius: 6,
+                  flexDirection: 'column',
+                  gap: 16
+                }}>
+                  <div style={{ 
+                    width: 80, 
+                    height: 80, 
+                    backgroundColor: '#d9d9d9', 
+                    borderRadius: 8,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <div style={{ 
+                      display: 'flex', 
+                      gap: 4,
+                      alignItems: 'end'
+                    }}>
+                      {[1, 2, 3, 4].map((bar) => (
+                        <div
+                          key={bar}
+                          style={{
+                            width: 8,
+                            height: Math.random() * 30 + 20,
+                            backgroundColor: '#8c8c8c',
+                            borderRadius: 2
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <Text style={{ color: '#8c8c8c', fontSize: 14 }}>
+                    Category spending by department chart would appear here
+                  </Text>
+                </div>
+              </Card>
+            </TabPane>
           </Tabs>
 
           
