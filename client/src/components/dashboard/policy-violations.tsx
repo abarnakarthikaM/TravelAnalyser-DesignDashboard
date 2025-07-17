@@ -261,7 +261,7 @@ export function PolicyViolations() {
         </Card>
 
         {/* Cost Impact Card */}
-        <Card style={{ height: 400 }}>
+        <Card >
           <div style={{ marginBottom: 24 }}>
             <h3 style={{ margin: 0, marginBottom: 4, fontSize: 18, fontWeight: 600 }}>
               Cost Impact
