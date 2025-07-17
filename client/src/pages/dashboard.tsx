@@ -378,9 +378,148 @@ export default function Dashboard() {
                 
             
             {activeTab === 'compliance' && (
-              <div className="bg-white rounded-lg p-8 text-center" style={{ minHeight: 400 }}>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Compliance</h3>
-                <p className="text-gray-600">Compliance metrics coming soon...</p>
+              <div className="bg-white rounded-lg" style={{ minHeight: 400, border: '1px solid #d1d5db' }}>
+                <div style={{ padding: '24px' }}>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Compliance Overview</h3>
+                  <p className="text-gray-600 mb-6">Monitor policy compliance across departments</p>
+                  
+                  {/* Compliance Metrics Cards */}
+                  <div style={{ 
+                    display: 'grid', 
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+                    gap: 24,
+                    marginBottom: 32
+                  }}>
+                    {/* Overall Compliance Card */}
+                    <div style={{
+                      backgroundColor: '#fff',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                      padding: '24px',
+                      boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
+                    }}>
+                      <div style={{ marginBottom: 16 }}>
+                        <div style={{
+                          fontSize: 14,
+                          color: '#6b7280',
+                          fontWeight: 500,
+                          marginBottom: 8
+                        }}>
+                          Overall Compliance
+                        </div>
+                        <div style={{
+                          fontSize: 32,
+                          fontWeight: 600,
+                          color: '#10b981',
+                          marginBottom: 12
+                        }}>
+                          87%
+                        </div>
+                        {/* Progress bar */}
+                        <div style={{
+                          width: '100%',
+                          height: 8,
+                          backgroundColor: '#f3f4f6',
+                          borderRadius: 4,
+                          overflow: 'hidden'
+                        }}>
+                          <div style={{
+                            width: '87%',
+                            height: '100%',
+                            backgroundColor: '#10b981',
+                            borderRadius: 4
+                          }}></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Policy Violations Card */}
+                    <div style={{
+                      backgroundColor: '#fff',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                      padding: '24px',
+                      boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
+                    }}>
+                      <div style={{ marginBottom: 16 }}>
+                        <div style={{
+                          fontSize: 14,
+                          color: '#6b7280',
+                          fontWeight: 500,
+                          marginBottom: 8
+                        }}>
+                          Policy Violations
+                        </div>
+                        <div style={{
+                          fontSize: 32,
+                          fontWeight: 600,
+                          color: '#ef4444',
+                          marginBottom: 8
+                        }}>
+                          143
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <span style={{
+                            fontSize: 14,
+                            color: '#10b981',
+                            fontWeight: 500
+                          }}>
+                            ↓ -12%
+                          </span>
+                          <span style={{
+                            fontSize: 12,
+                            color: '#6b7280'
+                          }}>
+                            from previous period
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Pending Approvals Card */}
+                    <div style={{
+                      backgroundColor: '#fff',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                      padding: '24px',
+                      boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
+                    }}>
+                      <div style={{ marginBottom: 16 }}>
+                        <div style={{
+                          fontSize: 14,
+                          color: '#6b7280',
+                          fontWeight: 500,
+                          marginBottom: 8
+                        }}>
+                          Pending Approvals
+                        </div>
+                        <div style={{
+                          fontSize: 32,
+                          fontWeight: 600,
+                          color: '#1f2937',
+                          marginBottom: 8
+                        }}>
+                          27
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <span style={{
+                            fontSize: 14,
+                            color: '#ef4444',
+                            fontWeight: 500
+                          }}>
+                            ↑ +8%
+                          </span>
+                          <span style={{
+                            fontSize: 12,
+                            color: '#6b7280'
+                          }}>
+                            from previous period
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
