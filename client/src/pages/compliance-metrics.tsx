@@ -3,6 +3,7 @@ import React from 'react';
 import { Layout, Typography, Button, Space, Row, Col, Card, Progress, Tabs, Tag } from 'antd';
 import { CalendarOutlined, FilterOutlined, DownloadOutlined, CheckCircleOutlined, ExclamationCircleOutlined, WarningOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { Sidebar } from '@/components/dashboard/sidebar';
+import { PolicyViolations } from '@/components/dashboard/policy-violations';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -94,18 +95,66 @@ export default function ComplianceMetrics() {
     {
       key: 'overview',
       label: 'Compliance Overview',
+      children: (
+        <div>
+          {/* Compliance by Policy Category */}
+          <div style={{ marginBottom: 32 }}>
+            <Title level={3} style={{ marginBottom: 8 }}>
+              Compliance by Policy Category
+            </Title>
+            <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
+              Breakdown of compliance across different policy areas
+            </Text>
+
+            <div style={{ maxWidth: 800 }}>
+              {policyComplianceData.map((policy, index) => (
+                <div key={index} style={{ marginBottom: 20 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <Text style={{ fontWeight: 500, minWidth: 150 }}>{policy.category}</Text>
+                      <Tag color={policy.status === 'Excellent' ? 'green' : policy.status === 'Good' ? 'blue' : 'orange'}>
+                        {policy.status}
+                      </Tag>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <Text style={{ fontWeight: 'bold' }}>{policy.percentage}%</Text>
+                      <Text style={{ 
+                        color: policy.change.startsWith('+') ? '#52c41a' : '#ff4d4f',
+                        fontWeight: 500,
+                        minWidth: 50,
+                        textAlign: 'right'
+                      }}>
+                        {policy.change}
+                      </Text>
+                    </div>
+                  </div>
+                  <Progress 
+                    percent={policy.percentage} 
+                    strokeColor={policy.color}
+                    showInfo={false}
+                    strokeWidth={8}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )
     },
     {
       key: 'violations',
       label: 'Policy Violations',
+      children: <PolicyViolations />
     },
     {
       key: 'department',
       label: 'By Department',
+      children: <div style={{ padding: 24 }}>Department view content</div>
     },
     {
       key: 'trends',
       label: 'Trends & Analysis',
+      children: <div style={{ padding: 24 }}>Trends and analysis content</div>
     }
   ];
 
@@ -191,50 +240,7 @@ export default function ComplianceMetrics() {
             <Tabs 
               defaultActiveKey="overview" 
               items={tabItems}
-              style={{ marginBottom: 24 }}
             />
-
-            {/* Compliance by Policy Category */}
-            <div style={{ marginBottom: 32 }}>
-              <Title level={3} style={{ marginBottom: 8 }}>
-                Compliance by Policy Category
-              </Title>
-              <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
-                Breakdown of compliance across different policy areas
-              </Text>
-
-              <div style={{ maxWidth: 800 }}>
-                {policyComplianceData.map((policy, index) => (
-                  <div key={index} style={{ marginBottom: 20 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                        <Text style={{ fontWeight: 500, minWidth: 150 }}>{policy.category}</Text>
-                        <Tag color={policy.status === 'Excellent' ? 'green' : policy.status === 'Good' ? 'blue' : 'orange'}>
-                          {policy.status}
-                        </Tag>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                        <Text style={{ fontWeight: 'bold' }}>{policy.percentage}%</Text>
-                        <Text style={{ 
-                          color: policy.change.startsWith('+') ? '#52c41a' : '#ff4d4f',
-                          fontWeight: 500,
-                          minWidth: 50,
-                          textAlign: 'right'
-                        }}>
-                          {policy.change}
-                        </Text>
-                      </div>
-                    </div>
-                    <Progress 
-                      percent={policy.percentage} 
-                      strokeColor={policy.color}
-                      showInfo={false}
-                      strokeWidth={8}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
           </Card>
 
           {/* Bottom Section - Employee Lists */}
