@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Layout, Card, Table, Button, Input, Select, Space, Typography, Tag, Statistic, Row, Col } from "antd";
 import { 
@@ -9,7 +8,9 @@ import {
   MoreOutlined
 } from "@ant-design/icons";
 import { Sidebar } from "@/components/dashboard/sidebar";
+import { DatePicker } from 'antd';
 
+const { RangePicker } = DatePicker;
 const { Content } = Layout;
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -285,7 +286,7 @@ export default function Transactions() {
   return (
     <Layout style={{ minHeight: '100vh', background: '#f5f5f5' }}>
       <Sidebar />
-      
+
       <Layout style={{ marginLeft: 256 }}>
         {/* Header */}
         <div style={{
@@ -304,11 +305,11 @@ export default function Transactions() {
               View and manage all travel expense transactions
             </Text>
           </div>
-          
+
           <Space>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#8c8c8c' }}>
               <CalendarOutlined />
-              <Text style={{ color: '#8c8c8c' }}>Jan 01, 2023 - Jul 15, 2025</Text>
+              <RangePicker />
             </div>
             <Button icon={<FilterOutlined />}>Filters</Button>
             <Button icon={<DownloadOutlined />}>Export</Button>
@@ -387,7 +388,7 @@ export default function Transactions() {
                 </Select>
               </Space>
             </div>
-            
+
             <Table
               columns={columns}
               dataSource={mockTransactions}

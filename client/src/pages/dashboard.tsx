@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,7 +14,7 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 
 // Vendor Performance Tab Component
 function VendorPerformanceTab() {
   const [selectedVendorTab, setSelectedVendorTab] = useState('all-vendors');
-  
+
   const vendorTabs = [
     { key: 'all-vendors', label: 'All Vendors' },
     { key: 'airlines', label: 'Airlines' },
@@ -55,7 +54,7 @@ function VendorPerformanceTab() {
       <div style={{ padding: '24px 24px 0' }}>
         <h3 className="text-xl font-semibold text-gray-900 mb-2">Vendor Performance</h3>
         <p className="text-gray-600 mb-6">Compare performance metrics across vendors</p>
-        
+
         {/* Filter tabs and dropdown */}
         <div className="flex items-center justify-between mb-6">
           <div 
@@ -100,7 +99,7 @@ function VendorPerformanceTab() {
               </button>
             ))}
           </div>
-          
+
           <Select
             defaultValue="Performance"
             style={{ width: 140 }}
@@ -112,7 +111,7 @@ function VendorPerformanceTab() {
           />
         </div>
       </div>
-      
+
       {/* Chart area */}
       <div style={{ padding: '0 24px 24px' }}>
         <div style={{ height: 350, position: 'relative' }}>
@@ -149,7 +148,7 @@ function VendorPerformanceTab() {
               />
             </BarChart>
           </ResponsiveContainer>
-          
+
           {/* Legend */}
           <div style={{ 
             position: 'absolute', 
@@ -178,7 +177,7 @@ function VendorPerformanceTab() {
             </div>
           </div>
         </div>
-        
+
         {/* Vendor Performance Cards */}
         <div style={{ 
           display: 'grid', 
@@ -194,9 +193,9 @@ function VendorPerformanceTab() {
               if (satisfaction >= 80) return { title: 'Highest Satisfaction', color: '#8b5cf6' };
               return { title: 'Needs Improvement', color: '#ef4444' };
             };
-            
+
             const category = getPerformanceCategory(vendor.efficiency, vendor.satisfaction);
-            
+
             return (
               <div
                 key={vendor.name}
@@ -225,7 +224,7 @@ function VendorPerformanceTab() {
                     {vendor.name}
                   </div>
                 </div>
-                
+
                 <div style={{ marginBottom: 8 }}>
                   <div style={{
                     fontSize: 12,
@@ -242,7 +241,7 @@ function VendorPerformanceTab() {
                     {vendor.efficiency}%
                   </div>
                 </div>
-                
+
                 <div>
                   <div style={{
                     fontSize: 12,
@@ -273,7 +272,7 @@ const { Option } = Select;
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('expense-breakdown');
-  
+
   const { data: metrics, isLoading } = useQuery({
     queryKey: ["/api/dashboard/metrics"],
   });
@@ -307,7 +306,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Sidebar />
-      
+
       <div className="ml-64">
         <header className="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between">
           <div>
@@ -318,7 +317,7 @@ export default function Dashboard() {
               Monitor and analyze your corporate travel expenses across all vendors
             </p>
           </div>
-          
+
           <div className="flex items-center gap-4">
             <Space size="middle">
               <RangePicker
@@ -327,10 +326,10 @@ export default function Dashboard() {
                   // Using moment is deprecated, but for demo purposes
                   null, null
                 ]}
-                placeholder={['Jan 01, 2023', 'Jan 27, 2023']}
+                placeholder={['Jan 01, 2023', 'Jul 15, 2025']}
                 style={{ width: 240 }}
               />
-              
+
               <Select
                 defaultValue="All Vendors"
                 style={{ width: 140 }}
@@ -339,7 +338,7 @@ export default function Dashboard() {
                 <Option value="airlines">Airlines</Option>
                 <Option value="hotels">Hotels</Option>
               </Select>
-              
+
               <Button className="flex items-center gap-2">
                 <Filter className="w-4 h-4" />
                 Filters
@@ -350,7 +349,7 @@ export default function Dashboard() {
 
         <main className="p-8">
           <MetricsCards metrics={metrics} />
-          
+
           <div className="mb-8">
             {/* Custom Tab Navigation */}
             <div className="dashboard-tabs-container mb-6">
@@ -366,23 +365,23 @@ export default function Dashboard() {
                 ))}
               </div>
             </div>
-            
+
             {activeTab === 'expense-breakdown' && (
               <ExpenseCharts metrics={metrics} />
             )}
-            
+
             {activeTab === 'vendor-performance' && (
               <VendorPerformanceTab />
             )}
-                
-                
-            
+
+
+
             {activeTab === 'compliance' && (
               <div className="bg-white rounded-lg" style={{ minHeight: 400, border: '1px solid #d1d5db' }}>
                 <div style={{ padding: '24px' }}>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">Compliance Overview</h3>
                   <p className="text-gray-600 mb-6">Monitor policy compliance across departments</p>
-                  
+
                   {/* Compliance Metrics Cards */}
                   <div style={{ 
                     display: 'grid', 
@@ -523,7 +522,7 @@ export default function Dashboard() {
               </div>
             )}
           </div>
-          
+
           <div className="grid grid-cols-1 gap-8 mt-8">
             <div className="col-span-2">
               <TopExpenses expenses={metrics?.topExpenses || []} />

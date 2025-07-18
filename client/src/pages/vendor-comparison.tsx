@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Layout, Typography, Card, Row, Col, Progress, Table, Tag, Button, Space } from 'antd';
+import { Layout, Typography, Card, Row, Col, Progress, Table, Tag, Button, Space, DatePicker } from 'antd';
 import { DownloadOutlined, FilterOutlined, CalendarOutlined, InfoCircleOutlined, CheckCircleOutlined, WarningOutlined } from '@ant-design/icons';
 import { Sidebar } from '@/components/dashboard/sidebar';
 
@@ -207,10 +207,12 @@ export default function VendorComparison() {
           </div>
           
           <Space>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#8c8c8c' }}>
-              <CalendarOutlined />
-              <Text style={{ color: '#8c8c8c' }}>Jan 01, 2023 - Jul 16, 2025</Text>
-            </div>
+            <DatePicker.RangePicker
+              suffixIcon={<CalendarOutlined />}
+              defaultValue={[null, null]}
+              placeholder={['Jan 01, 2023', 'Jul 16, 2025']}
+              style={{ width: 240 }}
+            />
             <Button icon={<FilterOutlined />}>Filters</Button>
             <Button icon={<DownloadOutlined />}>Export</Button>
           </Space>
