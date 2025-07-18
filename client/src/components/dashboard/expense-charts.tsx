@@ -104,7 +104,7 @@ export function ExpenseCharts({ metrics }: ExpenseChartsProps) {
           padding: "13px 15px",
         }}
       >
-        <div style={{ display: "flex", gap: 0 }}>
+        <div style={{ display: "flex", gap: 0,background:"#f5f5f5" }}>
           {["Monthly", "Quarterly", "Yearly"].map((period) => (
             <button
               key={period}
@@ -113,13 +113,14 @@ export function ExpenseCharts({ metrics }: ExpenseChartsProps) {
                 padding: "8px 16px",
                 border: "none",
                 background:
-                  selectedPeriod === period ? "#1f2937" : "transparent",
+                  selectedPeriod === period ? "#0c265a" : "transparent",
                 color: selectedPeriod === period ? "white" : "#6b7280",
                 fontSize: 14,
                 fontWeight: selectedPeriod === period ? 500 : 400,
                 cursor: "pointer",
                 borderRadius: selectedPeriod === period ? "4px" : "0",
                 transition: "all 0.2s ease",
+                margin:'4px'
               }}
             >
               {period}

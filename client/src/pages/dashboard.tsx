@@ -524,13 +524,13 @@ export default function Dashboard() {
             )}
           </div>
           
-          <div className="grid grid-cols-3 gap-8 mt-8">
+          <div className="grid grid-cols-1 gap-8 mt-8">
             <div className="col-span-2">
               <TopExpenses expenses={metrics?.topExpenses || []} />
             </div>
-            <div className="col-span-1">
+            {/* <div className="col-span-1">
               <AlertsInsights />
-            </div>
+            </div> */}
           </div>
         </main>
       </div>
