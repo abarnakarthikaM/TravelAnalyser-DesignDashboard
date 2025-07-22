@@ -17,32 +17,48 @@ const { Title } = Typography;
 
 interface ExpenseChartsProps {
   metrics?: {
-    totalExpenses: number;
-    airTravel: number;
-    accommodation: number;
-    groundTransport: number;
+    expense_breakdown:{
+      totalExpenses: number;
+      airTravel: number;
+      accommodation: number;
+      groundTransport: number;
+    }
+    
   };
 }
 
-export function ExpenseCharts({ metrics }: ExpenseChartsProps) {
+export function ExpenseCharts({ metrics }: any) {
   const [selectedPeriod, setSelectedPeriod] = useState("Monthly");
+  let initialata = metrics?.expense_breakdown[selectedPeriod].expense_trend;
 
-  // Monthly expense trend data
-  const monthlyData = [
-    { month: "Jan", amount: 65000 },
-    { month: "Feb", amount: 85000 },
-    { month: "Mar", amount: 45000 },
-    { month: "Apr", amount: 75000 },
-    { month: "May", amount: 55000 },
-  ];
+  let chartData = initialata.map((data:any) => ({
+  ...data,
+  amount: data.amount.replace(/,/g, '')
+}));
 
+// monthlyData=metrics.expense_breakdown[selectedPeriod].expense_trend
   // Pie chart data for expense distribution
-  const distributionData = [
-    { name: "Air Travel", value: 45, color: "#4F46E5" },
-    { name: "Hotels", value: 35, color: "#8B5CF6" },
-    { name: "Ground Transport", value: 20, color: "#EC4899" },
-  ];
+  // expense_distribution
+  // const distributionData = [
+  //   { name: "Air Travel", value: 45, color: "#4F46E5" },
+  //   { name: "Hotels", value: 35, color: "#8B5CF6" },
+  //   { name: "Ground Transport", value: 20, color: "#EC4899" },
+  // ];
+  const distributionData=JSON.parse(JSON.stringify(metrics?.expense_breakdown[selectedPeriod].expense_distribution));
 
+distributionData.map((data:any)=>{
+  switch (data.category) {
+    case 'Air Travel':
+      data. color="#4F46E5" 
+    break;
+    case 'Hotel Stays':
+      data. color="#8B5CF6" 
+    break;
+    case 'Ground Transport':
+      data. color="#EC4899" 
+    break;
+  }
+})
   const COLORS = ["#4F46E5", "#8B5CF6", "#EC4899"];
 
   const formatYAxis = (value: number) => {
@@ -52,7 +68,7 @@ export function ExpenseCharts({ metrics }: ExpenseChartsProps) {
   const formatTooltip = (value: number, name: string) => {
     return [`$${value.toLocaleString()}`, name];
   };
-
+  console.log(selectedPeriod)
   const renderCustomizedLabel = ({
     cx,
     cy,
@@ -198,10 +214,10 @@ export function ExpenseCharts({ metrics }: ExpenseChartsProps) {
                 Monthly Expense Trend
               </Title>
             </div>
-
             <ResponsiveContainer width="100%" height={250}>
+              
               <BarChart
-                data={monthlyData}
+                data={chartData}
                 margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
@@ -255,16 +271,16 @@ export function ExpenseCharts({ metrics }: ExpenseChartsProps) {
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
                 <Pie
-                  data={distributionData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={renderCustomizedLabel}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
+                   data={distributionData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={renderCustomizedLabel}
+                    outerRadius={100}
+                    dataKey="amount"
+                    nameKey="category"
                 >
-                  {distributionData.map((entry, index) => (
+                  {distributionData.map((entry:any, index:number) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={COLORS[index % COLORS.length]}

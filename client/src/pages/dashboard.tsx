@@ -8,290 +8,129 @@ import { TopExpenses } from "@/components/dashboard/top-expenses";
 import { AlertsInsights } from "@/components/dashboard/alerts-insights";
 import { DatePicker, Select, Space, Tabs } from "antd";
 import { CalendarOutlined } from "@ant-design/icons";
-import { useState } from "react";
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
-
-// Vendor Performance Tab Component
-function VendorPerformanceTab() {
-  const [selectedVendorTab, setSelectedVendorTab] = useState('all-vendors');
-
-  const vendorTabs = [
-    { key: 'all-vendors', label: 'All Vendors' },
-    { key: 'airlines', label: 'Airlines' },
-    { key: 'hotels', label: 'Hotels' },
-    { key: 'transport', label: 'Transport' },
+import { useEffect, useState } from "react";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+} from "recharts";
+import { useLazyGetDashboardOverviewQuery } from "@/services/dashboard/dashboard";
+import { formatDate } from "@/utils/dateFunctions";
+const tabItems = [
+    {
+      key: "expense-breakdown",
+      label: "Expense Breakdown",
+    },
+    {
+      key: "vendor-performance",
+      label: "Vendor Performance",
+    },
+    {
+      key: "compliance",
+      label: "Compliance",
+    },
   ];
 
-  const getChartData = (vendorType: string) => {
-    const data = {
-      'all-vendors': [
-        { name: 'AirCorp', efficiency: 85, satisfaction: 75 },
-        { name: 'TravelEase', efficiency: 92, satisfaction: 68 },
-        { name: 'GlobalStay', efficiency: 78, satisfaction: 85 },
-        { name: 'RideShare', efficiency: 88, satisfaction: 70 }
-      ],
-      'airlines': [
-        { name: 'AirCorp', efficiency: 85, satisfaction: 75 },
-        { name: 'SkyJet', efficiency: 90, satisfaction: 72 },
-        { name: 'GlobalAir', efficiency: 82, satisfaction: 78 }
-      ],
-      'hotels': [
-        { name: 'GlobalStay', efficiency: 78, satisfaction: 85 },
-        { name: 'HotelPlus', efficiency: 88, satisfaction: 82 },
-        { name: 'ComfortInn', efficiency: 75, satisfaction: 80 }
-      ],
-      'transport': [
-        { name: 'RideShare', efficiency: 88, satisfaction: 70 },
-        { name: 'CabCorp', efficiency: 85, satisfaction: 75 },
-        { name: 'TransportEase', efficiency: 80, satisfaction: 72 }
-      ]
-    };
-    return data[vendorType as keyof typeof data] || data['all-vendors'];
-  };
 
-  return (
-    <div className="bg-white rounded-lg" style={{ minHeight: 400, border: '1px solid #d1d5db' }}>
-      <div style={{ padding: '24px 24px 0' }}>
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">Vendor Performance</h3>
-        <p className="text-gray-600 mb-6">Compare performance metrics across vendors</p>
-
-        {/* Filter tabs and dropdown */}
-        <div className="flex items-center justify-between mb-6">
-          <div 
-            className="vendor-tabs-container"
-            style={{
-              backgroundColor: '#f5f5f5',
-              padding: '4px',
-              borderRadius: '8px',
-              border: '1px solid #e5e7eb',
-              display: 'flex',
-              gap: '2px'
-            }}
-          >
-            {vendorTabs.map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setSelectedVendorTab(tab.key)}
-                style={{
-                  padding: '8px 16px',
-                  fontSize: '14px',
-                  fontWeight: selectedVendorTab === tab.key ? '500' : '400',
-                  color: selectedVendorTab === tab.key ? '#374151' : '#6b7280',
-                  backgroundColor: selectedVendorTab === tab.key ? '#fff' : 'transparent',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  boxShadow: selectedVendorTab === tab.key ? '0 1px 2px 0 rgba(0, 0, 0, 0.05)' : 'none'
-                }}
-                onMouseEnter={(e) => {
-                  if (selectedVendorTab !== tab.key) {
-                    e.currentTarget.style.backgroundColor = '#e5e7eb';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (selectedVendorTab !== tab.key) {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                  }
-                }}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-
-          <Select
-            defaultValue="Performance"
-            style={{ width: 140 }}
-            options={[
-              { value: 'performance', label: 'Performance' },
-              { value: 'cost', label: 'Cost' },
-              { value: 'satisfaction', label: 'Satisfaction' },
-            ]}
-          />
-        </div>
-      </div>
-
-      {/* Chart area */}
-      <div style={{ padding: '0 24px 24px' }}>
-        <div style={{ height: 350, position: 'relative' }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={getChartData(selectedVendorTab)}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-              <XAxis
-                dataKey="name"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 12, fill: '#6b7280' }}
-              />
-              <YAxis
-                domain={[0, 100]}
-                tickFormatter={(value) => `${value}%`}
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 12, fill: '#6b7280' }}
-              />
-              <Bar
-                dataKey="efficiency"
-                fill="#4F46E5"
-                radius={[4, 4, 0, 0]}
-                maxBarSize={60}
-              />
-              <Bar
-                dataKey="satisfaction"
-                fill="#EC4899"
-                radius={[4, 4, 0, 0]}
-                maxBarSize={60}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-
-          {/* Legend */}
-          <div style={{ 
-            position: 'absolute', 
-            top: 10, 
-            right: 30,
-            display: 'flex',
-            gap: 20
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <div style={{
-                width: 12,
-                height: 12,
-                backgroundColor: '#4F46E5',
-                borderRadius: 2
-              }}></div>
-              <span style={{ fontSize: 12, color: '#6b7280' }}>Cost Efficiency</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <div style={{
-                width: 12,
-                height: 12,
-                backgroundColor: '#EC4899',
-                borderRadius: 2
-              }}></div>
-              <span style={{ fontSize: 12, color: '#6b7280' }}>Satisfaction</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Vendor Performance Cards */}
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(225px, 1fr))', 
-          gap: 16, 
-          marginTop: 24 
-        }}>
-          {getChartData(selectedVendorTab).map((vendor, index) => {
-            // Determine performance categories
-            const getPerformanceCategory = (efficiency: number, satisfaction: number) => {
-              if (efficiency >= 90 && satisfaction >= 85) return { title: 'Top Performer', color: '#10b981' };
-              if (efficiency >= 85 && satisfaction >= 80) return { title: 'Most Cost-Effective', color: '#3b82f6' };
-              if (satisfaction >= 80) return { title: 'Highest Satisfaction', color: '#8b5cf6' };
-              return { title: 'Needs Improvement', color: '#ef4444' };
-            };
-
-            const category = getPerformanceCategory(vendor.efficiency, vendor.satisfaction);
-
-            return (
-              <div
-                key={vendor.name}
-                style={{
-                  backgroundColor: '#fff',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px',
-                  padding: '20px',
-                  boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
-                }}
-              >
-                <div style={{ marginBottom: 12 }}>
-                  <div style={{
-                    fontSize: 12,
-                    color: '#6b7280',
-                    fontWeight: 500,
-                    marginBottom: 4
-                  }}>
-                    {category.title}
-                  </div>
-                  <div style={{
-                    fontSize: 18,
-                    fontWeight: 600,
-                    color: '#1f2937'
-                  }}>
-                    {vendor.name}
-                  </div>
-                </div>
-
-                <div style={{ marginBottom: 8 }}>
-                  <div style={{
-                    fontSize: 12,
-                    color: '#6b7280',
-                    marginBottom: 4
-                  }}>
-                    Cost Efficiency
-                  </div>
-                  <div style={{
-                    fontSize: 16,
-                    fontWeight: 600,
-                    color: category.color
-                  }}>
-                    {vendor.efficiency}%
-                  </div>
-                </div>
-
-                <div>
-                  <div style={{
-                    fontSize: 12,
-                    color: '#6b7280',
-                    marginBottom: 4
-                  }}>
-                    Satisfaction Rate
-                  </div>
-                  <div style={{
-                    fontSize: 16,
-                    fontWeight: 600,
-                    color: category.color
-                  }}>
-                    {vendor.satisfaction}%
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState('expense-breakdown');
-
+  const [activeTab, setActiveTab] = useState("expense-breakdown");
+  const [resDashboardOverviewData_S, setResDashboardOverviewData_S] = useState<any>();
+  const [resCommonTabResponse_S,setCommonTabResponse_S] = useState<any>([]);
+  const [resDatpickerValues, setDatpickerValues] = useState<any>([]);
+  const [dateFilter, setDateFilter] = useState("today");
+  const [open, setOpen] = useState(false);
+  const [dateRange, setDateRange] = useState<any>([]);
   const { data: metrics, isLoading } = useQuery({
     queryKey: ["/api/dashboard/metrics"],
   });
 
-  const tabItems = [
-    {
-      key: 'expense-breakdown',
-      label: 'Expense Breakdown',
-    },
-    {
-      key: 'vendor-performance',
-      label: 'Vendor Performance',
-    },
-    {
-      key: 'compliance',
-      label: 'Compliance',
-    },
-  ];
+  const [reqDashboardOverview, resDashboardOverview] = useLazyGetDashboardOverviewQuery();
+  const [reqExpenseBreakdown, resExpenseBreakdown] = useLazyGetDashboardOverviewQuery();
+  /********
+   * request service call for Expense card and Top Expenses  service call
+   */
+  useEffect(() => {
+    if(resDatpickerValues.length===2){
+    let reqData:any={
+      data: {
+        start_date: resDatpickerValues[0],
+        end_date: resDatpickerValues[1],
+      },
+      url:'dashboard/overview/'
+    }
+     reqDashboardOverview({ RequestDataFormat: reqData }) ;
+    }
+  }, [resDatpickerValues]);
+ /********
+   *get response for Expense card and Top Expenses  service call
+   */
 
+  useEffect(() => {
+    if(resDashboardOverview?.isSuccess && resDashboardOverview?.data){
+      setResDashboardOverviewData_S(resDashboardOverview.data)
+    }
+    if(resExpenseBreakdown?.isSuccess && resExpenseBreakdown?.data){
+      setCommonTabResponse_S(resExpenseBreakdown)
+    }
+  }, [resDashboardOverview,resExpenseBreakdown])
+   console.log(resCommonTabResponse_S)
+  /*******
+   * service call for Expense Breakdown charts when ever we change the date picker value,outer tab value
+   */
+  useEffect(()=>{
+    console.log(activeTab)
+    const urlvalue = (activeTab==='vendor-performance') ? "dashboard/vendors_performance/"
+                      : (activeTab==='compliance') ? "dashboard/compliance/"
+                      : "dashboard/expense_breakdown/";
+     let reqData:any={
+      data: {
+        start_date: resDatpickerValues[0],
+        end_date: resDatpickerValues[1],
+      },
+      url:urlvalue
+    }
+    reqExpenseBreakdown({ RequestDataFormat: reqData });
+  },[resDatpickerValues,activeTab])
+  
+/***********
+ * Des:this function call's when change the date picker option
+ */
+  const handleDateFilterChange = (value: any) => {
+      setDateFilter(value);
+    if (value === "date-range") {
+      setOpen(true);
+      setDateFilter(value);
+    } else {
+      setDateRange([]);
+      setOpen(false);
+    }
+  };
+/******
+ * Des:this function hanndles the date range picker value changes
+ */
+  const handleDateRangeChange = (dates: any, dateStrings: [any,any]) => {
+     setDateFilter("date-range");
+    setDateRange(dates);
+    setOpen(false);
+    if (dates && dates.length === 2) {
+      if (dateFilter === "date-range" && dateStrings && dateStrings.length === 2) {
+        setDatpickerValues(dateStrings);
+      }
+      setDateFilter(formatDate(dateStrings[0]) +' - '+ formatDate(dateStrings[1]));
+    }
+  };
+
+ 
+  const getVendorPerformancedata=((type:string)=>{
+    console.log(resCommonTabResponse_S)
+  })
   if (isLoading) {
     return (
       <div className="min-h-screen">
@@ -302,7 +141,6 @@ export default function Dashboard() {
       </div>
     );
   }
-
   return (
     <div className="min-h-screen bg-gray-50">
       <Sidebar />
@@ -314,26 +152,38 @@ export default function Dashboard() {
               Travel Expense Dashboard
             </h2>
             <p className="text-gray-600">
-              Monitor and analyze your corporate travel expenses across all vendors
+              Monitor and analyze your corporate travel expenses across all
+              vendors
             </p>
           </div>
 
           <div className="flex items-center gap-4">
             <Space size="middle">
-              <RangePicker
-                suffixIcon={<CalendarOutlined />}
-                defaultValue={[
-                  // Using moment is deprecated, but for demo purposes
-                  null, null
-                ]}
-                placeholder={['Jan 01, 2023', 'Jul 15, 2025']}
-                style={{ width: 240 }}
+              <Select
+                value={dateFilter}
+                style={{ width: 215 }}
+                onChange={handleDateFilterChange}
+              >
+                <Option value="today">Today</Option>
+                <Option value="yesterday">Yesterday</Option>
+                <Option value="this-month">This Month</Option>
+                <Option value="last-month">Last Month</Option>
+                <Option value="date-range">Date Range</Option>
+              </Select>
+
+              <DatePicker.RangePicker
+                open={open}
+                value={dateRange}
+                onChange={handleDateRangeChange}
+                onOpenChange={(status) => setOpen(status)}
+                style={{
+                  position: "absolute",
+                  opacity: 0,
+                  pointerEvents: "none",
+                }}
               />
 
-              <Select
-                defaultValue="All Vendors"
-                style={{ width: 140 }}
-              >
+              <Select defaultValue="All Vendors" style={{ width: 140 }}>
                 <Option value="all">All Vendors</Option>
                 <Option value="airlines">Airlines</Option>
                 <Option value="hotels">Hotels</Option>
@@ -348,7 +198,10 @@ export default function Dashboard() {
         </header>
 
         <main className="p-8">
-          <MetricsCards metrics={metrics} />
+          {/* dashboard cards view starts */}
+          {resDashboardOverviewData_S?.data?.expense?.length && <MetricsCards metrics={resDashboardOverviewData_S?.data?.expense} />}
+
+          {/* dashboard cards view starts */}
 
           <div className="mb-8">
             {/* Custom Tab Navigation */}
@@ -358,7 +211,7 @@ export default function Dashboard() {
                   <button
                     key={tab.key}
                     onClick={() => setActiveTab(tab.key)}
-                    className={`dashboard-tab ${activeTab === tab.key ? 'active' : ''}`}
+                    className={`dashboard-tab ${activeTab === tab.key ? "active" : ""}`}
                   >
                     {tab.label}
                   </button>
@@ -366,109 +219,145 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {activeTab === 'expense-breakdown' && (
-              <ExpenseCharts metrics={metrics} />
+            {activeTab === "expense-breakdown" && (
+              <>
+              {resCommonTabResponse_S?.data?.data?.expense_breakdown &&  <ExpenseCharts metrics={resCommonTabResponse_S?.data?.data} />}
+              </>
+             
             )}
 
-            {activeTab === 'vendor-performance' && (
-              <VendorPerformanceTab />
-            )}
-
-
-
-            {activeTab === 'compliance' && (
-              <div className="bg-white rounded-lg" style={{ minHeight: 400, border: '1px solid #d1d5db' }}>
-                <div style={{ padding: '24px' }}>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Compliance Overview</h3>
-                  <p className="text-gray-600 mb-6">Monitor policy compliance across departments</p>
+            {(activeTab === "vendor-performance" && resCommonTabResponse_S.data?.data?.vendor_performance !=undefined) && <VendorPerformanceTab />}
+            
+            {(activeTab === "compliance" && resCommonTabResponse_S.data?.data?.overall_compliance !=undefined) && (
+              <div
+                className="bg-white rounded-lg"
+                style={{ minHeight: 400, border: "1px solid #d1d5db" }}
+              >
+                <div style={{ padding: "24px" }}>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    Compliance Overview
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    Monitor policy compliance across departments
+                  </p>
 
                   {/* Compliance Metrics Cards */}
-                  <div style={{ 
-                    display: 'grid', 
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-                    gap: 24,
-                    marginBottom: 32
-                  }}>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns:
+                        "repeat(auto-fit, minmax(300px, 1fr))",
+                      gap: 24,
+                      marginBottom: 32,
+                    }}
+                  >
                     {/* Overall Compliance Card */}
-                    <div style={{
-                      backgroundColor: '#fff',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '8px',
-                      padding: '24px',
-                      boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
-                    }}>
+                    <div
+                      style={{
+                        backgroundColor: "#fff",
+                        border: "1px solid #e5e7eb",
+                        borderRadius: "8px",
+                        padding: "24px",
+                        boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+                      }}
+                    >
                       <div style={{ marginBottom: 16 }}>
-                        <div style={{
-                          fontSize: 14,
-                          color: '#6b7280',
-                          fontWeight: 500,
-                          marginBottom: 8
-                        }}>
+                        <div
+                          style={{
+                            fontSize: 14,
+                            color: "#6b7280",
+                            fontWeight: 500,
+                            marginBottom: 8,
+                          }}
+                        >
                           Overall Compliance
                         </div>
-                        <div style={{
-                          fontSize: 32,
-                          fontWeight: 600,
-                          color: '#10b981',
-                          marginBottom: 12
-                        }}>
-                          87%
+                        <div
+                          style={{
+                            fontSize: 32,
+                            fontWeight: 600,
+                            color: "#10b981",
+                            marginBottom: 12,
+                          }}
+                        >
+                        {resCommonTabResponse_S.data?.data?.overall_compliance.value}
                         </div>
                         {/* Progress bar */}
-                        <div style={{
-                          width: '100%',
-                          height: 8,
-                          backgroundColor: '#f3f4f6',
-                          borderRadius: 4,
-                          overflow: 'hidden'
-                        }}>
-                          <div style={{
-                            width: '87%',
-                            height: '100%',
-                            backgroundColor: '#10b981',
-                            borderRadius: 4
-                          }}></div>
+                        <div
+                          style={{
+                            width: "100%",
+                            height: 8,
+                            backgroundColor: "#f3f4f6",
+                            borderRadius: 4,
+                            overflow: "hidden",
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: resCommonTabResponse_S.data?.data?.overall_compliance.value,
+                              height: "100%",
+                              backgroundColor: "#10b981",
+                              borderRadius: 4,
+                            }}
+                          ></div>
                         </div>
                       </div>
                     </div>
 
                     {/* Policy Violations Card */}
-                    <div style={{
-                      backgroundColor: '#fff',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '8px',
-                      padding: '24px',
-                      boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
-                    }}>
+                    <div
+                      style={{
+                        backgroundColor: "#fff",
+                        border: "1px solid #e5e7eb",
+                        borderRadius: "8px",
+                        padding: "24px",
+                        boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+                      }}
+                    >
                       <div style={{ marginBottom: 16 }}>
-                        <div style={{
-                          fontSize: 14,
-                          color: '#6b7280',
-                          fontWeight: 500,
-                          marginBottom: 8
-                        }}>
+                        <div
+                          style={{
+                            fontSize: 14,
+                            color: "#6b7280",
+                            fontWeight: 500,
+                            marginBottom: 8,
+                          }}
+                        >
                           Policy Violations
                         </div>
-                        <div style={{
-                          fontSize: 32,
-                          fontWeight: 600,
-                          color: '#ef4444',
-                          marginBottom: 8
-                        }}>
-                          143
+                        <div
+                          style={{
+                            fontSize: 32,
+                            fontWeight: 600,
+                            color: "#ef4444",
+                            marginBottom: 8,
+                          }}
+                        >
+                           {resCommonTabResponse_S.data?.data?.policy_violations.count}
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <span style={{
-                            fontSize: 14,
-                            color: '#10b981',
-                            fontWeight: 500
-                          }}>
-                            ↓ -12%
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 4,
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: 14,
+                              color: "#10b981",
+                              fontWeight: 500,
+                            }}
+                          >
+                            ↓{resCommonTabResponse_S.data?.data?.policy_violations.trend}
+
                           </span>
-                          <span style={{
-                            fontSize: 12,
-                            color: '#6b7280'
-                          }}>
+                          <span
+                            style={{
+                              fontSize: 12,
+                              color: "#6b7280",
+                            }}
+                          >
                             from previous period
                           </span>
                         </div>
@@ -476,42 +365,58 @@ export default function Dashboard() {
                     </div>
 
                     {/* Pending Approvals Card */}
-                    <div style={{
-                      backgroundColor: '#fff',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '8px',
-                      padding: '24px',
-                      boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
-                    }}>
+                    <div
+                      style={{
+                        backgroundColor: "#fff",
+                        border: "1px solid #e5e7eb",
+                        borderRadius: "8px",
+                        padding: "24px",
+                        boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+                      }}
+                    >
                       <div style={{ marginBottom: 16 }}>
-                        <div style={{
-                          fontSize: 14,
-                          color: '#6b7280',
-                          fontWeight: 500,
-                          marginBottom: 8
-                        }}>
+                        <div
+                          style={{
+                            fontSize: 14,
+                            color: "#6b7280",
+                            fontWeight: 500,
+                            marginBottom: 8,
+                          }}
+                        >
                           Pending Approvals
                         </div>
-                        <div style={{
-                          fontSize: 32,
-                          fontWeight: 600,
-                          color: '#1f2937',
-                          marginBottom: 8
-                        }}>
-                          27
+                        <div
+                          style={{
+                            fontSize: 32,
+                            fontWeight: 600,
+                            color: "#1f2937",
+                            marginBottom: 8,
+                          }}
+                        >
+                          {resCommonTabResponse_S.data?.data?.late_approvals.count}
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <span style={{
-                            fontSize: 14,
-                            color: '#ef4444',
-                            fontWeight: 500
-                          }}>
-                            ↑ +8%
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 4,
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: 14,
+                              color: "#ef4444",
+                              fontWeight: 500,
+                            }}
+                          >
+                            ↑ {resCommonTabResponse_S.data?.data?.late_approvals.trend}
                           </span>
-                          <span style={{
-                            fontSize: 12,
-                            color: '#6b7280'
-                          }}>
+                          <span
+                            style={{
+                              fontSize: 12,
+                              color: "#6b7280",
+                            }}
+                          >
                             from previous period
                           </span>
                         </div>
@@ -525,7 +430,7 @@ export default function Dashboard() {
 
           <div className="grid grid-cols-1 gap-8 mt-8">
             <div className="col-span-2">
-              <TopExpenses expenses={metrics?.topExpenses || []} />
+              {(resDashboardOverviewData_S?.data?.top_expenses?.length && resDashboardOverviewData_S?.data?.top_expenses !=undefined) && <TopExpenses expenses={resDashboardOverviewData_S?.data?.top_expenses} />}
             </div>
             {/* <div className="col-span-1">
               <AlertsInsights />
@@ -535,4 +440,302 @@ export default function Dashboard() {
       </div>
     </div>
   );
+ function VendorPerformanceTab() {
+  
+  const [selectedVendorTab, setSelectedVendorTab] = useState("all");
+   console.log(selectedVendorTab)
+  let detailedVendor=resCommonTabResponse_S.data?.data?.vendor_performance?.detailed_metrics;
+  console.log(detailedVendor)
+ 
+  const keysArray = Object.keys(detailedVendor);
+  console.log(keysArray)
+  
+ 
+  // console.log(Object.keys(resCommonTabResponse_S.data?.data?.vendor_performance?.detailed_metrics))
+    const vendorTabs = [
+    { key: "all-vendors", label: "All Vendors" },
+    { key: "airlines", label: "Airlines" },
+    { key: "hotels", label: "Hotels" },
+    { key: "transport", label: "Transport" },
+  ];
+ 
+  console.log(vendorTabs)
+  const getChartData = (vendorType: string) => {
+    console.log(vendorType)
+    let vendorResData:any;
+    if(vendorType=='all'){
+      vendorResData= resCommonTabResponse_S.data.data.vendor_performance.chart_data
+    }
+    else{ 
+      let data=[]
+      data.push(JSON.parse(JSON.stringify(resCommonTabResponse_S.data.data.vendor_performance.detailed_metrics[vendorType])));
+      console.log(data)
+      vendorResData=data;
+    console.log(data)
+    } 
+    return vendorResData
+  };
+
+  return (
+    <div
+      className="bg-white rounded-lg"
+      style={{ minHeight: 400, border: "1px solid #d1d5db" }}
+    >
+      <div style={{ padding: "24px 24px 0" }}>
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          Vendor Performance
+        </h3>
+        <p className="text-gray-600 mb-6">
+          Compare performance metrics across vendors
+        </p>
+
+        {/* Filter tabs and dropdown */}
+        <div className="flex items-center justify-between mb-6">
+          <div
+            className="vendor-tabs-container"
+            style={{
+              backgroundColor: "#f5f5f5",
+              padding: "4px",
+              borderRadius: "8px",
+              border: "1px solid #e5e7eb",
+              display: "flex",
+              gap: "2px",
+            }}
+          >
+            {vendorTabs.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setSelectedVendorTab(tab.key)}
+                style={{
+                  padding: "8px 16px",
+                  fontSize: "14px",
+                  fontWeight: selectedVendorTab === tab.key ? "500" : "400",
+                  color: selectedVendorTab === tab.key ? "#374151" : "#6b7280",
+                  backgroundColor:
+                    selectedVendorTab === tab.key ? "#fff" : "transparent",
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                  boxShadow:
+                    selectedVendorTab === tab.key
+                      ? "0 1px 2px 0 rgba(0, 0, 0, 0.05)"
+                      : "none",
+                }}
+                onMouseEnter={(e) => {
+                  if (selectedVendorTab !== tab.key) {
+                    e.currentTarget.style.backgroundColor = "#e5e7eb";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (selectedVendorTab !== tab.key) {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          <Select
+            defaultValue="Performance"
+            style={{ width: 140 }}
+            options={[
+              { value: "performance", label: "Performance" },
+              { value: "cost_efficiency", label: "Cost" },
+              { value: "customer_satisfaction", label: "Satisfaction" },
+            ]}
+          />
+        </div>
+      </div>
+
+      {/* Chart area */}
+      <div style={{ padding: "0 24px 24px" }}>
+        <div style={{ height: 350, position: "relative" }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={getChartData(selectedVendorTab)}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+              <XAxis
+                dataKey="vendor"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 12, fill: "#6b7280" }}
+              />
+              <YAxis
+                domain={[0, 100]}
+                tickFormatter={(value) => `${value}%`}
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 12, fill: "#6b7280" }}
+              />
+              <Bar
+                dataKey="cost_efficiency"
+                fill="#4F46E5"
+                radius={[4, 4, 0, 0]}
+                maxBarSize={60}
+              />
+              <Bar
+                dataKey="customer_satisfaction"
+                fill="#EC4899"
+                radius={[4, 4, 0, 0]}
+                maxBarSize={60}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+
+          {/* Legend */}
+          <div
+            style={{
+              position: "absolute",
+              top: 10,
+              right: 30,
+              display: "flex",
+              gap: 20,
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <div
+                style={{
+                  width: 12,
+                  height: 12,
+                  backgroundColor: "#4F46E5",
+                  borderRadius: 2,
+                }}
+              ></div>
+              <span style={{ fontSize: 12, color: "#6b7280" }}>
+                Cost Efficiency
+              </span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <div
+                style={{
+                  width: 12,
+                  height: 12,
+                  backgroundColor: "#EC4899",
+                  borderRadius: 2,
+                }}
+              ></div>
+              <span style={{ fontSize: 12, color: "#6b7280" }}>
+                Satisfaction
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Vendor Performance Cards */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(225px, 1fr))",
+            gap: 16,
+            marginTop: 24,
+          }}
+        >
+         
+          {/* {getChartData(selectedVendorTab).map((vendor:any, index:any) => {
+            // Determine performance categories
+            const getPerformanceCategory = (
+              cost_efficiency: number,
+              customer_satisfaction: number,
+            ) => {
+              if (cost_efficiency >= 90 && customer_satisfaction >= 85)
+                return { title: "Top Performer", color: "#10b981" };
+              if (cost_efficiency >= 85 && customer_satisfaction >= 80)
+                return { title: "Most Cost-Effective", color: "#3b82f6" };
+              if (customer_satisfaction >= 80)
+                return { title: "Highest Satisfaction", color: "#8b5cf6" };
+              return { title: "Needs Improvement", color: "#ef4444" };
+            };
+
+            const category = getPerformanceCategory(
+              vendor.cost_efficiency,
+              vendor.customer_satisfaction,
+            );
+
+            return (
+              <div
+                key={vendor.vendor}
+                style={{
+                  backgroundColor: "#fff",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "8px",
+                  padding: "20px",
+                  boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+                }}
+              >
+                <div style={{ marginBottom: 12 }}>
+                  <div
+                    style={{
+                      fontSize: 12,
+                      color: "#6b7280",
+                      fontWeight: 500,
+                      marginBottom: 4,
+                    }}
+                  >
+                    {category.title}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 18,
+                      fontWeight: 600,
+                      color: "#1f2937",
+                    }}
+                  >
+                    {vendor.vendor}
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: 8 }}>
+                  <div
+                    style={{
+                      fontSize: 12,
+                      color: "#6b7280",
+                      marginBottom: 4,
+                    }}
+                  >
+                    Cost Efficiency
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 600,
+                      color: category.color,
+                    }}
+                  >
+                    {vendor.cost_efficiency}%
+                  </div>
+                </div>
+
+                <div>
+                  <div
+                    style={{
+                      fontSize: 12,
+                      color: "#6b7280",
+                      marginBottom: 4,
+                    }}
+                  >
+                    Satisfaction Rate
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 600,
+                      color: category.color,
+                    }}
+                  >
+                    {vendor.customer_satisfaction}%
+                  </div>
+                </div>
+              </div>
+            );
+          })} */}
+        </div>
+      </div>
+    </div>
+  );
+}
 }

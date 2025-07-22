@@ -1,15 +1,34 @@
 
-import React from 'react';
-import { Layout, Typography, Card, Row, Col, Progress, Table, Tag, Button, Space, DatePicker } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Layout, Typography, Card, Row, Col, Progress, Table, Tag, Button, Space, DatePicker,Select,Tabs } from 'antd';
 import { DownloadOutlined, FilterOutlined, CalendarOutlined, InfoCircleOutlined, CheckCircleOutlined, WarningOutlined } from '@ant-design/icons';
 import { Sidebar } from '@/components/dashboard/sidebar';
+import { useLazyGetVendorComparisionQuery } from '@/services/dashboard/dashboard';
+import { formatDate } from '@/utils/dateFunctions';
+import { Filter } from "lucide-react";
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
-
+const { Option } = Select;
 export default function VendorComparison() {
+  const [selectedTab, setSelectedTab] = useState("Airlines");
+  const [dateFilter, setDateFilter] = useState("today");
+  const [open, setOpen] = useState(false);
+  const [dateRange, setDateRange] = useState<any>([]);
+  const [resDatpickerValues, setDatpickerValues] = useState<any>([]);
+  const [resVendorResponse_S,setVendorResponse_S] = useState<any>([]);
+  
+  
+  const [reqVandorComparission,resVendorComparission]=useLazyGetVendorComparisionQuery();
+
+  const tabs = [
+    { key: "Airlines", label: "Airlines" },
+    { key: "Hotels", label: "Hotels" },
+    { key: "Ground Transport", label: "Ground Transport" },
+  ];
+
   // Sample data for the metrics cards
-  const metricsData = [
+  const allMetricsData = [
     {
       category: 'Airlines',
       totalSpent: 567890,
@@ -44,6 +63,9 @@ export default function VendorComparison() {
       customerSatisfaction: { value: 4.0, max: 5 }
     }
   ];
+
+  // Filter metrics data based on selected tab
+  const metricsData = allMetricsData.filter(metric => metric.category === selectedTab);
 
   // Table columns for detailed vendor comparison
   const tableColumns = [
@@ -112,37 +134,148 @@ export default function VendorComparison() {
       },
     },
   ];
+  /***********
+ * Des:this function call's when change the date picker option
+ */
+  const handleDateFilterChange = (value: any) => {
+      setDateFilter(value);
+    if (value === "date-range") {
+      setOpen(true);
+      setDateFilter(value);
+    } else {
+      setDateRange([]);
+      setOpen(false);
+    }
+  };
+  /******
+   * Des:this function hanndles the date range picker value changes
+   */
+    const handleDateRangeChange = (dates: any, dateStrings: [any,any]) => {
+       setDateFilter("date-range");
+      setDateRange(dates);
+      setOpen(false);
+      if (dates && dates.length === 2) {
+        if (dateFilter === "date-range" && dateStrings && dateStrings.length === 2) {
+          setDatpickerValues(dateStrings);
+        }
+        setDateFilter(formatDate(dateStrings[0]) +' - '+ formatDate(dateStrings[1]));
+      }
+    };
+  useEffect(() => {
+    if(resDatpickerValues.length===2){
+    let reqData:any={
+      data: {
+        start_date: resDatpickerValues[0],
+        end_date: resDatpickerValues[1],
+      },
+      url:'vendorcomparison/vendor_comparison/'
+    }
+     reqVandorComparission({ RequestDataFormat: reqData }) ;
+    }
+  }, [resDatpickerValues]);
+   /********
+     *get response for Expense card and Top Expenses  service call
+     */
+  
+    useEffect(() => {
+     setVendorResponse_S(resVendorComparission)
+    }, [resVendorComparission])
+    console.log(resVendorResponse_S)
+  // Sample table data based on selected tab
+  const getTableData = (category: string) => {
+    const data = {
+      "Airlines": [
+        {
+          key: '1',
+          vendor: 'AirCorp',
+          costEfficiency: 75,
+          onTimePerformance: 92,
+          customerSatisfaction: 85,
+          policyCompliance: 95,
+          overallRating: 'Excellent',
+        },
+        {
+          key: '2',
+          vendor: 'SkyJet',
+          costEfficiency: 82,
+          onTimePerformance: 86,
+          customerSatisfaction: 80,
+          policyCompliance: 88,
+          overallRating: 'Good',
+        },
+        {
+          key: '3',
+          vendor: 'GlobalAir',
+          costEfficiency: 68,
+          onTimePerformance: 78,
+          customerSatisfaction: 60,
+          policyCompliance: 70,
+          overallRating: 'Average',
+        },
+      ],
+      "Hotels": [
+        {
+          key: '1',
+          vendor: 'GlobalStay',
+          costEfficiency: 88,
+          onTimePerformance: 95,
+          customerSatisfaction: 92,
+          policyCompliance: 90,
+          overallRating: 'Excellent',
+        },
+        {
+          key: '2',
+          vendor: 'HotelPlus',
+          costEfficiency: 85,
+          onTimePerformance: 88,
+          customerSatisfaction: 85,
+          policyCompliance: 85,
+          overallRating: 'Good',
+        },
+        {
+          key: '3',
+          vendor: 'ComfortInn',
+          costEfficiency: 70,
+          onTimePerformance: 82,
+          customerSatisfaction: 78,
+          policyCompliance: 80,
+          overallRating: 'Average',
+        },
+      ],
+      "Ground Transport": [
+        {
+          key: '1',
+          vendor: 'RideShare',
+          costEfficiency: 90,
+          onTimePerformance: 85,
+          customerSatisfaction: 88,
+          policyCompliance: 92,
+          overallRating: 'Excellent',
+        },
+        {
+          key: '2',
+          vendor: 'CabCorp',
+          costEfficiency: 78,
+          onTimePerformance: 80,
+          customerSatisfaction: 75,
+          policyCompliance: 85,
+          overallRating: 'Good',
+        },
+        {
+          key: '3',
+          vendor: 'TransportEase',
+          costEfficiency: 72,
+          onTimePerformance: 75,
+          customerSatisfaction: 70,
+          policyCompliance: 78,
+          overallRating: 'Average',
+        },
+      ],
+    };
+    return data[category as keyof typeof data] || data["Airlines"];
+  };
 
-  // Sample table data
-  const tableData = [
-    {
-      key: '1',
-      vendor: 'AirCorp',
-      costEfficiency: 75,
-      onTimePerformance: 92,
-      customerSatisfaction: 85,
-      policyCompliance: 95,
-      overallRating: 'Excellent',
-    },
-    {
-      key: '2',
-      vendor: 'SkyJet',
-      costEfficiency: 82,
-      onTimePerformance: 86,
-      customerSatisfaction: 80,
-      policyCompliance: 88,
-      overallRating: 'Good',
-    },
-    {
-      key: '3',
-      vendor: 'GlobalAir',
-      costEfficiency: 68,
-      onTimePerformance: 78,
-      customerSatisfaction: 60,
-      policyCompliance: 70,
-      overallRating: 'Average',
-    },
-  ];
+  const tableData = getTableData(selectedTab);
 
   // AI Recommendations data
   const recommendations = [
@@ -206,74 +339,204 @@ export default function VendorComparison() {
             </Text>
           </div>
           
-          <Space>
-            <DatePicker.RangePicker
-              suffixIcon={<CalendarOutlined />}
-              defaultValue={[null, null]}
-              placeholder={['Jan 01, 2023', 'Jul 16, 2025']}
-              style={{ width: 240 }}
-            />
-            <Button icon={<FilterOutlined />}>Filters</Button>
-            <Button icon={<DownloadOutlined />}>Export</Button>
-          </Space>
+         <Space size="middle">
+              <Select
+                value={dateFilter}
+                style={{ width: 215 }}
+                onChange={handleDateFilterChange}
+              >
+                <Option value="today">Today</Option>
+                <Option value="yesterday">Yesterday</Option>
+                <Option value="this-month">This Month</Option>
+                <Option value="last-month">Last Month</Option>
+                <Option value="date-range">Date Range</Option>
+              </Select>
+
+              <DatePicker.RangePicker
+                open={open}
+                value={dateRange}
+                onChange={handleDateRangeChange}
+                onOpenChange={(status) => setOpen(status)}
+                style={{
+                  position: "absolute",
+                  opacity: 0,
+                  pointerEvents: "none",
+                }}
+              />
+
+              <Select defaultValue="All Vendors" style={{ width: 140 }}>
+                <Option value="all">All Vendors</Option>
+                <Option value="airlines">Airlines</Option>
+                <Option value="hotels">Hotels</Option>
+              </Select>
+
+              <Button className="flex items-center gap-2">
+                <Filter className="w-4 h-4" />
+                Filters
+              </Button>
+            </Space>
+        </div>
+
+        {/* Tab Navigation */}
+        <div style={{
+          background: '#fff',
+          borderBottom: '1px solid #f0f0f0',
+          padding: '0 32px',
+        }}>
+          <div
+            style={{
+              backgroundColor: "#f5f5f5",
+              padding: "4px",
+              borderRadius: "8px",
+              border: "1px solid #e5e7eb",
+              display: "inline-flex",
+              gap: "2px",
+            }}
+          >
+            {tabs.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setSelectedTab(tab.key)}
+                style={{
+                  padding: "8px 16px",
+                  fontSize: "14px",
+                  fontWeight: selectedTab === tab.key ? "500" : "400",
+                  color: selectedTab === tab.key ? "#374151" : "#6b7280",
+                  backgroundColor: selectedTab === tab.key ? "#fff" : "transparent",
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                  boxShadow: selectedTab === tab.key ? "0 1px 2px 0 rgba(0, 0, 0, 0.05)" : "none",
+                }}
+                onMouseEnter={(e) => {
+                  if (selectedTab !== tab.key) {
+                    e.currentTarget.style.backgroundColor = "#e5e7eb";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (selectedTab !== tab.key) {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <Content style={{ padding: '32px' }}>
           {/* Top Metrics Cards */}
           <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
             {metricsData.map((metric, index) => (
-              <Col xs={24} lg={8} key={index}>
-                <Card style={{ height: '100%' }}>
-                  <Title level={4} style={{ marginBottom: 16 }}>
-                    {metric.category}
-                  </Title>
+              <Col xs={24} lg={24} key={index}>
+                <Row gutter={[24, 0]}>
+                  <Col xs={24} lg={8}>
+                    <Card style={{ height: '100%' }}>
+                      <Title level={4} style={{ marginBottom: 16 }}>
+                        Total Spend
+                      </Title>
+                      
+                      <div style={{ marginBottom: 24 }}>
+                        <Title level={2} style={{ margin: 0, color: '#1890ff' }}>
+                          ${metric.totalSpent.toLocaleString()}
+                        </Title>
+                      </div>
+
+                      <div style={{ marginBottom: 16 }}>
+                        {metric.companies.map((company, idx) => (
+                          <div key={idx} style={{ marginBottom: 8 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                              <Text style={{ fontSize: 12 }}>{company.name}</Text>
+                              <Text style={{ fontSize: 12 }}>${company.amount.toLocaleString()}</Text>
+                            </div>
+                            <Progress 
+                              percent={company.percentage} 
+                              size="small" 
+                              showInfo={false}
+                              strokeColor={idx === 0 ? '#1890ff' : idx === 1 ? '#722ed1' : '#52c41a'}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </Card>
+                  </Col>
                   
-                  <div style={{ marginBottom: 24 }}>
-                    <Text style={{ fontSize: 12, color: '#8c8c8c', display: 'block' }}>Total Spend</Text>
-                    <Title level={2} style={{ margin: 0, color: '#1890ff' }}>
-                      ${metric.totalSpent.toLocaleString()}
-                    </Title>
-                  </div>
+                  <Col xs={24} lg={8}>
+                    <Card style={{ height: '100%' }}>
+                      <Title level={4} style={{ marginBottom: 16 }}>
+                        On-Time Performance
+                      </Title>
+                      
+                      <div style={{ marginBottom: 24 }}>
+                        <Title level={2} style={{ margin: 0, color: '#1890ff' }}>
+                          {metric.onTimePerformance.value}%
+                        </Title>
+                      </div>
 
-                  <div style={{ marginBottom: 16 }}>
-                    {metric.companies.map((company, idx) => (
-                      <div key={idx} style={{ marginBottom: 8 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                          <Text style={{ fontSize: 12 }}>{company.name}</Text>
-                          <Text style={{ fontSize: 12 }}>${company.amount.toLocaleString()}</Text>
-                        </div>
-                        <Progress 
-                          percent={company.percentage} 
-                          size="small" 
-                          showInfo={false}
-                          strokeColor={idx === 0 ? '#1890ff' : idx === 1 ? '#722ed1' : '#52c41a'}
-                        />
+                      <div style={{ marginBottom: 16 }}>
+                        {metric.companies.map((company, idx) => {
+                          const performanceValues = selectedTab === 'Airlines' ? [92.3, 85.7, 78.4] :
+                                                  selectedTab === 'Hotels' ? [95.1, 88.2, 82.4] :
+                                                  [85.2, 80.1, 75.3];
+                          const performanceLabels = selectedTab === 'Airlines' ? ['Excellent', 'Average', 'Poor'] :
+                                                  selectedTab === 'Hotels' ? ['Excellent', 'Good', 'Average'] :
+                                                  ['Good', 'Average', 'Poor'];
+                          return (
+                            <div key={idx} style={{ marginBottom: 8 }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                                <Text style={{ fontSize: 12 }}>{company.name}</Text>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                  <Text style={{ fontSize: 12 }}>{performanceValues[idx]}%</Text>
+                                  <Tag 
+                                    color={idx === 0 ? 'green' : idx === 1 ? 'orange' : 'red'}
+                                    style={{ fontSize: 10, padding: '2px 6px' }}
+                                  >
+                                    {performanceLabels[idx]}
+                                  </Tag>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
-                    ))}
-                  </div>
+                    </Card>
+                  </Col>
+                  
+                  <Col xs={24} lg={8}>
+                    <Card style={{ height: '100%' }}>
+                      <Title level={4} style={{ marginBottom: 16 }}>
+                        Customer Satisfaction
+                      </Title>
+                      
+                      <div style={{ marginBottom: 24 }}>
+                        <Title level={2} style={{ margin: 0, color: '#1890ff' }}>
+                          {metric.customerSatisfaction.value}/{metric.customerSatisfaction.max}
+                        </Title>
+                      </div>
 
-                  <Row gutter={16}>
-                    <Col span={12}>
-                      <Text style={{ fontSize: 12, color: '#8c8c8c', display: 'block' }}>On-Time Performance</Text>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <Text style={{ fontWeight: 'bold' }}>{metric.onTimePerformance.value}%</Text>
-                        {metric.onTimePerformance.status === 'excellent' && (
-                          <Tag color="green">Excellent</Tag>
-                        )}
-                        {metric.onTimePerformance.status === 'average' && (
-                          <Tag color="orange">Average</Tag>
-                        )}
+                      <div style={{ marginBottom: 16 }}>
+                        {metric.companies.map((company, idx) => {
+                          const satisfactionValues = selectedTab === 'Airlines' ? [4.2, 4.0, 3.5] :
+                                                    selectedTab === 'Hotels' ? [4.5, 4.2, 4.0] :
+                                                    [4.0, 3.8, 3.6];
+                          return (
+                            <div key={idx} style={{ marginBottom: 12 }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                                <Text style={{ fontSize: 12 }}>{company.name}</Text>
+                                <Text style={{ fontSize: 12 }}>{satisfactionValues[idx]}/5</Text>
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                {renderStars(satisfactionValues[idx], 5)}
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
-                    </Col>
-                    <Col span={12}>
-                      <Text style={{ fontSize: 12, color: '#8c8c8c', display: 'block' }}>Customer Satisfaction</Text>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <Text style={{ fontWeight: 'bold' }}>{metric.customerSatisfaction.value}/{metric.customerSatisfaction.max}</Text>
-                        {renderStars(metric.customerSatisfaction.value, metric.customerSatisfaction.max)}
-                      </div>
-                    </Col>
-                  </Row>
-                </Card>
+                    </Card>
+                  </Col>
+                </Row>
               </Col>
             ))}
           </Row>
@@ -284,7 +547,7 @@ export default function VendorComparison() {
               Detailed Vendor Comparison
             </Title>
             <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
-              Compare key metrics across airline vendors
+              Compare key metrics across {selectedTab.toLowerCase()} vendors
             </Text>
             
             <Table

@@ -1,4 +1,5 @@
 
+import { formatDate } from "@/utils/dateFunctions";
 import { Card, Table, Tag, Typography } from "antd";
 import type { ColumnsType } from 'antd/es/table';
 
@@ -18,13 +19,14 @@ interface TopExpensesProps {
 }
 
 export function TopExpenses({ expenses }: TopExpensesProps) {
+  
   const columns: ColumnsType<Expense> = [
     {
       title: 'Date',
       dataIndex: 'date',
       key: 'date',
-      render: (date: Date) => new Date(date).toLocaleDateString(),
-      width: 100,
+      render: (date: Date) => formatDate(date),
+      width: 200,
     },
     {
       title: 'Description',
