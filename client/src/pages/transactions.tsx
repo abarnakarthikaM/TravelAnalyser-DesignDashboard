@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Layout,
   Card,
@@ -12,6 +12,7 @@ import {
   Statistic,
   Row,
   Col,
+  Tabs,
 } from "antd";
 import {
   FilterOutlined,
@@ -22,6 +23,9 @@ import {
 } from "@ant-design/icons";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { DatePicker } from "antd";
+import { formatDate } from "@/utils/dateFunctions";
+import { Filter } from "lucide-react";
+import { useLazyGetTransactionServiceQuery } from "@/services/dashboard/dashboard";
 
 const { RangePicker } = DatePicker;
 const { Content } = Layout;
@@ -38,171 +42,79 @@ interface Transaction {
   amount: number;
   status: "Approved" | "Pending" | "Rejected";
 }
-
-const mockTransactions: Transaction[] = [
-  {
-    key: "1",
-    id: "TRX-1248",
-    date: "2023-11-15",
-    employee: "Sarah Johnson",
-    category: "Air Travel",
-    description: "Flight to New York - Client...",
-    amount: 450.75,
-    status: "Approved",
-  },
-  {
-    key: "2",
-    id: "TRX-1247",
-    date: "2023-11-14",
-    employee: "Michael Chen",
-    category: "Hotel",
-    description: "Marriott - 3 nights - Chi...",
-    amount: 825.5,
-    status: "Approved",
-  },
-  {
-    key: "3",
-    id: "TRX-1246",
-    date: "2023-11-14",
-    employee: "David Rodriguez",
-    category: "Ground Transport",
-    description: "Taxi from Airport to Hotel",
-    amount: 65.25,
-    status: "Pending",
-  },
-  {
-    key: "4",
-    id: "TRX-1245",
-    date: "2023-11-13",
-    employee: "Emily Wilson",
-    category: "Meals",
-    description: "Dinner with Client - Bos...",
-    amount: 128.4,
-    status: "Approved",
-  },
-  {
-    key: "5",
-    id: "TRX-1244",
-    date: "2023-11-13",
-    employee: "James Taylor",
-    category: "Air Travel",
-    description: "Flight to San Francisco -...",
-    amount: 685.3,
-    status: "Rejected",
-  },
-  {
-    key: "6",
-    id: "TRX-1243",
-    date: "2023-11-12",
-    employee: "Lisa Wang",
-    category: "Hotel",
-    description: "Hilton - 2 nights - Dalla...",
-    amount: 425.0,
-    status: "Approved",
-  },
-  {
-    key: "7",
-    id: "TRX-1242",
-    date: "2023-11-12",
-    employee: "Robert Chen",
-    category: "Meals",
-    description: "Breakfast Meeting - Chi...",
-    amount: 48.75,
-    status: "Pending",
-  },
-  {
-    key: "8",
-    id: "TRX-1241",
-    date: "2023-11-11",
-    employee: "Jennifer Smith",
-    category: "Ground Transport",
-    description: "Rental Car - Los Angeles",
-    amount: 275.8,
-    status: "Approved",
-  },
-  {
-    key: "9",
-    id: "TRX-1240",
-    date: "2023-11-10",
-    employee: "Thomas Garcia",
-    category: "Air Travel",
-    description: "Flight to Miami - Sales...",
-    amount: 520.45,
-    status: "Approved",
-  },
-  {
-    key: "10",
-    id: "TRX-1239",
-    date: "2023-11-10",
-    employee: "Amanda Lee",
-    category: "Hotel",
-    description: "Westin - 4 nights - Seat...",
-    amount: 1250.0,
-    status: "Pending",
-  },
-];
-
-const topSpendersData = [
-  {
-    key: "1",
-    employee: "Sarah Johnson",
-    department: "Sales",
-    transactions: 48,
-    totalAmount: 24689.75,
-    average: 512,
-    status: "Within Budget",
-  },
-  {
-    key: "2",
-    employee: "Michael Chen",
-    department: "Executive",
-    transactions: 32,
-    totalAmount: 18750.5,
-    average: 586,
-    status: "Within Budget",
-  },
-  {
-    key: "3",
-    employee: "David Rodriguez",
-    department: "Sales",
-    transactions: 45,
-    totalAmount: 15430.25,
-    average: 343,
-    status: "Near Limit",
-  },
-  {
-    key: "4",
-    employee: "Emily Wilson",
-    department: "Marketing",
-    transactions: 28,
-    totalAmount: 12150.8,
-    average: 434,
-    status: "Within Budget",
-  },
-  {
-    key: "5",
-    employee: "James Taylor",
-    department: "Engineering",
-    transactions: 22,
-    totalAmount: 9670.3,
-    average: 440,
-    status: "Near Limit",
-  },
-];
-
 export default function Transactions() {
+  const [activeTab, setActiveTab] = useState("transactionsummary");
+  const [dateFilter, setDateFilter] = useState("today");
+  const [tabValue, setTabValue] = useState("overview");
+  const [open, setOpen] = useState(false);
+  const [dateRange, setDateRange] = useState<any>([]);
+  const { Option } = Select;
+  const [resDatpickerValues, setDatpickerValues] = useState<any>(["2025-06-01", "2025-07-31"]);
+  const [resTransactionOverview_S, setTransactionOverview_S] = useState<any>([])
+  const [resRecentTransaction_S, setRecentTransaction_S] = useState<any>([])
+  const [resTransactiontabData_S, setResTransactiontabData_S] = useState<any>([])
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+    // Calculate paginated data
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+   const [searchText, setSearchText] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  // const paginatedTransactions = resRecentTransaction_S.data.transactions.slice(startIndex, endIndex);
+  
+  
+
+  const [reqTransactionOverview, resTransactionOverview] = useLazyGetTransactionServiceQuery();
+  const [reqRecentTransaction, resRecentTransaction] = useLazyGetTransactionServiceQuery();
+  const [reqTransactionTabData, resTransactiontabData] = useLazyGetTransactionServiceQuery();
+
+ 
+
+  const handlePageChange = (page: number, size?: number) => {
+    setCurrentPage(page);
+    if (size && size !== pageSize) {
+      setPageSize(size);
+      setCurrentPage(1); // Reset to first page when page size changes
+    }
+  };
+
+
+  // Calculate paginated data from filtered results
+  const transactionVolumeData = [
+    { month: "Jan", count: 245, amount: 45000 },
+    { month: "Feb", count: 189, amount: 38500 },
+    { month: "Mar", count: 298, amount: 52000 },
+    { month: "Apr", count: 267, amount: 48000 },
+    { month: "May", count: 314, amount: 58000 },
+  ];
+
+  const categoryData = [
+    { category: "Air Travel", amount: 567890, percentage: 42, transactions: 234 },
+    { category: "Hotel", amount: 324560, percentage: 24, transactions: 189 },
+    { category: "Ground Transport", amount: 185430, percentage: 14, transactions: 456 },
+    { category: "Meals", amount: 267890, percentage: 20, transactions: 678 },
+  ];
+
+  const paymentMethodData = [
+    { method: "Corporate Card", amount: 890450, percentage: 65, transactions: 834 },
+    { method: "Expense Claims", amount: 267890, percentage: 20, transactions: 245 },
+    { method: "Direct Bill", amount: 189340, percentage: 15, transactions: 123 },
+  ];
+
   const columns = [
     {
       title: "ID",
       dataIndex: "id",
       key: "id",
-      width: 100,
+      width: 130,
     },
     {
       title: "Date",
       dataIndex: "date",
       key: "date",
-      width: 110,
+      width: 130,
+      render : (date: any) => `${formatDate(date)}`,
     },
     {
       title: "Employee",
@@ -214,7 +126,7 @@ export default function Transactions() {
       title: "Category",
       dataIndex: "category",
       key: "category",
-      width: 130,
+      width: 80,
       render: (category: string) => {
         const color =
           category === "Air Travel"
@@ -238,7 +150,7 @@ export default function Transactions() {
       dataIndex: "amount",
       key: "amount",
       width: 100,
-      render: (amount: number) => `$${amount.toFixed(2)}`,
+      render : (amount: any) => `INR ${amount}`,
     },
     {
       title: "Status",
@@ -258,7 +170,7 @@ export default function Transactions() {
     {
       title: "Actions",
       key: "actions",
-      width: 80,
+      width: 60,
       render: () => <Button type="text" icon={<MoreOutlined />} />,
     },
   ];
@@ -281,9 +193,8 @@ export default function Transactions() {
     },
     {
       title: "Total Amount",
-      dataIndex: "totalAmount",
-      key: "totalAmount",
-      render: (amount: number) => `$${amount.toLocaleString()}`,
+      dataIndex: "total_amount",
+      key: "total_amount"
     },
     {
       title: "Average",
@@ -295,18 +206,157 @@ export default function Transactions() {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (status: string) => {
-        const color =
-          status === "Within Budget"
-            ? "green"
-            : status === "Near Limit"
-              ? "orange"
-              : "red";
+      render: (status: string, record: any) => {
+        const color = record.status_color; // fallback color
         return <Tag color={color}>{status}</Tag>;
       },
-    },
+}
   ];
+  /***********
+    * Des:this function call's when change the date picker option
+    */
+  const handleDateFilterChange = (value: any) => {
+    setDateFilter(value);
+    if (value === "date-range") {
+      setOpen(true);
+      setDateFilter(value);
+    } else {
+      setDateRange([]);
+      setOpen(false);
+    }
+  };
+  /******
+   * Des:this function hanndles the date range picker value changes
+   */
+  const handleDateRangeChange = (dates: any, dateStrings: [any, any]) => {
+    setDateFilter("date-range");
+    setDateRange(dates);
+    setOpen(false);
+    if (dates && dates.length === 2) {
+      if (dateFilter === "date-range" && dateStrings && dateStrings.length === 2) {
+        setDatpickerValues(dateStrings);
+      }
+      setDateFilter(formatDate(dateStrings[0]) + ' - ' + formatDate(dateStrings[1]));
+    }
+  };
+    const handleStatusFilterChange = (value: string) => {
+      console.log(value)
+    setStatusFilter(value);
+    setCurrentPage(1); // Reset to first page when filtering
+  };
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchText(e.target.value);
+    setCurrentPage(1); // Reset to first page when searching
+  };
+  const handleCategoryFilterChange = (value: string) => {
+    setCategoryFilter(value);
+    setCurrentPage(1); // Reset to first page when filtering
+  };
+  /**********
+   * Des:transaction over view service call
+   */
+  useEffect(() => {
+    console.log(tabValue)
+    if (resDatpickerValues.length === 2) {
+      let reqData: any = {
+        data: {
+          start_date: '2025-06-15',
+          end_date: '2025-06-15'
+        },
+        url: "transactions/overview/"
+      }
+      reqTransactionOverview({ RequestDataFormat: reqData });
+    }
+  }, [resDatpickerValues]);
+ 
+  /**********
+ * Des:transaction over view service call response
+ */
+  useEffect(() => {
+    if (resTransactionOverview.isSuccess) {
+      setTransactionOverview_S(resTransactionOverview)
+    }
+  }, [resTransactionOverview])
+ 
+  /**************
+   * Des: Recent Transactions table data service call
+   */
+  useEffect(() => {
+    if (resDatpickerValues.length === 2) {
+      let reqData: any = {
+        data: {
+          start_date: resDatpickerValues[0],
+          end_date: resDatpickerValues[1],
+          status: 'all',
+          travel_type: 'all',
+          page: 1,
+          page_size: 10
+        },
+        url: "transactions/recent/"
+      }
+      reqRecentTransaction({ RequestDataFormat: reqData });
+    }
+  }, [resDatpickerValues]);
+  /**********
+ * Des:transaction over view service call response
+ */
+  useEffect(() => {
+    if (resRecentTransaction.isSuccess) {
+      setRecentTransaction_S(resRecentTransaction.data)
+      
+    }
+  }, [resRecentTransaction])
+  
+  /*******************
+   * Des:transaction tab based service call
+   */
+   useEffect(() => {
+    if (resDatpickerValues.length === 2) {
+       console.log(activeTab)
+      let reqData: any = {
+        data: {
+          start_date: '2025-03-15',
+          end_date: '2025-06-15'
+        },
+        url: "transactions/"+activeTab+'/'
+      }
+      console.log(reqData)
+      reqTransactionTabData({ RequestDataFormat: reqData });
+    }
+  }, [resDatpickerValues,activeTab]);
 
+  /**********
+ * Des:transaction over view service call response
+ */
+  useEffect(() => {
+   
+    if (resTransactiontabData.isSuccess) {
+      setResTransactiontabData_S(resTransactiontabData)
+      console.log(resTransactiontabData)
+    }
+  }, [resTransactiontabData])
+       console.log(resTransactiontabData_S)
+
+  // Filter transactions based on search and filters
+  const filteredTransactions = resRecentTransaction_S?.data?.transactions.filter((transaction:any) => {
+    const matchesSearch = 
+      transaction.id.toLowerCase().includes(searchText.toLowerCase()) ||
+      transaction.employee.toLowerCase().includes(searchText.toLowerCase()) ||
+      transaction.description.toLowerCase().includes(searchText.toLowerCase()) ||
+      transaction.category.toLowerCase().includes(searchText.toLowerCase());
+    
+    const matchesStatus = statusFilter === "all" || 
+      transaction.status.toLowerCase() === statusFilter.toLowerCase();
+    
+    const matchesCategory = categoryFilter === "all" || 
+      (categoryFilter === "air" && transaction.category === "Air Travel") ||
+      (categoryFilter === "hotel" && transaction.category === "Hotel") ||
+      (categoryFilter === "transport" && transaction.category === "Ground Transport") ||
+      (categoryFilter === "meals" && transaction.category === "Meals");
+    
+    return matchesSearch && matchesStatus && matchesCategory;
+  });
+const paginatedTransactions = filteredTransactions?.slice(startIndex, endIndex);
   return (
     <Layout style={{ minHeight: "100vh", background: "#f5f5f5" }}>
       <Sidebar />
@@ -332,69 +382,63 @@ export default function Transactions() {
             </Text>
           </div>
 
-          <Space>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                color: "#8c8c8c",
-              }}
+          <Space size="middle">
+            <Select
+              value={dateFilter}
+              style={{ width: 215 }}
+              onChange={handleDateFilterChange}
             >
-              <RangePicker />
-            </div>
-            <Button icon={<FilterOutlined />}>Filters</Button>
-            <Button icon={<DownloadOutlined />}>Export</Button>
+              <Option value="today">Today</Option>
+              <Option value="yesterday">Yesterday</Option>
+              <Option value="this-month">This Month</Option>
+              <Option value="last-month">Last Month</Option>
+              <Option value="date-range">Date Range</Option>
+            </Select>
+
+            <DatePicker.RangePicker
+              open={open}
+              value={dateRange}
+              onChange={handleDateRangeChange}
+              onOpenChange={(status) => setOpen(status)}
+              style={{
+                position: "absolute",
+                opacity: 0,
+                pointerEvents: "none",
+              }}
+            />
+
+            <Select defaultValue="All Vendors" style={{ width: 140 }}>
+              <Option value="all">All Vendors</Option>
+              <Option value="airlines">Airlines</Option>
+              <Option value="hotels">Hotels</Option>
+            </Select>
+
+            <Button className="flex items-center gap-2">
+              <Filter className="w-4 h-4" />
+              Filters
+            </Button>
           </Space>
         </div>
 
         <Content style={{ padding: "32px" }}>
           {/* Metrics Cards */}
           <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
-            <Col xs={24} sm={12} lg={6}>
-              <Card>
-                <Statistic
-                  title="Total Transactions"
-                  value={1248}
-                  suffix="in current period"
-                  valueStyle={{ color: "#1890ff" }}
-                />
-              </Card>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Card>
-                <Statistic
-                  title="Approved"
-                  value={1052}
-                  suffix="in this period"
-                  valueStyle={{ color: "#52c41a" }}
-                />
-              </Card>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Card>
-                <Statistic
-                  title="Pending"
-                  value={156}
-                  suffix="pending transactions"
-                  valueStyle={{ color: "#faad14" }}
-                />
-              </Card>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Card>
-                <Statistic
-                  title="Rejected"
-                  value={40}
-                  suffix="rejected transactions"
-                  valueStyle={{ color: "#ff4d4f" }}
-                />
-              </Card>
-            </Col>
+            {resTransactionOverview_S?.data?.data?.overview_cards.map((overviewData: any) => (
+              <Col xs={24} sm={12} lg={6}>
+                <Card>
+                  <Statistic
+                    title={overviewData.title}
+                    value={overviewData.count}
+                    suffix={overviewData.description ? overviewData.description : overviewData.change_percentage +'in current period'}
+                  // suffixStyle={{ color: "#1890ff" }}
+                  />
+                </Card>
+              </Col>
+            ))}
+
           </Row>
 
-          {/* Recent Transactions */}
-          <Card style={{ marginBottom: 32 }}>
+           <Card style={{ marginBottom: 32 }}>
             <div
               style={{
                 marginBottom: 16,
@@ -411,126 +455,507 @@ export default function Transactions() {
                   placeholder="Search transactions..."
                   prefix={<SearchOutlined />}
                   style={{ width: 200 }}
+                  value={searchText}
+                  onChange={handleSearchChange}
                 />
-                <Select defaultValue="all" style={{ width: 120 }}>
+                <Select defaultValue="all" style={{ width: 120 }}  value={statusFilter} 
+                  onChange={handleStatusFilterChange}>
                   <Option value="all">All Statuses</Option>
                   <Option value="approved">Approved</Option>
                   <Option value="pending">Pending</Option>
                   <Option value="rejected">Rejected</Option>
                 </Select>
-                <Select defaultValue="all" style={{ width: 140 }}>
+                <Select defaultValue="all" style={{ width: 140 }}  value={categoryFilter}  
+                  onChange={handleCategoryFilterChange}>
                   <Option value="all">All Categories</Option>
                   <Option value="air">Air Travel</Option>
                   <Option value="hotel">Hotel</Option>
                   <Option value="transport">Ground Transport</Option>
-                  <Option value="meals">Meals</Option>
                 </Select>
               </Space>
             </div>
 
             <Table
               columns={columns}
-              dataSource={mockTransactions}
+              dataSource={paginatedTransactions}
               pagination={{
-                pageSize: 10,
+                current: currentPage,
+                pageSize: pageSize,
+                total: filteredTransactions?.length,
                 showSizeChanger: true,
                 showQuickJumper: true,
+                onChange: handlePageChange,
+                onShowSizeChange: handlePageChange,
                 showTotal: (total, range) =>
                   `Showing ${range[0]}-${range[1]} of ${total} transactions`,
+                pageSizeOptions: ['5', '10', '20', '50'],
               }}
-              scroll={{ x: 1000 }}
             />
           </Card>
+          {/* Tab Section */}
+          <div style={{ marginBottom: 32 }}>
+            <Tabs
+              activeKey={activeTab}
+              onChange={setActiveTab}
+              items={[
+                {
+                  key: "transactionsummary",
+                  label: "Transaction Summary",
+                  children: (
+                    <>
+                      <Row gutter={[24, 24]}>
+                        {/* Transaction Volume Chart */}
+                        <Col xs={24} lg={12}>
+                          <Card style={{ height: 400 }}>
+                            <Title level={4} style={{ marginBottom: 8 }}>
+                              Transaction Volume
+                            </Title>
+                            <Text
+                              style={{
+                                color: "#8c8c8c",
+                                display: "block",
+                                marginBottom: 24,
+                              }}
+                            >
+                              Monthly transaction count and amount
+                            </Text>
+                            <div
+                              style={{
+                                height: 280,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                backgroundColor: "#fafafa",
+                                borderRadius: 6,
+                                color: "#8c8c8c",
+                              }}
+                            >
+                              Transaction volume chart would appear here
+                            </div>
+                          </Card>
+                        </Col>
 
-          {/* Bottom Section - Charts and Top Spenders */}
-          <Row gutter={[24, 24]}>
-            {/* Transaction Volume Chart */}
-            <Col xs={24} lg={12}>
-              <Card style={{ height: 400 }}>
-                <Title level={4} style={{ marginBottom: 8 }}>
-                  Transaction Volume
-                </Title>
-                <Text
-                  style={{
-                    color: "#8c8c8c",
-                    display: "block",
-                    marginBottom: 24,
-                  }}
-                >
-                  Monthly transaction count and amount
-                </Text>
-                <div
-                  style={{
-                    height: 280,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    backgroundColor: "#fafafa",
-                    borderRadius: 6,
-                    color: "#8c8c8c",
-                  }}
-                >
-                  Transaction volume chart would appear here
-                </div>
-              </Card>
-            </Col>
+                        {/* Transaction Status Chart */}
+                        <Col xs={24} lg={12}>
+                          <Card style={{ height: 400 }}>
+                            <Title level={4} style={{ marginBottom: 8 }}>
+                              Transaction Status
+                            </Title>
+                            <Text
+                              style={{
+                                color: "#8c8c8c",
+                                display: "block",
+                                marginBottom: 24,
+                              }}
+                            >
+                              Breakdown by approval status
+                            </Text>
+                            <div
+                              style={{
+                                height: 280,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                backgroundColor: "#fafafa",
+                                borderRadius: 6,
+                                color: "#8c8c8c",
+                              }}
+                            >
+                              Transaction status chart would appear here
+                            </div>
+                          </Card>
+                        </Col>
+                      </Row>
 
-            {/* Transaction Status Chart */}
-            <Col xs={24} lg={12}>
-              <Card style={{ height: 400 }}>
-                <Title level={4} style={{ marginBottom: 8 }}>
-                  Transaction Status
-                </Title>
-                <Text
-                  style={{
-                    color: "#8c8c8c",
-                    display: "block",
-                    marginBottom: 24,
-                  }}
-                >
-                  Breakdown by approval status
-                </Text>
-                <div
-                  style={{
-                    height: 280,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    backgroundColor: "#fafafa",
-                    borderRadius: 6,
-                    color: "#8c8c8c",
-                  }}
-                >
-                  Transaction status chart would appear here
-                </div>
-              </Card>
-            </Col>
+                      {/* Top Spenders */}
+                       {resTransactiontabData_S?.data?.data?.top_spenders !=undefined &&
+                        <Card style={{ height: 400, marginTop: 24 }}>
+                          <Title level={4} style={{ marginBottom: 8 }}>
+                            {resTransactiontabData_S?.data?.data?.top_spenders?.title}
+                          </Title>
+                          <Text
+                            style={{
+                              color: "#8c8c8c",
+                              display: "block",
+                              marginBottom: 16,
+                            }}
+                          >
+                              {resTransactiontabData_S?.data?.data?.top_spenders?.description}
 
-            {/* Top Spenders */}
-            <Col xs={24} lg={24}>
-              <Card style={{ height: 400 }}>
-                <Title level={4} style={{ marginBottom: 8 }}>
-                  Top Spenders
-                </Title>
-                <Text
-                  style={{
-                    color: "#8c8c8c",
-                    display: "block",
-                    marginBottom: 16,
-                  }}
-                >
-                  Employees with highest transaction volume
-                </Text>
-                <Table
-                  columns={topSpendersColumns}
-                  dataSource={topSpendersData}
-                  pagination={false}
-                  size="small"
-                  scroll={{ y: 240 }}
-                />
-              </Card>
-            </Col>
-          </Row>
+                          </Text>
+                          <Table
+                            columns={topSpendersColumns}
+                            dataSource={resTransactiontabData_S?.data?.data?.top_spenders?.data}
+                            pagination={false}
+                            size="small"
+                            scroll={{ y: 240 }}
+                          />
+                        </Card>
+                      }
+                    </>
+                  ),
+                },
+                {
+                  key: "by_category",
+                  label: "By Category",
+                  children: (
+                    // {resTransactiontabData?.data?.data?.category_overview}
+                    <div>
+                      {/* Category Summary Cards */}
+                      <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
+                    {resTransactiontabData_S?.data?.data?.category_overview?.cards?.map((data:any)=>(
+                        <Col xs={24} sm={12} lg={6}>
+                          <Card style={{ height: "100%" }}>
+                            <Title
+                              level={4}
+                              style={{ marginBottom: 8, fontSize: 16, fontWeight: 600 }}
+                            >
+                            {data.category}
+                            </Title>
+                            <Title
+                              level={2}
+                              style={{
+                                margin: 0,
+                                marginBottom: 8,
+                                color: "#1f2937",
+                                fontSize: 32,
+                              }}
+                            >
+                             {data.total_amount}
+                            </Title>
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 8,
+                                marginBottom: 16,
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  color: "#52c41a",
+                                  fontWeight: 500,
+                                  fontSize: 14,
+                                }}
+                              >
+                                {data.percentage} % of total
+                              </Text>
+                            </div>
+                            <Text style={{ color: "#8c8c8c", fontSize: 14 }}>
+                              {data.transaction_count} transactions
+                            </Text>
+                          </Card>
+                        </Col>
+                       ))}
+                      </Row>
+
+                      {/* Category Breakdown */}
+                      <Card style={{ marginBottom: 32 }}>
+                        <Title level={4} style={{ marginBottom: 8 }}>
+                          Category Breakdown
+                        </Title>
+                        <Text
+                          style={{
+                            color: "#8c8c8c",
+                            display: "block",
+                            marginBottom: 24,
+                          }}
+                        >
+                          Detailed analysis of spending by category
+                        </Text>
+                        <div
+                          style={{
+                            height: 280,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            backgroundColor: "#fafafa",
+                            borderRadius: 6,
+                            color: "#8c8c8c",
+                          }}
+                        >
+                          Category breakdown chart would appear here
+                        </div>
+                      </Card>
+
+                      <Row gutter={[24, 24]}>
+                        {/* Top Vendors */}
+                        {resTransactiontabData_S?.data?.data?.top_vendors!=undefined &&
+                         
+                             <Col xs={24} lg={12}>
+                          <Card style={{ height: 400 }}>
+                            <Title level={4} style={{ marginBottom: 8 }}>
+                              {resTransactiontabData_S?.data?.data?.top_vendors?.title}
+                            </Title>
+                            <Text
+                              style={{
+                                color: "#8c8c8c",
+                                display: "block",
+                                marginBottom: 16,
+                              }}>
+                               {resTransactiontabData_S?.data?.data?.top_vendors?.description}
+                            </Text>
+                            <Table
+                              columns={[
+                                {
+                                  title: "Vendor",
+                                  dataIndex: "vendor",
+                                  key: "vendor",
+                                },
+                                {
+                                  title: "Category",
+                                  dataIndex: "category",
+                                  key: "category",
+                                },
+                                {
+                                  title: "Transactions",
+                                  dataIndex: "transaction_count",
+                                  key: "transaction_count",
+                                },
+                                {
+                                  title: "Amount",
+                                  dataIndex: "total_amount",
+                                  key: "total_amount"
+                                },
+                              ]}
+                              dataSource={resTransactiontabData_S?.data?.data?.top_vendors.data}
+                              pagination={false}
+                              size="small"
+                              scroll={{ y: 240 }}
+                            />
+                          </Card>
+                        </Col>
+                        }
+
+                        {/* Category Trends */}
+                        <Col xs={24} lg={12}>
+                          <Card style={{ height: 400 }}>
+                            <Title level={4} style={{ marginBottom: 8 }}>
+                              Category Trends
+                            </Title>
+                            <Text
+                              style={{
+                                color: "#8c8c8c",
+                                display: "block",
+                                marginBottom: 24,
+                              }}
+                            >
+                              Monthly spending trends by category
+                            </Text>
+                            <div
+                              style={{
+                                height: 280,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                backgroundColor: "#fafafa",
+                                borderRadius: 6,
+                                color: "#8c8c8c",
+                              }}
+                            >
+                              Category trends chart would appear here
+                            </div>
+                          </Card>
+                        </Col>
+                      </Row>
+                    </div>
+                  ),
+                },
+                
+                {
+                  key: "payment_methods",
+                  label: "Payment Methods",
+                  children: (
+                    <div>
+                      {/* Payment Method Summary Cards */}
+                      <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
+                        {resTransactiontabData_S?.data?.data?.payment_method_overview?.cards?.map((data:any)=>(
+                        <Col xs={24} sm={12} lg={6}>
+                          <Card style={{ height: "100%" }}>
+                            
+                            <Title
+                              level={4}
+                              style={{ marginBottom: 8, fontSize: 16, fontWeight: 600 }}
+                            >
+                              {data.method}
+                            </Title>
+                            <Title
+                              level={2}
+                              style={{
+                                margin: 0,
+                                marginBottom: 8,
+                                color: "#1f2937",
+                                fontSize: 32,
+                              }}
+                            >
+                              {data.total_amount}
+                            </Title>
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 8,
+                                marginBottom: 16,
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  color: "#52c41a",
+                                  fontWeight: 500,
+                                  fontSize: 14,
+                                }}
+                              >
+                                {data.percentage}
+                              </Text>
+                              <Text style={{ color: "#8c8c8c", fontSize: 12 }}>
+                                of total
+                              </Text>
+                            </div>
+                            <Text style={{ color: "#8c8c8c", fontSize: 14 }}>
+                              {data.transaction_count} transactions
+                            </Text>
+                          </Card>
+                        </Col>
+                        ))}
+                      </Row>
+
+                      {/* Payment Method Analysis */}
+                      <Card style={{ marginBottom: 32 }}>
+                        <Title level={4} style={{ marginBottom: 8 }}>
+                          Payment Method Analysis
+                        </Title>
+                        <Text
+                          style={{
+                            color: "#8c8c8c",
+                            display: "block",
+                            marginBottom: 24,
+                          }}
+                        >
+                          Comparison analysis over time by type
+                        </Text>
+                        <div
+                          style={{
+                            height: 280,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            backgroundColor: "#fafafa",
+                            borderRadius: 6,
+                            color: "#8c8c8c",
+                          }}
+                        >
+                          Payment method analysis chart would appear here
+                        </div>
+                      </Card>
+
+                      {/* Corporate Card Usage */}
+                      <Card>
+                        <Title level={4} style={{ marginBottom: 8 }}>
+                         {resTransactiontabData_S?.data?.data?.corporate_card_usage?.title}
+                        </Title>
+                        <Text
+                          style={{
+                            color: "#8c8c8c",
+                            display: "block",
+                            marginBottom: 24,
+                          }}
+                        >
+                          {resTransactiontabData_S?.data?.data?.corporate_card_usage?.description}
+                        </Text>
+
+                        {/* Corporate Card Statistics */}
+                        <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
+                          <Col xs={24} sm={8}>
+                            <div style={{ textAlign: "center" }}>
+                              <Text style={{ color: "#8c8c8c", fontSize: 14, display: "block" }}>
+                                Total Avg Transaction
+                              </Text>
+                              <Title level={2} style={{ margin: 0, color: "#1f2937" }}>
+                               {resTransactiontabData_S?.data?.data?.corporate_card_usage?.overview.average_transaction}
+                              </Title>
+                              {/* <Text style={{ color: "#52c41a", fontSize: 14 }}>
+                                +8% from last month
+                              </Text> */}
+                            </div>
+                          </Col>
+                          <Col xs={24} sm={8}>
+                            <div style={{ textAlign: "center" }}>
+                              <Text style={{ color: "#8c8c8c", fontSize: 14, display: "block" }}>
+                                First Time Rate
+                              </Text>
+                              <Title level={2} style={{ margin: 0, color: "#1f2937" }}>
+                                {resTransactiontabData_S?.data?.data?.corporate_card_usage?.overview.utilization_rate}
+                              </Title>
+                              {/* <Text style={{ color: "#52c41a", fontSize: 14 }}>
+                                +2% from last filing
+                              </Text> */}
+                            </div>
+                          </Col>
+                          <Col xs={24} sm={8}>
+                            <div style={{ textAlign: "center" }}>
+                              <Text style={{ color: "#8c8c8c", fontSize: 14, display: "block" }}>
+                                Policy Compliance
+                              </Text>
+                              <Title level={2} style={{ margin: 0, color: "#1f2937" }}>
+                                {resTransactiontabData_S?.data?.data?.corporate_card_usage?.overview.utilization_rate}
+                              </Title>
+                              {/* <Text style={{ color: "#52c41a", fontSize: 14 }}>
+                                +5% from last review period
+                              </Text> */}
+                            </div>
+                          </Col>
+                        </Row>
+
+                        {/* Top Corporate Card Users Table */}
+                        <div style={{ marginBottom: 16 }}>
+                          <Title level={5} style={{ margin: 0, marginBottom: 16 }}>
+                            {resTransactiontabData_S?.data?.data?.corporate_card_usage?.top_corporate_card_users.title}
+                          </Title>
+                        </div>
+                        <Table
+                          columns={[
+                            {
+                              title: "Employee",
+                              dataIndex: "employee",
+                              key: "employee",
+                            },
+                            {
+                              title: "Department",
+                              dataIndex: "department",
+                              key: "department",
+                            },
+                            {
+                              title: "Transactions",
+                              dataIndex: "transactions",
+                              key: "transactions",
+                            },
+                            {
+                              title: "Amount",
+                              dataIndex: "amount",
+                              key: "amount",
+                              render: (amount: number) => `$${amount.toLocaleString()}`,
+                            },
+                            {
+                              title: "Card Type",
+                              dataIndex: "card_types",
+                              key: "card_types",
+                              render: (type: string) => {
+                                const color = type === "BTA" ? "blue" : type === "Gold" ? "orange" : "purple";
+                                return <Tag color={color}>{type}</Tag>;
+                              },
+                            },
+                          ]}
+                          dataSource={resTransactiontabData_S?.data?.data?.corporate_card_usage?.top_corporate_card_users.data}
+                          pagination={false}
+                          size="small"
+                        />
+                      </Card>
+                    </div>
+                  ),
+                },
+              ]}
+            />
+          </div>
         </Content>
       </Layout>
     </Layout>

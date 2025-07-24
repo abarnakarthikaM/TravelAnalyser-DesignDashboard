@@ -12,19 +12,21 @@ const { Title, Text } = Typography;
 const { Option } = Select;
 export default function VendorComparison() {
   const [selectedTab, setSelectedTab] = useState("Airlines");
+  const [selectedTravelMode, setSelectedTravelMode] = useState("airline");
   const [dateFilter, setDateFilter] = useState("today");
   const [open, setOpen] = useState(false);
   const [dateRange, setDateRange] = useState<any>([]);
-  const [resDatpickerValues, setDatpickerValues] = useState<any>([]);
+  const [resDatpickerValues, setDatpickerValues] = useState<any>(["2025-06-01",
+    "2025-07-31"]);
   const [resVendorResponse_S,setVendorResponse_S] = useState<any>([]);
-  
+  const currency:string="INR"
   
   const [reqVandorComparission,resVendorComparission]=useLazyGetVendorComparisionQuery();
 
   const tabs = [
-    { key: "Airlines", label: "Airlines" },
-    { key: "Hotels", label: "Hotels" },
-    { key: "Ground Transport", label: "Ground Transport" },
+    { key: "Airlines", label: "Airlines",id: "airline" },
+    { key: "Hotels", label: "Hotels",id:"hotel" },
+    { key: "Ground Transport", label: "Ground Transport",id:'ground' },
   ];
 
   // Sample data for the metrics cards
@@ -66,7 +68,7 @@ export default function VendorComparison() {
 
   // Filter metrics data based on selected tab
   const metricsData = allMetricsData.filter(metric => metric.category === selectedTab);
-
+console.log(metricsData)
   // Table columns for detailed vendor comparison
   const tableColumns = [
     {
@@ -77,8 +79,8 @@ export default function VendorComparison() {
     },
     {
       title: 'Cost Efficiency',
-      dataIndex: 'costEfficiency',
-      key: 'costEfficiency',
+      dataIndex: 'cost_efficiency',
+      key: 'cost_efficiency',
       width: 150,
       render: (value: number) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -88,21 +90,9 @@ export default function VendorComparison() {
       ),
     },
     {
-      title: 'On-Time Performance',
-      dataIndex: 'onTimePerformance',
-      key: 'onTimePerformance',
-      width: 180,
-      render: (value: number) => (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Progress percent={value} size="small" showInfo={false} style={{ width: 80 }} />
-          <Text>{value}%</Text>
-        </div>
-      ),
-    },
-    {
       title: 'Customer Satisfaction',
-      dataIndex: 'customerSatisfaction',
-      key: 'customerSatisfaction',
+      dataIndex: 'customer_satisfaction',
+      key: 'customer_satisfaction',
       width: 180,
       render: (value: number) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -113,8 +103,8 @@ export default function VendorComparison() {
     },
     {
       title: 'Policy Compliance',
-      dataIndex: 'policyCompliance',
-      key: 'policyCompliance',
+      dataIndex: 'policy_compliance',
+      key: 'policy_compliance',
       width: 160,
       render: (value: number) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -125,8 +115,8 @@ export default function VendorComparison() {
     },
     {
       title: 'Overall Rating',
-      dataIndex: 'overallRating',
-      key: 'overallRating',
+      dataIndex: 'overall_rating',
+      key: 'overall_rating',
       width: 120,
       render: (rating: string) => {
         const color = rating === 'Excellent' ? 'green' : rating === 'Good' ? 'blue' : 'orange';
@@ -162,17 +152,22 @@ export default function VendorComparison() {
       }
     };
   useEffect(() => {
+    console.log(selectedTab)
+    let travelType=(selectedTab=='Airlines') ? 'airline' 
+                    :(selectedTab=='Hotels') ? 'hotel' 
+                    :(selectedTab=='Ground Transport') && 'ground'
     if(resDatpickerValues.length===2){
     let reqData:any={
       data: {
         start_date: resDatpickerValues[0],
         end_date: resDatpickerValues[1],
+        travel_type : travelType
       },
       url:'vendorcomparison/vendor_comparison/'
     }
      reqVandorComparission({ RequestDataFormat: reqData }) ;
     }
-  }, [resDatpickerValues]);
+  }, [resDatpickerValues,selectedTab]);
    /********
      *get response for Expense card and Top Expenses  service call
      */
@@ -181,101 +176,12 @@ export default function VendorComparison() {
      setVendorResponse_S(resVendorComparission)
     }, [resVendorComparission])
     console.log(resVendorResponse_S)
-  // Sample table data based on selected tab
-  const getTableData = (category: string) => {
-    const data = {
-      "Airlines": [
-        {
-          key: '1',
-          vendor: 'AirCorp',
-          costEfficiency: 75,
-          onTimePerformance: 92,
-          customerSatisfaction: 85,
-          policyCompliance: 95,
-          overallRating: 'Excellent',
-        },
-        {
-          key: '2',
-          vendor: 'SkyJet',
-          costEfficiency: 82,
-          onTimePerformance: 86,
-          customerSatisfaction: 80,
-          policyCompliance: 88,
-          overallRating: 'Good',
-        },
-        {
-          key: '3',
-          vendor: 'GlobalAir',
-          costEfficiency: 68,
-          onTimePerformance: 78,
-          customerSatisfaction: 60,
-          policyCompliance: 70,
-          overallRating: 'Average',
-        },
-      ],
-      "Hotels": [
-        {
-          key: '1',
-          vendor: 'GlobalStay',
-          costEfficiency: 88,
-          onTimePerformance: 95,
-          customerSatisfaction: 92,
-          policyCompliance: 90,
-          overallRating: 'Excellent',
-        },
-        {
-          key: '2',
-          vendor: 'HotelPlus',
-          costEfficiency: 85,
-          onTimePerformance: 88,
-          customerSatisfaction: 85,
-          policyCompliance: 85,
-          overallRating: 'Good',
-        },
-        {
-          key: '3',
-          vendor: 'ComfortInn',
-          costEfficiency: 70,
-          onTimePerformance: 82,
-          customerSatisfaction: 78,
-          policyCompliance: 80,
-          overallRating: 'Average',
-        },
-      ],
-      "Ground Transport": [
-        {
-          key: '1',
-          vendor: 'RideShare',
-          costEfficiency: 90,
-          onTimePerformance: 85,
-          customerSatisfaction: 88,
-          policyCompliance: 92,
-          overallRating: 'Excellent',
-        },
-        {
-          key: '2',
-          vendor: 'CabCorp',
-          costEfficiency: 78,
-          onTimePerformance: 80,
-          customerSatisfaction: 75,
-          policyCompliance: 85,
-          overallRating: 'Good',
-        },
-        {
-          key: '3',
-          vendor: 'TransportEase',
-          costEfficiency: 72,
-          onTimePerformance: 75,
-          customerSatisfaction: 70,
-          policyCompliance: 78,
-          overallRating: 'Average',
-        },
-      ],
-    };
-    return data[category as keyof typeof data] || data["Airlines"];
-  };
 
-  const tableData = getTableData(selectedTab);
+
+    
+  // Sample table data based on selected tab
+
+  const tableData =resVendorResponse_S?.data?.data?.detailed_vendor_comparison;
 
   // AI Recommendations data
   const recommendations = [
@@ -389,14 +295,17 @@ export default function VendorComparison() {
               padding: "4px",
               borderRadius: "8px",
               border: "1px solid #e5e7eb",
-              display: "inline-flex",
+              display: "flex",
               gap: "2px",
+              justifyContent:'space-between'
             }}
           >
             {tabs.map((tab) => (
               <button
                 key={tab.key}
-                onClick={() => setSelectedTab(tab.key)}
+                onClick={() => 
+                  setSelectedTab(tab.key)
+                }
                 style={{
                   padding: "8px 16px",
                   fontSize: "14px",
@@ -440,16 +349,16 @@ export default function VendorComparison() {
                       
                       <div style={{ marginBottom: 24 }}>
                         <Title level={2} style={{ margin: 0, color: '#1890ff' }}>
-                          ${metric.totalSpent.toLocaleString()}
+                          {currency} {resVendorResponse_S?.data?.data?.summary_card.total_spend}
                         </Title>
                       </div>
 
                       <div style={{ marginBottom: 16 }}>
-                        {metric.companies.map((company, idx) => (
+                        {resVendorResponse_S?.data?.data?.summary_card?.per_vendor.map((company:any, idx:any) => (
                           <div key={idx} style={{ marginBottom: 8 }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                              <Text style={{ fontSize: 12 }}>{company.name}</Text>
-                              <Text style={{ fontSize: 12 }}>${company.amount.toLocaleString()}</Text>
+                              <Text style={{ fontSize: 12 }}>{company.vendor}</Text>
+                              <Text style={{ fontSize: 12 }}>${company.spend.toLocaleString()}</Text>
                             </div>
                             <Progress 
                               percent={company.percentage} 
@@ -471,12 +380,12 @@ export default function VendorComparison() {
                       
                       <div style={{ marginBottom: 24 }}>
                         <Title level={2} style={{ margin: 0, color: '#1890ff' }}>
-                          {metric.onTimePerformance.value}%
+                          {resVendorResponse_S?.data?.data?.summary_card?.overall_on_time_performance}%
                         </Title>
                       </div>
 
                       <div style={{ marginBottom: 16 }}>
-                        {metric.companies.map((company, idx) => {
+                        {resVendorResponse_S?.data?.data?.summary_card?.per_vendor.map((company:any, idx:any) => {
                           const performanceValues = selectedTab === 'Airlines' ? [92.3, 85.7, 78.4] :
                                                   selectedTab === 'Hotels' ? [95.1, 88.2, 82.4] :
                                                   [85.2, 80.1, 75.3];
@@ -486,14 +395,14 @@ export default function VendorComparison() {
                           return (
                             <div key={idx} style={{ marginBottom: 8 }}>
                               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                                <Text style={{ fontSize: 12 }}>{company.name}</Text>
+                                <Text style={{ fontSize: 12 }}>{company.vendor}</Text>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                  <Text style={{ fontSize: 12 }}>{performanceValues[idx]}%</Text>
+                                  <Text style={{ fontSize: 12 }}>{company.on_time_performance}%</Text>
                                   <Tag 
                                     color={idx === 0 ? 'green' : idx === 1 ? 'orange' : 'red'}
                                     style={{ fontSize: 10, padding: '2px 6px' }}
                                   >
-                                    {performanceLabels[idx]}
+                                    {performanceLabels[company.on_time_performance]}
                                   </Tag>
                                 </div>
                               </div>
@@ -512,23 +421,21 @@ export default function VendorComparison() {
                       
                       <div style={{ marginBottom: 24 }}>
                         <Title level={2} style={{ margin: 0, color: '#1890ff' }}>
-                          {metric.customerSatisfaction.value}/{metric.customerSatisfaction.max}
+                        {resVendorResponse_S?.data?.data?.summary_card?.overall_customer_satisfaction} / 5
                         </Title>
                       </div>
 
                       <div style={{ marginBottom: 16 }}>
-                        {metric.companies.map((company, idx) => {
-                          const satisfactionValues = selectedTab === 'Airlines' ? [4.2, 4.0, 3.5] :
-                                                    selectedTab === 'Hotels' ? [4.5, 4.2, 4.0] :
-                                                    [4.0, 3.8, 3.6];
+                        {resVendorResponse_S?.data?.data?.summary_card?.per_vendor.map((company:any, idx:any) => {
+                          console.log(company)
                           return (
                             <div key={idx} style={{ marginBottom: 12 }}>
                               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                                <Text style={{ fontSize: 12 }}>{company.name}</Text>
-                                <Text style={{ fontSize: 12 }}>{satisfactionValues[idx]}/5</Text>
+                                <Text style={{ fontSize: 12 }}>{company.vendor}</Text>
+                                <Text style={{ fontSize: 12 }}>{company.customer_satisfaction} /5</Text>
                               </div>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                {renderStars(satisfactionValues[idx], 5)}
+                                {renderStars(company.customer_satisfaction, 5)}
                               </div>
                             </div>
                           );

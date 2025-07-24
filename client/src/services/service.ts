@@ -11,7 +11,7 @@ const prepareHeader = (headers: Headers) => {
   if (user) {
     console.log(headers)
     // const token = JSON.parse(atob(user))?.token;
-    const token = 'Token 5c8af9b608a62d23c1cb921a663347ae657e99f9';
+    const token = 'Token 3b19dd702ece7b124013a39b16114559649d1283';
     token && headers.set('Authorization',token); // Adding the token to headers if it exists
   }
   return headers;

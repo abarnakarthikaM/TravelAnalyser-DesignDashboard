@@ -23,7 +23,8 @@ interface RecommendationItem {
   description: string;
 }
 
-export function DepartmentCompliance() {
+export function DepartmentCompliance(departmentCompliance:any) {
+  console.log(departmentCompliance)
   const departmentData: DepartmentComplianceData[] = [
     { department: 'Finance', compliance: 96, violations: 5, status: 'Excellent', change: '+2.1%' },
     { department: 'HR', compliance: 94, violations: 7, status: 'Excellent', change: '+1.5%' },
@@ -86,14 +87,14 @@ export function DepartmentCompliance() {
       {/* Compliance by Department Section */}
       <div style={{ marginBottom: 32 }}>
         <Title level={3} style={{ marginBottom: 8 }}>
-          Compliance by Department
+         {departmentCompliance?.departmentComplianceData?.data?.departments_compliance?.title}
         </Title>
         <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
-          Policy adherence across different departments
+          {departmentCompliance?.departmentComplianceData?.data?.departments_compliance?.description}
         </Text>
 
         <div style={{ maxWidth: 800 }}>
-          {departmentData.map((dept, index) => (
+          {departmentCompliance?.departmentComplianceData?.data?.departments_compliance?.data?.map((dept:any, index:any) => (
             <div key={index} style={{ marginBottom: 16 }}>
               <div style={{ 
                 display: 'flex', 
@@ -124,24 +125,24 @@ export function DepartmentCompliance() {
                   justifyContent: 'flex-end'
                 }}>
                   <Text style={{ color: '#8c8c8c', fontSize: 12 }}>
-                    Violations: {dept.violations}
+                    Violations: {dept.violations_count}
                   </Text>
                   <Text style={{ fontWeight: 600, minWidth: 40 }}>
-                    {dept.compliance}%
+                    {dept.compliance_rate}%
                   </Text>
                   <Text style={{ 
-                    color: dept.change.startsWith('+') ? '#52c41a' : '#ff4d4f',
+                    color: dept.status_color,
                     fontWeight: 500,
                     minWidth: 50,
                     fontSize: 12
                   }}>
-                    {dept.change}
+                    {dept.trend}
                   </Text>
                 </div>
               </div>
               <Progress 
-                percent={dept.compliance} 
-                strokeColor={getProgressColor(dept.compliance)}
+                percent={dept.compliance_rate} 
+                strokeColor={getProgressColor(dept.compliance_rate)}
                 showInfo={false}
                 strokeWidth={8}
               />

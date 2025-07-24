@@ -182,3 +182,9 @@ body,
 .cls-topspender .ant-tabs-tab {
   border: unset;
 }
+.cls-spender-cards .ant-card-body{
+  padding: 17px 24px;
+}
+.cls-topspender .ant-tabs-tab-active .ant-tabs-tab-btn{
+  color:#fff !important;
+}

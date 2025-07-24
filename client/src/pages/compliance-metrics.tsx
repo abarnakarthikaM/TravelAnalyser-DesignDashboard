@@ -1,15 +1,32 @@
 
 import React from 'react';
-import { Layout, Typography, Button, Space, Row, Col, Card, Progress, Tabs, Tag, DatePicker } from 'antd';
+import { Layout, Typography, Button, Space, Row, Col, Card, Progress, Tabs, Tag, DatePicker, Select } from 'antd';
 import { CalendarOutlined, FilterOutlined, DownloadOutlined, CheckCircleOutlined, ExclamationCircleOutlined, WarningOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { Sidebar } from '@/components/dashboard/sidebar';
 import { PolicyViolations } from '@/components/dashboard/policy-violations';
 import { DepartmentCompliance } from '@/components/dashboard/department-compliance';
-
+import { useEffect, useState } from "react";
+import { formatDate } from '@/utils/dateFunctions';
+import { Filter } from 'lucide-react';
+import { useLazyGetCompliancemetricsQuery } from '@/services/dashboard/dashboard';
 const { Content } = Layout;
 const { Title, Text } = Typography;
 
 export default function ComplianceMetrics() {
+  const [resDatpickerValues, setDatpickerValues] = useState<any>(["2025-06-01",
+    "2025-07-31"]);
+    const [dateFilter, setDateFilter] = useState("today");
+    const [tabValue, setTabValue] = useState("overview");
+    const [open, setOpen] = useState(false);
+    const [dateRange, setDateRange] = useState<any>([]);
+    const { Option } = Select;
+    const [reqComplainceTabdata, resComplainceTabData] = useLazyGetCompliancemetricsQuery();
+    const [reqComplainceCardData, resComplainceCardData] = useLazyGetCompliancemetricsQuery();
+    const [resComplainceCards_S,setComplainceCards_S] = useState<any>([]);
+    const [resComplainceOverview_S,setComplainceOverview_S] = useState<any>([]);
+    const [resComplainceViolation_S,setComplainceViolation_S] = useState<any>([]);
+    const [resComplainceDepartment_S,setComplainceDepartment_S] = useState<any>([]);
+    
   // Metrics data
   const metricsData = [
     {
@@ -91,6 +108,89 @@ export default function ComplianceMetrics() {
     if (compliance >= 80) return '#faad14';
     return '#ff4d4f';
   };
+  useEffect(() => {
+    console.log(tabValue)
+    if(resDatpickerValues.length===2){
+    let reqData:any={
+      data: {
+        start_date: resDatpickerValues[0],
+        end_date: resDatpickerValues[1],
+      },
+      url:"compliance/metrics/"
+    }
+     reqComplainceCardData({ RequestDataFormat: reqData }) ;
+    }
+  }, [resDatpickerValues]);
+
+  useEffect(()=>{
+    setComplainceCards_S(resComplainceCardData)
+  },[resComplainceCardData])
+  console.log(resComplainceCards_S)
+/********
+   * request service call for Expense card and Top Expenses  service call
+   */
+  useEffect(() => {
+    console.log(tabValue)
+      const url =
+          (tabValue=='department') ? "compliance/by_department/" :
+          (tabValue=='violations') ? "compliance/violations/" :
+          "compliance/overview/" ;
+    if(resDatpickerValues.length===2){
+    let reqData:any={
+      data: {
+        start_date: resDatpickerValues[0],
+        end_date: resDatpickerValues[1],
+      },
+      url:url
+    }
+     reqComplainceTabdata({ RequestDataFormat: reqData }) ;
+    }
+  }, [resDatpickerValues,tabValue]);
+ /********
+   *get response for Expense card and Top Expenses  service call
+   */
+
+  useEffect(() => {
+    console.log(tabValue)
+    if(resComplainceTabData?.isSuccess){
+     (tabValue=='overview')&& setComplainceOverview_S(resComplainceTabData.data);
+     (tabValue=='violations')&& setComplainceViolation_S(resComplainceTabData.data);
+     (tabValue=='department')&& setComplainceDepartment_S(resComplainceTabData.data);
+    }
+
+    // if(resExpenseBreakdown?.isSuccess && resExpenseBreakdown?.data){
+    //   setCommonTabResponse_S(resExpenseBreakdown)
+    // }
+  }, [resComplainceTabData])
+   console.log(resComplainceTabData)
+   console.log(resComplainceDepartment_S)
+  /***********
+   * Des:this function call's when change the date picker option
+   */
+    const handleDateFilterChange = (value: any) => {
+        setDateFilter(value);
+      if (value === "date-range") {
+        setOpen(true);
+        setDateFilter(value);
+      } else {
+        setDateRange([]);
+        setOpen(false);
+      }
+    };
+  /******
+   * Des:this function hanndles the date range picker value changes
+   */
+    const handleDateRangeChange = (dates: any, dateStrings: [any,any]) => {
+       setDateFilter("date-range");
+      setDateRange(dates);
+      setOpen(false);
+      if (dates && dates.length === 2) {
+        if (dateFilter === "date-range" && dateStrings && dateStrings.length === 2) {
+          setDatpickerValues(dateStrings);
+        }
+        setDateFilter(formatDate(dateStrings[0]) +' - '+ formatDate(dateStrings[1]));
+      }
+    };
 
   const tabItems = [
     {
@@ -99,110 +199,117 @@ export default function ComplianceMetrics() {
       children: (
         <div>
           {/* Compliance by Policy Category */}
-          <div style={{ marginBottom: 32 }}>
-            <Title level={3} style={{ marginBottom: 8 }}>
-              Compliance by Policy Category
-            </Title>
-            <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
-              Breakdown of compliance across different policy areas
-            </Text>
+           {resComplainceOverview_S?.data?.compliance_by_category !=undefined &&
+              <div style={{ marginBottom: 32 }}>
+                <Title level={3} style={{ marginBottom: 8 }}>
+                  {resComplainceOverview_S?.data?.compliance_by_category?.title}
+                </Title>
+                <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
+                  {resComplainceOverview_S?.data?.compliance_by_category.description}
+                </Text>
 
-            <div style={{ maxWidth: 800 }}>
-              {policyComplianceData.map((policy, index) => (
-                <div key={index} style={{ marginBottom: 20 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <Text style={{ fontWeight: 500, minWidth: 150 }}>{policy.category}</Text>
-                      <Tag color={policy.status === 'Excellent' ? 'green' : policy.status === 'Good' ? 'blue' : 'orange'}>
-                        {policy.status}
-                      </Tag>
+                <div style={{ maxWidth: 800 }}>
+                  {resComplainceOverview_S?.data?.compliance_by_category?.data.map((policy:any, index:any) => (
+                    <div key={index} style={{ marginBottom: 20 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                          <Text style={{ fontWeight: 500, minWidth: 150 }}>{policy.category}</Text>
+                          <Tag color={policy.status === 'Excellent' ? 'green' : policy.status === 'Good' ? 'blue' : 'orange'}>
+                            {policy.status}
+                          </Tag>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                          <Text style={{ fontWeight: 'bold' }}>{policy.compliance_rate}%</Text>
+                          <Text style={{ 
+                            color: (policy.trend_direction == 'up') ? '#52c41a' : '#ff4d4f',
+                            fontWeight: 500,
+                            minWidth: 50,
+                            textAlign: 'right'
+                          }}>
+                            {policy.change}
+                          </Text>
+                        </div>
+                      </div>
+                      <Progress 
+                        percent={policy.compliance_rate} 
+                        strokeColor={policy.status_color}
+                        showInfo={false}
+                        strokeWidth={8}
+                      />
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <Text style={{ fontWeight: 'bold' }}>{policy.percentage}%</Text>
-                      <Text style={{ 
-                        color: policy.change.startsWith('+') ? '#52c41a' : '#ff4d4f',
-                        fontWeight: 500,
-                        minWidth: 50,
-                        textAlign: 'right'
-                      }}>
-                        {policy.change}
-                      </Text>
-                    </div>
-                  </div>
-                  <Progress 
-                    percent={policy.percentage} 
-                    strokeColor={policy.color}
-                    showInfo={false}
-                    strokeWidth={8}
-                  />
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
+              </div>
+          }
 
           {/* Employee Lists Section */}
+           
           <Row gutter={[24, 24]}>
-            <Col xs={24} lg={12}>
-              <Card style={{ height: 400 }}>
-                <Title level={4} style={{ marginBottom: 8 }}>
-                  Top Compliant Employees
-                </Title>
-                <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
-                  Employees with highest policy adherence
-                </Text>
-                
-                <div style={{ maxHeight: 280, overflowY: 'auto' }}>
-                  {topCompliantEmployees.map((employee, index) => (
-                    <div key={index} style={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between', 
-                      alignItems: 'center',
-                      padding: '12px 0',
-                      borderBottom: index < topCompliantEmployees.length - 1 ? '1px solid #f0f0f0' : 'none'
-                    }}>
-                      <div>
-                        <Text style={{ fontWeight: 500, display: 'block' }}>{employee.name}</Text>
-                        <Text style={{ color: '#8c8c8c', fontSize: 12 }}>{employee.department}</Text>
+            {resComplainceOverview_S?.data?.top_compliant_employees !=undefined &&
+              <Col xs={24} lg={12}>
+                <Card style={{ height: 400 }}>
+                  <Title level={4} style={{ marginBottom: 8 }}>
+                    Top Compliant Employees
+                  </Title>
+                  <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
+                    Employees with highest policy adherence
+                  </Text>
+                  
+                  <div style={{ maxHeight: 280, overflowY: 'auto' }}>
+                    {resComplainceOverview_S?.data?.top_compliant_employees?.data.map((employee:any, index:any) => (
+                      <div key={index} style={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'center',
+                        padding: '12px 0',
+                        borderBottom: index < topCompliantEmployees.length - 1 ? '1px solid #f0f0f0' : 'none'
+                      }}>
+                        <div>
+                          <Text style={{ fontWeight: 500, display: 'block' }}>{employee.employee_name}</Text>
+                          <Text style={{ color: '#8c8c8c', fontSize: 12 }}>{employee.department}</Text>
+                        </div>
+                        <Tag color={employee.status_color} style={{ fontWeight: 'bold' }}>
+                          {employee.compliance_rate}%
+                        </Tag>
                       </div>
-                      <Tag color={getComplianceColor(employee.compliance)} style={{ fontWeight: 'bold' }}>
-                        {employee.compliance}%
-                      </Tag>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            </Col>
+                    ))}
+                  </div>
+                </Card>
+              </Col>
+            }
+            {resComplainceOverview_S?.data?.needs_improvement_employees !=undefined &&
+              <Col xs={24} lg={12}>
+                <Card style={{ height: 400 }}>
+                  <Title level={4} style={{ marginBottom: 8 }}>
+                   {resComplainceOverview_S?.data?.needs_improvement_employees.title}
+                  </Title>
+                  <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
+                   {resComplainceOverview_S?.data?.needs_improvement_employees.description}
 
-            <Col xs={24} lg={12}>
-              <Card style={{ height: 400 }}>
-                <Title level={4} style={{ marginBottom: 8 }}>
-                  Needs Improvement
-                </Title>
-                <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
-                  Employees with lowest policy adherence
-                </Text>
-                
-                <div style={{ maxHeight: 280, overflowY: 'auto' }}>
-                  {needsImprovementEmployees.map((employee, index) => (
-                    <div key={index} style={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between', 
-                      alignItems: 'center',
-                      padding: '12px 0',
-                      borderBottom: index < needsImprovementEmployees.length - 1 ? '1px solid #f0f0f0' : 'none'
-                    }}>
-                      <div>
-                        <Text style={{ fontWeight: 500, display: 'block' }}>{employee.name}</Text>
-                        <Text style={{ color: '#8c8c8c', fontSize: 12 }}>{employee.department}</Text>
+                  </Text>
+                  
+                  <div style={{ maxHeight: 280, overflowY: 'auto' }}>
+                    {resComplainceOverview_S?.data?.needs_improvement_employees.data.map((employee:any, index:number) => (
+                      <div key={index} style={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'center',
+                        padding: '12px 0',
+                        borderBottom: index < needsImprovementEmployees.length - 1 ? '1px solid #f0f0f0' : 'none'
+                      }}>
+                        <div>
+                          <Text style={{ fontWeight: 500, display: 'block' }}>{employee.employee_name}</Text>
+                          <Text style={{ color: '#8c8c8c', fontSize: 12 }}>{employee.department}</Text>
+                        </div>
+                        <Tag color={employee.status_color}>
+                          {employee.compliance_rate}%
+                        </Tag>
                       </div>
-                      <Tag color={getComplianceColor(employee.compliance)} style={{ fontWeight: 'bold' }}>
-                        {employee.compliance}%
-                      </Tag>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            </Col>
+                    ))}
+                  </div>
+                </Card>
+              </Col>
+            }
           </Row>
         </div>
       )
@@ -210,12 +317,12 @@ export default function ComplianceMetrics() {
     {
       key: 'violations',
       label: 'Policy Violations',
-      children: <PolicyViolations />
+      children: <PolicyViolations violationComplaince={resComplainceViolation_S}/>
     },
     {
       key: 'department',
       label: 'By Department',
-      children: <DepartmentCompliance />
+      children: <DepartmentCompliance departmentComplianceData={resComplainceDepartment_S}/>
     },
     {
       key: 'trends',
@@ -247,57 +354,83 @@ export default function ComplianceMetrics() {
             </Text>
           </div>
           
-          <Space>
-            <DatePicker.RangePicker
-              suffixIcon={<CalendarOutlined />}
-              defaultValue={[null, null]}
-              placeholder={['Jan 01, 2023', 'Jul 15, 2025']}
-              style={{ width: 240 }}
-            />
-            <Button icon={<FilterOutlined />}>Filters</Button>
-            <Button icon={<DownloadOutlined />}>Export</Button>
-          </Space>
+           <Space size="middle">
+              <Select
+                value={dateFilter}
+                style={{ width: 215 }}
+                onChange={handleDateFilterChange}
+              >
+                <Option value="today">Today</Option>
+                <Option value="yesterday">Yesterday</Option>
+                <Option value="this-month">This Month</Option>
+                <Option value="last-month">Last Month</Option>
+                <Option value="date-range">Date Range</Option>
+              </Select>
+
+              <DatePicker.RangePicker
+                open={open}
+                value={dateRange}
+                onChange={handleDateRangeChange}
+                onOpenChange={(status) => setOpen(status)}
+                style={{
+                  position: "absolute",
+                  opacity: 0,
+                  pointerEvents: "none",
+                }}
+              />
+
+              <Select defaultValue="All Vendors" style={{ width: 140 }}>
+                <Option value="all">All Vendors</Option>
+                <Option value="airlines">Airlines</Option>
+                <Option value="hotels">Hotels</Option>
+              </Select>
+
+              <Button className="flex items-center gap-2">
+                <Filter className="w-4 h-4" />
+                Filters
+              </Button>
+            </Space>
         </div>
 
         <Content style={{ padding: '32px' }}>
           {/* Top Metrics Cards */}
           <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
-            {metricsData.map((metric, index) => (
+            {resComplainceCards_S?.data?.data?.compliance.map((metric:any, index:any) => (
               <Col xs={24} lg={6} key={index}>
                 <Card style={{ height: '100%' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
                     <Title level={4} style={{ margin: 0, fontSize: 16 }}>
-                      {metric.title}
+                      {metric.name}
                     </Title>
                     {metric.icon}
                   </div>
                   
                   <Title level={1} style={{ margin: 0, marginBottom: 8, fontSize: 32 }}>
-                    {metric.value}
+                    {metric.total}
                   </Title>
-                  
+                  {metric.name == "Overall Compliance" && <Progress percent={metric.change_percent} size="small" showInfo={false} style={{ width: 80 }} />}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
                     <Text style={{ 
-                      color: metric.changeType === 'positive' ? '#52c41a' : '#ff4d4f',
+                      color:( metric.change_percent > 0) ? '#52c41a' : '#ff4d4f',
                       fontWeight: 500
                     }}>
-                      {metric.change}
+                      {metric.change_percent}
                     </Text>
                     <Text style={{ color: '#8c8c8c', fontSize: 12 }}>
-                      {metric.subtitle}
+                       from previous period
                     </Text>
                   </div>
 
-                  {metric.details && (
+                  {/* {metric.severity && (
                     <div style={{ fontSize: 12, color: '#8c8c8c' }}>
-                      {metric.details.map((detail, idx) => (
+                      {metric.details.map((detail:any, idx:any) => (
                         <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                           <span>{detail.label}</span>
-                          <span style={{ fontWeight: 500 }}>{detail.value}</span>
+                          <span style={{ fontWeight: 500 }}>{detail.severity}</span>
                         </div>
                       ))}
                     </div>
-                  )}
+                  )} */}
                 </Card>
               </Col>
             ))}
@@ -308,6 +441,7 @@ export default function ComplianceMetrics() {
             <Tabs 
               defaultActiveKey="overview" 
               items={tabItems}
+              onChange={setTabValue}
             />
           </Card>
 
@@ -316,4 +450,5 @@ export default function ComplianceMetrics() {
       </Layout>
     </Layout>
   );
+
 }
