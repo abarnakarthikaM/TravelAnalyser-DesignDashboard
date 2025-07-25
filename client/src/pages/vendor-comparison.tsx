@@ -4,7 +4,7 @@ import { Layout, Typography, Card, Row, Col, Progress, Table, Tag, Button, Space
 import { DownloadOutlined, FilterOutlined, CalendarOutlined, InfoCircleOutlined, CheckCircleOutlined, WarningOutlined } from '@ant-design/icons';
 import { Sidebar } from '@/components/dashboard/sidebar';
 import { useLazyGetVendorComparisionQuery } from '@/services/dashboard/dashboard';
-import { formatDate } from '@/utils/dateFunctions';
+import { calculateDateValues, formatDate } from '@/utils/dateFunctions';
 import { Filter } from "lucide-react";
 
 const { Content } = Layout;
@@ -16,8 +16,7 @@ export default function VendorComparison() {
   const [dateFilter, setDateFilter] = useState("today");
   const [open, setOpen] = useState(false);
   const [dateRange, setDateRange] = useState<any>([]);
-  const [resDatpickerValues, setDatpickerValues] = useState<any>(["2025-06-01",
-    "2025-07-31"]);
+  const [resDatpickerValues, setDatpickerValues] = useState<any>([]);
   const [resVendorResponse_S,setVendorResponse_S] = useState<any>([]);
   const currency:string="INR"
   
@@ -134,6 +133,7 @@ console.log(metricsData)
       setDateFilter(value);
     } else {
       setDateRange([]);
+     setDatpickerValues(calculateDateValues(value))
       setOpen(false);
     }
   };
@@ -253,6 +253,8 @@ console.log(metricsData)
               >
                 <Option value="today">Today</Option>
                 <Option value="yesterday">Yesterday</Option>
+                <Option value="this-week">This week</Option>
+                <Option value="last-week">Last week</Option>
                 <Option value="this-month">This Month</Option>
                 <Option value="last-month">Last Month</Option>
                 <Option value="date-range">Date Range</Option>
@@ -269,17 +271,6 @@ console.log(metricsData)
                   pointerEvents: "none",
                 }}
               />
-
-              <Select defaultValue="All Vendors" style={{ width: 140 }}>
-                <Option value="all">All Vendors</Option>
-                <Option value="airlines">Airlines</Option>
-                <Option value="hotels">Hotels</Option>
-              </Select>
-
-              <Button className="flex items-center gap-2">
-                <Filter className="w-4 h-4" />
-                Filters
-              </Button>
             </Space>
         </div>
 
@@ -361,10 +352,14 @@ console.log(metricsData)
                               <Text style={{ fontSize: 12 }}>${company.spend.toLocaleString()}</Text>
                             </div>
                             <Progress 
-                              percent={company.percentage} 
+                              percent={company.spend_percentage} 
                               size="small" 
                               showInfo={false}
-                              strokeColor={idx === 0 ? '#1890ff' : idx === 1 ? '#722ed1' : '#52c41a'}
+                              strokeColor={company.spend_percentage >= 85 ? '#52c41a' 
+                                            :company.spend_percentage >=65 ? '#722ed1' 
+                                            :'#1890ff'}
+
+                              //  strokeColor={company.spend_percentage >= 85 ? '#1890ff' : idx === 1 ? '#722ed1' : '#52c41a'}
                             />
                           </div>
                         ))}
@@ -399,10 +394,10 @@ console.log(metricsData)
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                   <Text style={{ fontSize: 12 }}>{company.on_time_performance}%</Text>
                                   <Tag 
-                                    color={idx === 0 ? 'green' : idx === 1 ? 'orange' : 'red'}
+                                    color={(company.on_time_performance_status > 90) ? 'green' : (company.on_time_performance_status > 60) ? 'orange' : 'red'}
                                     style={{ fontSize: 10, padding: '2px 6px' }}
                                   >
-                                    {performanceLabels[company.on_time_performance]}
+                                    {company.on_time_performance_status}
                                   </Tag>
                                 </div>
                               </div>

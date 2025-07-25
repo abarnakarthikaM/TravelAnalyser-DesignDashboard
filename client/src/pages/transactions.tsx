@@ -23,7 +23,7 @@ import {
 } from "@ant-design/icons";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { DatePicker } from "antd";
-import { formatDate } from "@/utils/dateFunctions";
+import { calculateDateValues, formatDate } from "@/utils/dateFunctions";
 import { Filter } from "lucide-react";
 import { useLazyGetTransactionServiceQuery } from "@/services/dashboard/dashboard";
 
@@ -49,7 +49,7 @@ export default function Transactions() {
   const [open, setOpen] = useState(false);
   const [dateRange, setDateRange] = useState<any>([]);
   const { Option } = Select;
-  const [resDatpickerValues, setDatpickerValues] = useState<any>(["2025-06-01", "2025-07-31"]);
+  const [resDatpickerValues, setDatpickerValues] = useState<any>([]);
   const [resTransactionOverview_S, setTransactionOverview_S] = useState<any>([])
   const [resRecentTransaction_S, setRecentTransaction_S] = useState<any>([])
   const [resTransactiontabData_S, setResTransactiontabData_S] = useState<any>([])
@@ -222,6 +222,7 @@ export default function Transactions() {
       setDateFilter(value);
     } else {
       setDateRange([]);
+      setDatpickerValues(calculateDateValues(value))
       setOpen(false);
     }
   };
@@ -260,8 +261,8 @@ export default function Transactions() {
     if (resDatpickerValues.length === 2) {
       let reqData: any = {
         data: {
-          start_date: '2025-06-15',
-          end_date: '2025-06-15'
+          start_date: resDatpickerValues[0],
+          end_date: resDatpickerValues[1],
         },
         url: "transactions/overview/"
       }
@@ -388,11 +389,13 @@ const paginatedTransactions = filteredTransactions?.slice(startIndex, endIndex);
               style={{ width: 215 }}
               onChange={handleDateFilterChange}
             >
-              <Option value="today">Today</Option>
-              <Option value="yesterday">Yesterday</Option>
-              <Option value="this-month">This Month</Option>
-              <Option value="last-month">Last Month</Option>
-              <Option value="date-range">Date Range</Option>
+                <Option value="today">Today</Option>
+                <Option value="yesterday">Yesterday</Option>
+                <Option value="this-week">This week</Option>
+                <Option value="last-week">Last week</Option>
+                <Option value="this-month">This Month</Option>
+                <Option value="last-month">Last Month</Option>
+                <Option value="date-range">Date Range</Option>
             </Select>
 
             <DatePicker.RangePicker
@@ -406,17 +409,6 @@ const paginatedTransactions = filteredTransactions?.slice(startIndex, endIndex);
                 pointerEvents: "none",
               }}
             />
-
-            <Select defaultValue="All Vendors" style={{ width: 140 }}>
-              <Option value="all">All Vendors</Option>
-              <Option value="airlines">Airlines</Option>
-              <Option value="hotels">Hotels</Option>
-            </Select>
-
-            <Button className="flex items-center gap-2">
-              <Filter className="w-4 h-4" />
-              Filters
-            </Button>
           </Space>
         </div>
 
@@ -424,7 +416,7 @@ const paginatedTransactions = filteredTransactions?.slice(startIndex, endIndex);
           {/* Metrics Cards */}
           <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
             {resTransactionOverview_S?.data?.data?.overview_cards.map((overviewData: any) => (
-              <Col xs={24} sm={12} lg={6}>
+              <Col xs={24} sm={4} lg={5}>
                 <Card>
                   <Statistic
                     title={overviewData.title}

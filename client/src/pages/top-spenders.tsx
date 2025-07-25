@@ -17,9 +17,10 @@ import {
   FilterOutlined,
   DownloadOutlined,
 } from "@ant-design/icons";
+import dayjs from 'dayjs'
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { useLazyGettopSpenderQuery } from "@/services/dashboard/dashboard";
-import { formatDate } from "@/utils/dateFunctions";
+import { formatDate,calculateDateValues } from "@/utils/dateFunctions";
 import { Filter } from "lucide-react";
 
 const TopSpenders = () => {
@@ -27,8 +28,7 @@ const TopSpenders = () => {
   const [tabValue, setTabValue] = useState("department");
   const [open, setOpen] = useState(false);
   const [dateRange, setDateRange] = useState<any>([]);
-  const [resDatpickerValues, setDatpickerValues] = useState<any>(["2024-11-01",
-    "2025-07-31"]);
+  const [resDatpickerValues, setDatpickerValues] = useState<any>([]);
 const [resTopSpender_S,setTopSpender_S] = useState<any>([]);
 
 const [reqTopSpender,resTopSpender]=useLazyGettopSpenderQuery();
@@ -63,15 +63,19 @@ let topCategorySpenders:any;
    * Des:this function call's when change the date picker option
    */
     const handleDateFilterChange = (value: any) => {
+      console.log(value)
         setDateFilter(value);
       if (value === "date-range") {
         setOpen(true);
         setDateFilter(value);
       } else {
         setDateRange([]);
+        setDatpickerValues(calculateDateValues(value))
         setOpen(false);
       }
+      console.log(resDatpickerValues)
     };
+   
     const getStrokeColor = (percentage:any)=>{
         if(percentage < 30) return '#722ed1'
         if (percentage > 30 && percentage < 50) return '#1890ff'; // red
@@ -107,8 +111,8 @@ let topCategorySpenders:any;
         },
         url:urlType
       };
-        if(tabValue==='department'){
-          reqData.data.grouping_type='band'
+        if(tabValue==='department' || tabValue==='band'){
+          reqData.data.grouping_type=tabValue
         }
         console.log(reqData)
        reqTopSpender({ RequestDataFormat: reqData }) ;
@@ -164,9 +168,11 @@ let topCategorySpenders:any;
               >
                 <Option value="today">Today</Option>
                 <Option value="yesterday">Yesterday</Option>
-                <Option value="this-month">This Month</Option>
-                <Option value="last-month">Last Month</Option>
-                <Option value="date-range">Date Range</Option>
+                 <Option value="this-week">This week</Option>
+                <Option value="last-week">Last week</Option>
+                <Option value="this-month">This month</Option>
+                <Option value="last-month">Last month</Option>
+                <Option value="date-range">Date range</Option>
               </Select>
 
               <DatePicker.RangePicker
@@ -181,16 +187,7 @@ let topCategorySpenders:any;
                 }}
               />
 
-              <Select defaultValue="All Vendors" style={{ width: 140 }}>
-                <Option value="all">All Vendors</Option>
-                <Option value="airlines">Airlines</Option>
-                <Option value="hotels">Hotels</Option>
-              </Select>
-
-              <Button className="flex items-center gap-2">
-                <Filter className="w-4 h-4" />
-                Filters
-              </Button>
+             
             </Space>
         </div>
 
@@ -202,7 +199,7 @@ let topCategorySpenders:any;
             className="custom-tabs cls-topspender"
             onChange={setTabValue}
           >
-            <TabPane tab="By Department" key="department">
+            <TabPane tab="By department" key="department">
               {/* Department content - existing code */}
               {/* Department Metrics Cards */}
               <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
@@ -342,7 +339,7 @@ let topCategorySpenders:any;
               </Card>
             </TabPane>
 
-            <TabPane tab="By Individual" key="individual">
+            <TabPane tab="By individual" key="individual">
              
               {/* Top Individual Spenders */}
               <Card style={{ marginBottom: 32 }}>
@@ -634,7 +631,7 @@ let topCategorySpenders:any;
               </Row>
             </TabPane>
 
-            <TabPane tab="By Category" key="category">
+            <TabPane tab="By category" key="category">
               {/* Category Summary Cards */}
               <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
                 {/* category Card */}
@@ -959,6 +956,145 @@ let topCategorySpenders:any;
                 </div>
               </Card>
             </TabPane>
+              <TabPane tab="By band" key="band">
+              {/* Department content - existing code */}
+              {/* Department Metrics Cards */}
+              <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
+                {topSpenderCards!=undefined}{
+                  <>
+                  {topSpenderCards?.map((metric:any, index:number) => (
+                  <Col xs={24} lg={6} key={index}>
+                    <Card style={{ height: "100%" }}>
+                      <Title
+                        level={4}
+                        style={{ marginBottom: 16, fontSize: 16 }}
+                      >
+                        {metric.name}
+                      </Title>
+
+                      <Title
+                        level={3}
+                        style={{ margin: 0, marginBottom: 8, color: "#1890ff" }}
+                      >
+                        {metric.spend}
+                      </Title>
+
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color:
+                              metric.trend === "up"
+                                ? "#52c41a"
+                                : "#ff4d4f",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {metric.change_percentage}
+                        </Text>
+                        <Text style={{ color: "#8c8c8c", fontSize: 12 }}>
+                          from previous period
+                        </Text>
+                      </div>
+                    </Card>
+                  </Col>
+                ))}
+                  </>
+                }
+                
+              </Row>
+
+              {/* Department Spending Breakdown */}
+              <Card style={{ marginBottom: 32 }}>
+                <Title level={4} style={{ marginBottom: 16 }}>
+                  Department Spending Breakdown
+                </Title>
+                <Text
+                  style={{
+                    color: "#8c8c8c",
+                    display: "block",
+                    marginBottom: 24,
+                  }}
+                >
+                  Detailed analysis of departmental travel expenses
+                </Text>
+
+                <div style={{ marginBottom: 24 ,overflowY:"scroll",height:'300px'}}>
+                  {(deptSpendingBreakdown !=undefined) && deptSpendingBreakdown?.map((dept:any, index:number) => (
+                    <div key={index} style={{ marginBottom: 20 }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginBottom: 8,
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 16,
+                          }}
+                        >
+                          <Text style={{ fontWeight: 500, minWidth: 120 }}>
+                            {dept.name}
+                          </Text>
+                          <Text
+                            style={{
+                              color: dept.trend=="up"
+                                ? "#52c41a"
+                                : "#ff4d4f",
+                              fontWeight: 500,
+                              fontSize: 12,
+                            }}
+                          >
+                            {dept.percentage_of_total} %
+                          </Text>
+                        </div>
+                        <div style={{ textAlign: "right" }}>
+                          <Text style={{ fontWeight: 600, fontSize: 16 }}>
+                            {dept.spend}
+                          </Text>
+                          <br />
+                          <Text style={{ color: "#8c8c8c", fontSize: 12 }}>
+                            {dept.change_percentage}%
+                          </Text>
+                        </div>
+                      </div>
+                      <Progress
+                        percent={dept.percentage_of_total}
+                        showInfo={false}
+                        strokeColor={getProgressColor(dept.trend)}
+                        style={{ marginBottom: 4 }}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Chart Placeholder */}
+                <div
+                  style={{
+                    height: 200,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: "#fafafa",
+                    borderRadius: 6,
+                    marginTop: 24,
+                  }}
+                >
+                  <Text style={{ color: "#8c8c8c" }}>
+                    Department spending comparison chart would appear here
+                  </Text>
+                </div>
+              </Card>
+            </TabPane>
           </Tabs>
         </Content>
       </Layout>
@@ -967,3 +1103,5 @@ let topCategorySpenders:any;
 };
 
 export default TopSpenders;
+
+

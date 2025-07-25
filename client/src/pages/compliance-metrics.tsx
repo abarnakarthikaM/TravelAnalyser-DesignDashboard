@@ -6,15 +6,14 @@ import { Sidebar } from '@/components/dashboard/sidebar';
 import { PolicyViolations } from '@/components/dashboard/policy-violations';
 import { DepartmentCompliance } from '@/components/dashboard/department-compliance';
 import { useEffect, useState } from "react";
-import { formatDate } from '@/utils/dateFunctions';
+import { calculateDateValues, formatDate } from '@/utils/dateFunctions';
 import { Filter } from 'lucide-react';
 import { useLazyGetCompliancemetricsQuery } from '@/services/dashboard/dashboard';
 const { Content } = Layout;
 const { Title, Text } = Typography;
 
 export default function ComplianceMetrics() {
-  const [resDatpickerValues, setDatpickerValues] = useState<any>(["2025-06-01",
-    "2025-07-31"]);
+  const [resDatpickerValues, setDatpickerValues] = useState<any>([]);
     const [dateFilter, setDateFilter] = useState("today");
     const [tabValue, setTabValue] = useState("overview");
     const [open, setOpen] = useState(false);
@@ -174,6 +173,7 @@ export default function ComplianceMetrics() {
         setDateFilter(value);
       } else {
         setDateRange([]);
+        setDatpickerValues(calculateDateValues(value))
         setOpen(false);
       }
     };
@@ -362,9 +362,11 @@ export default function ComplianceMetrics() {
               >
                 <Option value="today">Today</Option>
                 <Option value="yesterday">Yesterday</Option>
-                <Option value="this-month">This Month</Option>
-                <Option value="last-month">Last Month</Option>
-                <Option value="date-range">Date Range</Option>
+                <Option value="this-week">This week</Option>
+                <Option value="last-week">Last week</Option>
+                <Option value="this-month">This month</Option>
+                <Option value="last-month">Last month</Option>
+                <Option value="date-range">Date range</Option>
               </Select>
 
               <DatePicker.RangePicker
@@ -378,17 +380,6 @@ export default function ComplianceMetrics() {
                   pointerEvents: "none",
                 }}
               />
-
-              <Select defaultValue="All Vendors" style={{ width: 140 }}>
-                <Option value="all">All Vendors</Option>
-                <Option value="airlines">Airlines</Option>
-                <Option value="hotels">Hotels</Option>
-              </Select>
-
-              <Button className="flex items-center gap-2">
-                <Filter className="w-4 h-4" />
-                Filters
-              </Button>
             </Space>
         </div>
 

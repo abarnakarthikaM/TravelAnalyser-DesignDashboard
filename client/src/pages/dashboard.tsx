@@ -18,7 +18,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import { useLazyGetDashboardOverviewQuery } from "@/services/dashboard/dashboard";
-import { formatDate } from "@/utils/dateFunctions";
+import { calculateDateValues, formatDate } from "@/utils/dateFunctions";
 const tabItems = [
     {
       key: "expense-breakdown",
@@ -43,8 +43,7 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("expense-breakdown");
   const [resDashboardOverviewData_S, setResDashboardOverviewData_S] = useState<any>();
   const [resCommonTabResponse_S,setCommonTabResponse_S] = useState<any>([]);
-  const [resDatpickerValues, setDatpickerValues] = useState<any>(["2025-06-01",
-    "2025-07-31"]);
+  const [resDatpickerValues, setDatpickerValues] = useState<any>([]);
   const [dateFilter, setDateFilter] = useState("today");
   const [open, setOpen] = useState(false);
   const [dateRange, setDateRange] = useState<any>([]);
@@ -60,6 +59,7 @@ export default function Dashboard() {
    * request service call for Expense card and Top Expenses  service call
    */
   useEffect(() => {
+    console.log(dateFilter)
     if(resDatpickerValues.length===2){
     let reqData:any={
       data: {
@@ -84,11 +84,13 @@ export default function Dashboard() {
     }
   }, [resDashboardOverview,resExpenseBreakdown])
    console.log(resCommonTabResponse_S)
+    console.log(resDatpickerValues)
   /*******
    * service call for Expense Breakdown charts when ever we change the date picker value,outer tab value
    */
   useEffect(()=>{
-    console.log(activeTab)
+    console.log(dateFilter)
+        console.log(resDatpickerValues)
     const urlvalue = (activeTab==='vendor-performance') ? "dashboard/vendors_performance/"
                       : (activeTab==='compliance') ? "dashboard/compliance/"
                       : "dashboard/expense_breakdown/";
@@ -123,14 +125,16 @@ export default function Dashboard() {
  * Des:this function call's when change the date picker option
  */
   const handleDateFilterChange = (value: any) => {
-      setDateFilter(value);
+     console.log(value)
     if (value === "date-range") {
       setOpen(true);
       setDateFilter(value);
     } else {
       setDateRange([]);
+      setDatpickerValues(calculateDateValues(value))
       setOpen(false);
     }
+     console.log(resDatpickerValues)
   };
 /******
  * Des:this function hanndles the date range picker value changes
@@ -186,6 +190,8 @@ export default function Dashboard() {
               >
                 <Option value="today">Today</Option>
                 <Option value="yesterday">Yesterday</Option>
+                <Option value="this-week">This week</Option>
+                <Option value="last-week">Last week</Option>
                 <Option value="this-month">This Month</Option>
                 <Option value="last-month">Last Month</Option>
                 <Option value="date-range">Date Range</Option>
@@ -202,17 +208,6 @@ export default function Dashboard() {
                   pointerEvents: "none",
                 }}
               />
-
-              <Select defaultValue="All Vendors" style={{ width: 140 }}>
-                <Option value="all">All Vendors</Option>
-                <Option value="airlines">Airlines</Option>
-                <Option value="hotels">Hotels</Option>
-              </Select>
-
-              <Button className="flex items-center gap-2">
-                <Filter className="w-4 h-4" />
-                Filters
-              </Button>
             </Space>
           </div>
         </header>
