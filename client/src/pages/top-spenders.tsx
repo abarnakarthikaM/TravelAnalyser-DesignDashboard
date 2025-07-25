@@ -261,6 +261,8 @@ const TopSpenders = () => {
     console.log(topCategorySpenders)
   }
 
+  console.log('isSuccess:', resTopSpender.isSuccess);
+console.log('isLoading:', resTopSpender.isLoading);
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Sidebar />
@@ -329,7 +331,7 @@ const TopSpenders = () => {
               {/* Department content - existing code */}
               {/* Department Metrics Cards */}
               <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
-                {topSpenderCards != undefined && resTopSpender.isSuccess && topSpenderCards.length > 0 ?
+                {!resTopSpender.isLoading && resTopSpender.isSuccess && (resTopSpender?.data as any)?.data?.top_spenders ?
                   (
                     <>
                       {topSpenderCards?.map((metric: any, index: number) => (
@@ -880,7 +882,7 @@ const TopSpenders = () => {
                 <LoaderCard count={3} />
               }
               {/* Category Spending by Department Table */}
-              {resTopSpender.isSuccess && !resTopSpender.isLoading && (resTopSpender.data as any)?.data?.category_spending_by_department?
+              {resTopSpender.isSuccess && !resTopSpender.isLoading ?
                 (topCategorySpenders != undefined && topCategorySpenders?.data?.category_spending_by_department != undefined) &&
                 <Card style={{ marginBottom: 32 }}>
                   <Title level={4} style={{ marginBottom: 8 }}>
@@ -1144,8 +1146,8 @@ const TopSpenders = () => {
             <TabPane tab="By band" key="band">
               {/* Department content - existing code */}
               {/* Department Metrics Cards */}
-              {/* {resTopSpender.isSuccess && !resTopSpender.isLoading && (resTopSpender.data as any)?.data?.spending_breakdown} */}
-              <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
+              {/* {resTopSpender.isSuccess && !resTopSpender.isLoading && (resTopSpender.data as any)?.data?.spending_breakdown ? */}
+                <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
                 {topSpenderCards != undefined}{
                   <>
                     {topSpenderCards?.map((metric: any, index: number) => (
@@ -1193,7 +1195,10 @@ const TopSpenders = () => {
                   </>
                 }
 
-              </Row>
+              </Row>:
+              
+              {/* } */}
+              
 
               {/* Department Spending Breakdown */}
               <Card style={{ marginBottom: 32 }}>
