@@ -27,7 +27,7 @@ import { Sidebar } from "@/components/dashboard/sidebar";
 import { Rupees } from "@/components/ui/icons";
 import { BarChartLoader, CardLoader, DepartmentSkeleton, LoaderCard, SkeletonSpenderCard, TableLoader } from "@/components/Loader/Loader";
 import { useLazyGettopSpenderQuery } from "@/services/dashboard/dashboard";
-import { formatDate,calculateDateValues } from "@/utils/dateFunctions";
+import { formatDate, calculateDateValues } from "@/utils/dateFunctions";
 import { Filter } from "lucide-react";
 
 
@@ -200,28 +200,28 @@ const TopSpenders = () => {
   /******
    * Des:this function hanndles the date range picker value changes
    */
-    const handleDateFilterChange = (value: any) => {
-      console.log(value)
-        setDateFilter(value);
-      if (value === "date-range") {
-        setOpen(true);
-        setDateFilter(value);
-      } else {
-        setDateRange([]);
-        setDatpickerValues(calculateDateValues(value))
-        setOpen(false);
-      }
-      console.log(resDatpickerValues)
-    };
-   
-    const getStrokeColor = (percentage:any)=>{
-        if(percentage < 30) return '#722ed1'
-        if (percentage > 30 && percentage < 50) return '#1890ff'; // red
-        if (percentage > 50 && percentage < 75) return '#fa8c16'; // orange
-        if (percentage > 75 && percentage < 99) return '#eb2f96'; // orange
-
-        return '#52c41a'; // green
+  const handleDateFilterChange = (value: any) => {
+    console.log(value)
+    setDateFilter(value);
+    if (value === "date-range") {
+      setOpen(true);
+      setDateFilter(value);
+    } else {
+      setDateRange([]);
+      setDatpickerValues(calculateDateValues(value))
+      setOpen(false);
     }
+    console.log(resDatpickerValues)
+  };
+
+  const getStrokeColor = (percentage: any) => {
+    if (percentage < 30) return '#722ed1'
+    if (percentage > 30 && percentage < 50) return '#1890ff'; // red
+    if (percentage > 50 && percentage < 75) return '#fa8c16'; // orange
+    if (percentage > 75 && percentage < 99) return '#eb2f96'; // orange
+
+    return '#52c41a'; // green
+  }
 
   useEffect(() => {
     console.log(tabValue)
@@ -236,7 +236,7 @@ const TopSpenders = () => {
         },
         url: urlType
       };
-      if (tabValue === 'department'|| tabValue==='band') {
+      if (tabValue === 'department' || tabValue === 'band') {
         reqData.data.grouping_type = tabValue
       }
       console.log(reqData)
@@ -246,13 +246,15 @@ const TopSpenders = () => {
   /********
     *get response for Expense card and Top Expenses  service call
     */
-
+  console.log(resDatpickerValues)
   useEffect(() => {
-    setTopSpender_S(resTopSpender)
+    if(resTopSpender.isSuccess){
+      setLoader(false);
+      setTopSpender_S(resTopSpender)
+    }
   }, [resTopSpender])
-  console.log(resTopSpender_S)
+
   if (resTopSpender_S != undefined) {
-    console.log(tabValue)
     topSpenderCards = resTopSpender_S?.data?.data?.top_spenders?.cards;
     deptSpendingBreakdown = resTopSpender_S?.data?.data?.spending_breakdown?.groups;
     if (tabValue === 'individual') topIndividualSpenders = resTopSpender_S.data;
@@ -286,20 +288,20 @@ const TopSpenders = () => {
             </Text>
           </div>
 
-         <Space size="middle">
-              <Select
-                value={dateFilter}
-                style={{ width: 215 }}
-                onChange={handleDateFilterChange}
-              >
-                <Option value="today">Today</Option>
-                <Option value="yesterday">Yesterday</Option>
-                 <Option value="this-week">This week</Option>
-                <Option value="last-week">Last week</Option>
-                <Option value="this-month">This month</Option>
-                <Option value="last-month">Last month</Option>
-                <Option value="date-range">Date range</Option>
-              </Select>
+          <Space size="middle">
+            <Select
+              value={dateFilter}
+              style={{ width: 215 }}
+              onChange={handleDateFilterChange}
+            >
+              <Option value="today">Today</Option>
+              <Option value="yesterday">Yesterday</Option>
+              <Option value="this-week">This week</Option>
+              <Option value="last-week">Last week</Option>
+              <Option value="this-month">This month</Option>
+              <Option value="last-month">Last month</Option>
+              <Option value="date-range">Date range</Option>
+            </Select>
 
             <DatePicker.RangePicker
               open={open}
@@ -313,8 +315,8 @@ const TopSpenders = () => {
               }}
             />
 
-             
-            </Space>
+
+          </Space>
         </div>
 
         <Content style={{ padding: "32px" }}>
@@ -329,8 +331,8 @@ const TopSpenders = () => {
               {/* Department content - existing code */}
               {/* Department Metrics Cards */}
               <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
-                {topSpenderCards != undefined && resTopSpender.isSuccess && topSpenderCards.length > 0 ?
-                  (
+                { !resTopSpender.isLoading && resTopSpender.isSuccess && (resTopSpender.data as any)?.data?.top_spenders && !loader ?
+                  (topSpenderCards != undefined && topSpenderCards.length > 0?
                     <>
                       {topSpenderCards?.map((metric: any, index: number) => (
                         <Col xs={24} lg={6} key={index}>
@@ -344,9 +346,9 @@ const TopSpenders = () => {
 
                             <Title
                               level={5}
-                              style={{ margin: 0, marginBottom: 8}}
+                              style={{ margin: 0, marginBottom: 8 }}
                             >
-                              <Rupees className="inline-block"/>{metric.spend}
+                              <Rupees className="inline-block" />{metric.spend}
                             </Title>
 
                             <div
@@ -363,11 +365,11 @@ const TopSpenders = () => {
                                       ? "#52c41a"
                                       : "#ff4d4f",
                                   fontWeight: 500,
-                                  fontSize:"12px"
+                                  fontSize: "12px"
                                 }}
                               >
-                                {metric.trend === "up"?
-                                <span style={{marginRight:"5px"}}><RiseOutlined /></span>:<span style={{marginRight:"5px"}}><FallOutlined /></span>}{metric.change_percentage}
+                                {metric.trend === "up" ?
+                                  <span style={{ marginRight: "5px" }}><RiseOutlined /></span> : <span style={{ marginRight: "5px" }}><FallOutlined /></span>}{metric.change_percentage}
                                 {/* {metric.trend === "up"?
                                 <ArrowUpOutlined />:<ArrowDownOutlined />}{metric.change_percentage} */}
                               </Text>
@@ -378,7 +380,8 @@ const TopSpenders = () => {
                           </Card>
                         </Col>
                       ))}
-                    </>
+                    </>:
+                    <></>
                   ) : (
                     <CardLoader showBorder={false} />
                   )
@@ -399,9 +402,9 @@ const TopSpenders = () => {
                 >
                   Detailed analysis of departmental travel expenses
                 </Text>
-                {deptSpendingBreakdown != undefined && resTopSpender.isSuccess && deptSpendingBreakdown.length > 0?
+                {!resTopSpender.isLoading && resTopSpender.isSuccess && (resTopSpender.data as any)?.data?.spending_breakdown?.groups && !loader?
                   (<div style={{ marginBottom: 24, overflowY: "scroll", height: '300px' }}>
-                    {deptSpendingBreakdown && deptSpendingBreakdown !== undefined ?
+                    {deptSpendingBreakdown && deptSpendingBreakdown !== undefined &&deptSpendingBreakdown.length>0 ?
                       (
                         <>
                           {(deptSpendingBreakdown != undefined) && deptSpendingBreakdown?.map((dept: any, index: number) => (
@@ -410,7 +413,7 @@ const TopSpenders = () => {
                                 style={{
                                   display: "flex",
                                   justifyContent: "space-between",
-                                  alignItems: "center", 
+                                  alignItems: "center",
                                   marginBottom: 8,
                                 }}
                               >
@@ -470,7 +473,7 @@ const TopSpenders = () => {
                               Department spending comparison chart would appear here
                             </Text>
                           </div>
-                        </>
+                        </>                        
                       )
                       : (
                         <Empty className="cls-whole-empty" />
@@ -486,7 +489,6 @@ const TopSpenders = () => {
 
             <TabPane tab="By Individual" key="individual">
               {/* Top Individual Spenders */}
-              <SkeletonSpenderCard />
               <Card style={{ marginBottom: 32 }}>
                 {topIndividualSpenders?.data?.top_individual_spenders != undefined &&
                   <div
@@ -528,103 +530,106 @@ const TopSpenders = () => {
                 }
 
                 {/* Individual Spenders List */}
-                <div style={{ marginBottom: 32 }}>
-                  {(topIndividualSpenders != undefined && topIndividualSpenders?.data?.top_individual_spenders?.individuals != undefined) ?
-                    <>
-                      {topIndividualSpenders?.data?.top_individual_spenders?.individuals.map((person: any) => (
-                        <div
-                          key={person.rank}
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            padding: "16px 0",
-                            borderBottom: "1px solid #f0f0f0",
-                          }}
-                        >
+                {!resTopSpender_S.isLoading && resTopSpender_S.isSuccess  ?
+                  <div style={{ marginBottom: 32 }}>
+                    {(topIndividualSpenders != undefined) ?
+                      <>
+                        {topIndividualSpenders?.data?.top_individual_spenders?.individuals.map((person: any) => (
                           <div
+                            key={person.rank}
                             style={{
-                              width: 32,
-                              height: 32,
-                              backgroundColor: "#1890ff",
-                              borderRadius: "50%",
                               display: "flex",
                               alignItems: "center",
-                              justifyContent: "center",
-                              marginRight: 16,
+                              padding: "16px 0",
+                              borderBottom: "1px solid #f0f0f0",
                             }}
                           >
-                            <Text style={{ color: "white", fontWeight: 600 }}>
-                              {person.rank}
-                            </Text>
-                          </div>
-
-                          <div style={{ flex: 1 }}>
                             <div
                               style={{
+                                width: 32,
+                                height: 32,
+                                backgroundColor: "#1890ff",
+                                borderRadius: "50%",
                                 display: "flex",
                                 alignItems: "center",
-                                gap: 8,
-                                marginBottom: 4,
+                                justifyContent: "center",
+                                marginRight: 16,
                               }}
                             >
-                              <Text style={{ fontWeight: 600, fontSize: 16 }}>
-                                {person.name}
+                              <Text style={{ color: "white", fontWeight: 600 }}>
+                                {person.rank}
                               </Text>
-                              <span
+                            </div>
+
+                            <div style={{ flex: 1 }}>
+                              <div
                                 style={{
-                                  backgroundColor:
-                                    person.department === "Sales"
-                                      ? "#e6f7ff"
-                                      : person.department === "Executive"
-                                        ? "#f6ffed"
-                                        : person.department === "Marketing"
-                                          ? "#fff2e6"
-                                          : "#f0f5ff",
-                                  color:
-                                    person.department === "Sales"
-                                      ? "#1890ff"
-                                      : person.department === "Executive"
-                                        ? "#52c41a"
-                                        : person.department === "Marketing"
-                                          ? "#fa8c16"
-                                          : "#722ed1",
-                                  padding: "2px 8px",
-                                  borderRadius: 4,
-                                  fontSize: 12,
-                                  fontWeight: 500,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 8,
+                                  marginBottom: 4,
                                 }}
                               >
-                                {person.department}
-                              </span>
+                                <Text style={{ fontWeight: 600, fontSize: 16 }}>
+                                  {person.name}
+                                </Text>
+                                <span
+                                  style={{
+                                    backgroundColor:
+                                      person.department === "Sales"
+                                        ? "#e6f7ff"
+                                        : person.department === "Executive"
+                                          ? "#f6ffed"
+                                          : person.department === "Marketing"
+                                            ? "#fff2e6"
+                                            : "#f0f5ff",
+                                    color:
+                                      person.department === "Sales"
+                                        ? "#1890ff"
+                                        : person.department === "Executive"
+                                          ? "#52c41a"
+                                          : person.department === "Marketing"
+                                            ? "#fa8c16"
+                                            : "#722ed1",
+                                    padding: "2px 8px",
+                                    borderRadius: 4,
+                                    fontSize: 12,
+                                    fontWeight: 500,
+                                  }}
+                                >
+                                  {person.department}
+                                </span>
+                              </div>
+                              <Text style={{ color: "#8c8c8c", fontSize: 14 }}>
+                                {person.designation}
+                              </Text>
+                              <div style={{ marginTop: 4 }}>
+                                <Text style={{ color: "#595959", fontSize: 12 }}>
+                                  Trips: {person.trip_count} | Avg per trip: $
+                                  {person.avg_per_trip.toLocaleString()}
+                                </Text>
+                              </div>
                             </div>
-                            <Text style={{ color: "#8c8c8c", fontSize: 14 }}>
-                              {person.designation}
-                            </Text>
-                            <div style={{ marginTop: 4 }}>
-                              <Text style={{ color: "#595959", fontSize: 12 }}>
-                                Trips: {person.trip_count} | Avg per trip: $
-                                {person.avg_per_trip.toLocaleString()}
+
+                            <div style={{ textAlign: "right" }}>
+                              <Text style={{ fontWeight: 600, fontSize: 18 }}>
+                                ${person.total_spend.toLocaleString()}
+                              </Text>
+                              <br />
+                              <Text style={{ color: "#8c8c8c", fontSize: 12 }}>
+                                Total spend
                               </Text>
                             </div>
                           </div>
-
-                          <div style={{ textAlign: "right" }}>
-                            <Text style={{ fontWeight: 600, fontSize: 18 }}>
-                              ${person.total_spend.toLocaleString()}
-                            </Text>
-                            <br />
-                            <Text style={{ color: "#8c8c8c", fontSize: 12 }}>
-                              Total spend
-                            </Text>
-                          </div>
-                        </div>
-                      ))}
-                    </>
-                    : (
-                      <Empty />
-                    )
-                  }
-                </div>
+                        ))}
+                      </>
+                      : (
+                        <Empty />
+                      )
+                    }
+                  </div> :
+                  <SkeletonSpenderCard />
+                }
               </Card>
               <LoaderCard count={2} />
               {/* Bottom Charts Row */}
@@ -1126,57 +1131,57 @@ const TopSpenders = () => {
                 </div>
               </Card>
             </TabPane>
-              <TabPane tab="By band" key="band">
+            <TabPane tab="By band" key="band">
               {/* Department content - existing code */}
               {/* Department Metrics Cards */}
               <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
-                {topSpenderCards!=undefined}{
+                {topSpenderCards != undefined}{
                   <>
-                  {topSpenderCards?.map((metric:any, index:number) => (
-                  <Col xs={24} lg={6} key={index}>
-                    <Card style={{ height: "100%" }}>
-                      <Title
-                        level={4}
-                        style={{ marginBottom: 16, fontSize: 16 }}
-                      >
-                        {metric.name}
-                      </Title>
+                    {topSpenderCards?.map((metric: any, index: number) => (
+                      <Col xs={24} lg={6} key={index}>
+                        <Card style={{ height: "100%" }}>
+                          <Title
+                            level={4}
+                            style={{ marginBottom: 16, fontSize: 16 }}
+                          >
+                            {metric.name}
+                          </Title>
 
-                      <Title
-                        level={3}
-                        style={{ margin: 0, marginBottom: 8, color: "#1890ff" }}
-                      >
-                        {metric.spend}
-                      </Title>
+                          <Title
+                            level={3}
+                            style={{ margin: 0, marginBottom: 8, color: "#1890ff" }}
+                          >
+                            {metric.spend}
+                          </Title>
 
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 8,
-                        }}
-                      >
-                        <Text
-                          style={{
-                            color:
-                              metric.trend === "up"
-                                ? "#52c41a"
-                                : "#ff4d4f",
-                            fontWeight: 500,
-                          }}
-                        >
-                          {metric.change_percentage}
-                        </Text>
-                        <Text style={{ color: "#8c8c8c", fontSize: 12 }}>
-                          from previous period
-                        </Text>
-                      </div>
-                    </Card>
-                  </Col>
-                ))}
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 8,
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color:
+                                  metric.trend === "up"
+                                    ? "#52c41a"
+                                    : "#ff4d4f",
+                                fontWeight: 500,
+                              }}
+                            >
+                              {metric.change_percentage}
+                            </Text>
+                            <Text style={{ color: "#8c8c8c", fontSize: 12 }}>
+                              from previous period
+                            </Text>
+                          </div>
+                        </Card>
+                      </Col>
+                    ))}
                   </>
                 }
-                
+
               </Row>
 
               {/* Department Spending Breakdown */}
@@ -1194,8 +1199,8 @@ const TopSpenders = () => {
                   Detailed analysis of departmental travel expenses
                 </Text>
 
-                <div style={{ marginBottom: 24 ,overflowY:"scroll",height:'300px'}}>
-                  {(deptSpendingBreakdown !=undefined) && deptSpendingBreakdown?.map((dept:any, index:number) => (
+                <div style={{ marginBottom: 24, overflowY: "scroll", height: '300px' }}>
+                  {(deptSpendingBreakdown != undefined) && deptSpendingBreakdown?.map((dept: any, index: number) => (
                     <div key={index} style={{ marginBottom: 20 }}>
                       <div
                         style={{
@@ -1217,7 +1222,7 @@ const TopSpenders = () => {
                           </Text>
                           <Text
                             style={{
-                              color: dept.trend=="up"
+                              color: dept.trend == "up"
                                 ? "#52c41a"
                                 : "#ff4d4f",
                               fontWeight: 500,
