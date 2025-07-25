@@ -1,8 +1,11 @@
 
 import React from 'react';
-import { Table, Card, Progress, Tag, Pagination, Select } from 'antd';
+import { Table, Card, Progress, Tag, Pagination, Select, Empty } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { formatDate } from '@/utils/dateFunctions';
+import { Rupees } from '../ui/icons';
+import { LoaderCard, TableLoader } from '../Loader/Loader';
+
 
 interface PolicyViolation {
   key: string;
@@ -138,7 +141,7 @@ export function PolicyViolations(violationComplaince:any) {
       title: 'Cost Impact',
       dataIndex: 'cost_impact',
       key: 'cost_impact',
-      render: (amount: number) => amount === 0 ? '$0' : `$${amount}`,
+      render: (amount: number) => amount === 0 ? '0' : <> <Rupees className='inline-block' />{`${amount.toLocaleString()}`}</>,
       sorter: true,
     },
     {
@@ -155,6 +158,8 @@ export function PolicyViolations(violationComplaince:any) {
      
         <div style={{ padding: '24px' }}>
           {/* Recent Policy Violations Table */}
+          <TableLoader />
+
           <div style={{ marginBottom: 32 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <div>
@@ -177,6 +182,8 @@ export function PolicyViolations(violationComplaince:any) {
               />
             </div>
            
+            {data.length > 0 && data !== undefined ?
+          (
             <>
               <Table
                 columns={columns}
@@ -199,9 +206,14 @@ export function PolicyViolations(violationComplaince:any) {
                 />
               </div>
             </>
+          ) : (
+            <Empty className='cls-whole-empty' />
+          )
+        }
          
 
           </div>
+                 <LoaderCard count={2}/>
 
           {/* Bottom Cards Section */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
@@ -217,6 +229,9 @@ export function PolicyViolations(violationComplaince:any) {
               </div>
               
               <div style={{ maxHeight: 300, overflowY: 'auto' }}>
+                {violationTypes.length > 0 && violationTypes !== undefined ?
+              (
+                <>
                 {violationComplaince?.violationComplaince?.data?.violation_types?.data.map((violation:any, index:any) => (
                   <div key={index} style={{ marginBottom: 20 }}>
                     <div style={{ 
@@ -248,6 +263,12 @@ export function PolicyViolations(violationComplaince:any) {
                     </div>
                   </div>
                 ))}
+                </>
+              )
+              : (
+                <Empty />
+              )
+            }
               </div>
               
               {/* Placeholder for pie chart */}
@@ -277,6 +298,7 @@ export function PolicyViolations(violationComplaince:any) {
                    {violationComplaince?.violationComplaince?.data?.cost_impact?.description}
 
                 </p>
+                
               </div>
               
               {/* Summary metrics */}
@@ -293,16 +315,16 @@ export function PolicyViolations(violationComplaince:any) {
                   <div style={{ fontSize: 12, color: '#8c8c8c', marginBottom: 4 }}>
                     Total Cost Impact
                   </div>
-                  <div style={{ fontSize: 24, fontWeight: 600, color: '#1f2937' }}>
-                    {violationComplaince?.violationComplaince?.data?.cost_impact?.total_cost_impact}
+                  <div style={{ fontSize: 20, fontWeight: 600, color: '#1f2937' }}>
+                    <Rupees className='inline-block' height={"20px"} width={"20px"}/>{violationComplaince?.violationComplaince?.data?.cost_impact?.total_cost_impact}
                   </div>
                 </div>
                 <div>
                   <div style={{ fontSize: 12, color: '#8c8c8c', marginBottom: 4 }}>
                     Average per Violation
                   </div>
-                  <div style={{ fontSize: 24, fontWeight: 600, color: '#1f2937' }}>
-                    {violationComplaince?.violationComplaince?.data?.cost_impact?.average_per_violation}
+                  <div style={{ fontSize: 20, fontWeight: 600, color: '#1f2937' }}>
+                    <Rupees className='inline-block' height={"20px"} width={"20px"}/>{violationComplaince?.violationComplaince?.data?.cost_impact?.average_per_violation}
 
                   </div>
                 </div>
@@ -315,7 +337,9 @@ export function PolicyViolations(violationComplaince:any) {
                 </h4>
                 
                 <div style={{ maxHeight: 200, overflowY: 'auto' }}>
-                  {violationComplaince?.violationComplaince?.data?.cost_impact?.impact_by_violation_type
+                {violationComplaince?.violationComplaince?.data?.cost_impact?.impact_by_violation_type.length >0 && costImpactData !== undefined ?
+
+                  (violationComplaince?.violationComplaince?.data?.cost_impact?.impact_by_violation_type
 .map((item:any, index:any) => (
                     <div key={index} style={{ marginBottom: 12 }}>
                       <div style={{
@@ -338,7 +362,11 @@ export function PolicyViolations(violationComplaince:any) {
                         strokeWidth={6}
                       />
                     </div>
-                  ))}
+                  )))
+                : (
+                  <Empty />
+                )
+              }
                 </div>
               </div>
             </Card>

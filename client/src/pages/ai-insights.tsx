@@ -11,6 +11,9 @@ import {
   FallOutlined
 } from '@ant-design/icons';
 import { Sidebar } from '@/components/dashboard/sidebar';
+import { Rupees } from '@/components/ui/icons';
+import { LoaderCard } from '@/components/Loader/Loader';
+
 
 const { Title, Text } = Typography;
 
@@ -81,10 +84,10 @@ const AIInsights = () => {
   ];
 
   return (
-    <Layout style={{ minHeight: '100vh', background: '#f5f5f5' }}>
+    <Layout style={{ minHeight: '100vh'}}>
       <Sidebar />
       
-      <Layout style={{ marginLeft: 256 }}>
+      <Layout style={{ marginLeft: 256, background: '#f9fafb' }}>
         {/* Header */}
         <div style={{
           background: '#fff',
@@ -95,7 +98,7 @@ const AIInsights = () => {
           alignItems: 'center'
         }}>
           <div>
-            <Title level={2} style={{ margin: 0, marginBottom: 4 }}>
+            <Title level={3} style={{ margin: 0, marginBottom: 4 }}>
               AI-Powered Insights
             </Title>
             <Text style={{ color: '#8c8c8c' }}>
@@ -123,6 +126,7 @@ const AIInsights = () => {
             items={tabItems}
             style={{ marginBottom: 32 }}
           />
+          <LoaderCard count={3}/>
 
           {/* Top Metrics Cards */}
           <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
@@ -132,8 +136,9 @@ const AIInsights = () => {
                   <Text style={{ fontSize: 16, fontWeight: 500 }}>Cost Saving Opportunities</Text>
                   <Badge count="High Impact" style={{ backgroundColor: '#1890ff' }} />
                 </div>
-                <Title level={2} style={{ margin: 0, marginBottom: 4 }}>
-                  $127,500
+                <Title level={2} style={{ margin: 0, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <Rupees className="inline-block" width={"29px"} height={"29px"} />
+                  127,500
                 </Title>
                 <Text style={{ color: '#8c8c8c' }}>
                   Potential annual savings identified
@@ -231,6 +236,7 @@ const AIInsights = () => {
               </Card>
             </Col>
           </Row>
+          <LoaderCard count={2}/>
 
           {/* Trend Analysis */}
           <Card style={{ marginBottom: 32 }}>

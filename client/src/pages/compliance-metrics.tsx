@@ -9,23 +9,24 @@ import { useEffect, useState } from "react";
 import { calculateDateValues, formatDate } from '@/utils/dateFunctions';
 import { Filter } from 'lucide-react';
 import { useLazyGetCompliancemetricsQuery } from '@/services/dashboard/dashboard';
+
 const { Content } = Layout;
 const { Title, Text } = Typography;
 
 export default function ComplianceMetrics() {
-  const [resDatpickerValues, setDatpickerValues] = useState<any>([]);
-    const [dateFilter, setDateFilter] = useState("today");
-    const [tabValue, setTabValue] = useState("overview");
-    const [open, setOpen] = useState(false);
-    const [dateRange, setDateRange] = useState<any>([]);
-    const { Option } = Select;
-    const [reqComplainceTabdata, resComplainceTabData] = useLazyGetCompliancemetricsQuery();
-    const [reqComplainceCardData, resComplainceCardData] = useLazyGetCompliancemetricsQuery();
-    const [resComplainceCards_S,setComplainceCards_S] = useState<any>([]);
-    const [resComplainceOverview_S,setComplainceOverview_S] = useState<any>([]);
-    const [resComplainceViolation_S,setComplainceViolation_S] = useState<any>([]);
-    const [resComplainceDepartment_S,setComplainceDepartment_S] = useState<any>([]);
-    
+  const [resDatpickerValues, setDatpickerValues] = useState<any>(["2025-06-01",
+    "2025-07-31"]);
+  const [dateFilter, setDateFilter] = useState("today");
+  const [tabValue, setTabValue] = useState("overview");
+  const [open, setOpen] = useState(false);
+  const [dateRange, setDateRange] = useState<any>([]);
+  const { Option } = Select;
+  const [reqComplainceTabdata, resComplainceTabData] = useLazyGetCompliancemetricsQuery();
+  const [reqComplainceCardData, resComplainceCardData] = useLazyGetCompliancemetricsQuery();
+  const [resComplainceCards_S, setComplainceCards_S] = useState<any>([]);
+  const [resComplainceOverview_S, setComplainceOverview_S] = useState<any>([]);
+  const [resComplainceViolation_S, setComplainceViolation_S] = useState<any>([]);
+  const [resComplainceDepartment_S, setComplainceDepartment_S] = useState<any>([]);
   // Metrics data
   const metricsData = [
     {
@@ -107,62 +108,62 @@ export default function ComplianceMetrics() {
     if (compliance >= 80) return '#faad14';
     return '#ff4d4f';
   };
+
   useEffect(() => {
     console.log(tabValue)
-    if(resDatpickerValues.length===2){
-    let reqData:any={
-      data: {
-        start_date: resDatpickerValues[0],
-        end_date: resDatpickerValues[1],
-      },
-      url:"compliance/metrics/"
-    }
-     reqComplainceCardData({ RequestDataFormat: reqData }) ;
+    if (resDatpickerValues.length === 2) {
+      let reqData: any = {
+        data: {
+          start_date: resDatpickerValues[0],
+          end_date: resDatpickerValues[1],
+        },
+        url: "compliance/metrics/"
+      }
+      reqComplainceCardData({ RequestDataFormat: reqData });
     }
   }, [resDatpickerValues]);
 
-  useEffect(()=>{
+  useEffect(() => {
     setComplainceCards_S(resComplainceCardData)
-  },[resComplainceCardData])
+  }, [resComplainceCardData])
   console.log(resComplainceCards_S)
-/********
-   * request service call for Expense card and Top Expenses  service call
-   */
+  /********
+     * request service call for Expense card and Top Expenses  service call
+     */
   useEffect(() => {
     console.log(tabValue)
-      const url =
-          (tabValue=='department') ? "compliance/by_department/" :
-          (tabValue=='violations') ? "compliance/violations/" :
-          "compliance/overview/" ;
-    if(resDatpickerValues.length===2){
-    let reqData:any={
-      data: {
-        start_date: resDatpickerValues[0],
-        end_date: resDatpickerValues[1],
-      },
-      url:url
+    const url =
+      (tabValue == 'department') ? "compliance/by_department/" :
+        (tabValue == 'violations') ? "compliance/violations/" :
+          "compliance/overview/";
+    if (resDatpickerValues.length === 2) {
+      let reqData: any = {
+        data: {
+          start_date: resDatpickerValues[0],
+          end_date: resDatpickerValues[1],
+        },
+        url: url
+      }
+      reqComplainceTabdata({ RequestDataFormat: reqData });
     }
-     reqComplainceTabdata({ RequestDataFormat: reqData }) ;
-    }
-  }, [resDatpickerValues,tabValue]);
- /********
-   *get response for Expense card and Top Expenses  service call
-   */
+  }, [resDatpickerValues, tabValue]);
+  /********
+    *get response for Expense card and Top Expenses  service call
+    */
 
   useEffect(() => {
     console.log(tabValue)
-    if(resComplainceTabData?.isSuccess){
-     (tabValue=='overview')&& setComplainceOverview_S(resComplainceTabData.data);
-     (tabValue=='violations')&& setComplainceViolation_S(resComplainceTabData.data);
-     (tabValue=='department')&& setComplainceDepartment_S(resComplainceTabData.data);
+    if (resComplainceTabData?.isSuccess) {
+      (tabValue == 'overview') && setComplainceOverview_S(resComplainceTabData.data);
+      (tabValue == 'violations') && setComplainceViolation_S(resComplainceTabData.data);
+      (tabValue == 'department') && setComplainceDepartment_S(resComplainceTabData.data);
     }
 
     // if(resExpenseBreakdown?.isSuccess && resExpenseBreakdown?.data){
     //   setCommonTabResponse_S(resExpenseBreakdown)
     // }
   }, [resComplainceTabData])
-   console.log(resComplainceTabData)
-   console.log(resComplainceDepartment_S)
+
   /***********
    * Des:this function call's when change the date picker option
    */
@@ -180,17 +181,17 @@ export default function ComplianceMetrics() {
   /******
    * Des:this function hanndles the date range picker value changes
    */
-    const handleDateRangeChange = (dates: any, dateStrings: [any,any]) => {
-       setDateFilter("date-range");
-      setDateRange(dates);
-      setOpen(false);
-      if (dates && dates.length === 2) {
-        if (dateFilter === "date-range" && dateStrings && dateStrings.length === 2) {
-          setDatpickerValues(dateStrings);
-        }
-        setDateFilter(formatDate(dateStrings[0]) +' - '+ formatDate(dateStrings[1]));
+  const handleDateRangeChange = (dates: any, dateStrings: [any, any]) => {
+    setDateFilter("date-range");
+    setDateRange(dates);
+    setOpen(false);
+    if (dates && dates.length === 2) {
+      if (dateFilter === "date-range" && dateStrings && dateStrings.length === 2) {
+        setDatpickerValues(dateStrings);
       }
-    };
+      setDateFilter(formatDate(dateStrings[0]) + ' - ' + formatDate(dateStrings[1]));
+    }
+  };
 
   const tabItems = [
     {
@@ -199,53 +200,51 @@ export default function ComplianceMetrics() {
       children: (
         <div>
           {/* Compliance by Policy Category */}
-           {resComplainceOverview_S?.data?.compliance_by_category !=undefined &&
-              <div style={{ marginBottom: 32 }}>
-                <Title level={3} style={{ marginBottom: 8 }}>
-                  {resComplainceOverview_S?.data?.compliance_by_category?.title}
-                </Title>
-                <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
-                  {resComplainceOverview_S?.data?.compliance_by_category.description}
-                </Text>
+          {resComplainceOverview_S?.data?.compliance_by_category != undefined &&
+            <div style={{ marginBottom: 32 }}>
+              <Title level={3} style={{ marginBottom: 8 }}>
+                {resComplainceOverview_S?.data?.compliance_by_category?.title}
+              </Title>
+              <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
+                {resComplainceOverview_S?.data?.compliance_by_category.description}
+              </Text>
 
-                <div style={{ maxWidth: 800 }}>
-                  {resComplainceOverview_S?.data?.compliance_by_category?.data.map((policy:any, index:any) => (
-                    <div key={index} style={{ marginBottom: 20 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                          <Text style={{ fontWeight: 500, minWidth: 150 }}>{policy.category}</Text>
-                          <Tag color={policy.status === 'Excellent' ? 'green' : policy.status === 'Good' ? 'blue' : 'orange'}>
-                            {policy.status}
-                          </Tag>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                          <Text style={{ fontWeight: 'bold' }}>{policy.compliance_rate}%</Text>
-                          <Text style={{ 
-                            color: (policy.trend_direction == 'up') ? '#52c41a' : '#ff4d4f',
-                            fontWeight: 500,
-                            minWidth: 50,
-                            textAlign: 'right'
-                          }}>
-                            {policy.change}
-                          </Text>
-                        </div>
+              <div style={{ maxWidth: 800 }}>
+                {resComplainceOverview_S?.data?.compliance_by_category?.data.map((policy: any, index: any) => (
+                  <div key={index} style={{ marginBottom: 20 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <Text style={{ fontWeight: 500, minWidth: 150 }}>{policy.category}</Text>
+                        <Tag color={policy.status === 'Excellent' ? 'green' : policy.status === 'Good' ? 'blue' : 'orange'}>
+                          {policy.status}
+                        </Tag>
                       </div>
-                      <Progress 
-                        percent={policy.compliance_rate} 
-                        strokeColor={policy.status_color}
-                        showInfo={false}
-                        strokeWidth={8}
-                      />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <Text style={{ fontWeight: 'bold' }}>{policy.percentage}%</Text>
+                        <Text style={{
+                          color: policy.change.startsWith('+') ? '#52c41a' : '#ff4d4f',
+                          fontWeight: 500,
+                          minWidth: 50,
+                          textAlign: 'right'
+                        }}>
+                          {policy.change}
+                        </Text>
+                      </div>
                     </div>
-                  ))}
-                </div>
+                    <Progress
+                      percent={policy.percentage}
+                      strokeColor={policy.color}
+                      showInfo={false}
+                      strokeWidth={8}
+                    />
+                  </div>
+                ))}
               </div>
+            </div>
           }
-
           {/* Employee Lists Section */}
-           
           <Row gutter={[24, 24]}>
-            {resComplainceOverview_S?.data?.top_compliant_employees !=undefined &&
+            {resComplainceOverview_S?.data?.top_compliant_employees != undefined &&
               <Col xs={24} lg={12}>
                 <Card style={{ height: 400 }}>
                   <Title level={4} style={{ marginBottom: 8 }}>
@@ -254,12 +253,12 @@ export default function ComplianceMetrics() {
                   <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
                     Employees with highest policy adherence
                   </Text>
-                  
+
                   <div style={{ maxHeight: 280, overflowY: 'auto' }}>
-                    {resComplainceOverview_S?.data?.top_compliant_employees?.data.map((employee:any, index:any) => (
-                      <div key={index} style={{ 
-                        display: 'flex', 
-                        justifyContent: 'space-between', 
+                    {resComplainceOverview_S?.data?.top_compliant_employees?.data.map((employee: any, index: any) => (
+                      <div key={index} style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
                         alignItems: 'center',
                         padding: '12px 0',
                         borderBottom: index < topCompliantEmployees.length - 1 ? '1px solid #f0f0f0' : 'none'
@@ -277,22 +276,21 @@ export default function ComplianceMetrics() {
                 </Card>
               </Col>
             }
-            {resComplainceOverview_S?.data?.needs_improvement_employees !=undefined &&
+            {resComplainceOverview_S?.data?.needs_improvement_employees != undefined &&
               <Col xs={24} lg={12}>
                 <Card style={{ height: 400 }}>
                   <Title level={4} style={{ marginBottom: 8 }}>
-                   {resComplainceOverview_S?.data?.needs_improvement_employees.title}
+                    {resComplainceOverview_S?.data?.needs_improvement_employees.title}
                   </Title>
                   <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
-                   {resComplainceOverview_S?.data?.needs_improvement_employees.description}
-
+                    {resComplainceOverview_S?.data?.needs_improvement_employees.description}
                   </Text>
-                  
+
                   <div style={{ maxHeight: 280, overflowY: 'auto' }}>
-                    {resComplainceOverview_S?.data?.needs_improvement_employees.data.map((employee:any, index:number) => (
-                      <div key={index} style={{ 
-                        display: 'flex', 
-                        justifyContent: 'space-between', 
+                    {resComplainceOverview_S?.data?.needs_improvement_employees.data.map((employee: any, index: number) => (
+                      <div key={index} style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
                         alignItems: 'center',
                         padding: '12px 0',
                         borderBottom: index < needsImprovementEmployees.length - 1 ? '1px solid #f0f0f0' : 'none'
@@ -317,12 +315,12 @@ export default function ComplianceMetrics() {
     {
       key: 'violations',
       label: 'Policy Violations',
-      children: <PolicyViolations violationComplaince={resComplainceViolation_S}/>
+      children: <PolicyViolations violationComplaince={resComplainceViolation_S} />
     },
     {
       key: 'department',
       label: 'By Department',
-      children: <DepartmentCompliance departmentComplianceData={resComplainceDepartment_S}/>
+      children: <DepartmentCompliance departmentComplianceData={resComplainceDepartment_S} />
     },
     {
       key: 'trends',
@@ -330,11 +328,12 @@ export default function ComplianceMetrics() {
       children: <div style={{ padding: 24 }}>Trends and analysis content</div>
     }
   ];
+  console.log(resComplainceCards_S?.data?.data?.compliance);
 
   return (
     <Layout style={{ minHeight: '100vh', background: '#f5f5f5' }}>
       <Sidebar />
-      
+
       <Layout style={{ marginLeft: 256 }}>
         {/* Header */}
         <div style={{
@@ -386,7 +385,7 @@ export default function ComplianceMetrics() {
         <Content style={{ padding: '32px' }}>
           {/* Top Metrics Cards */}
           <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
-            {resComplainceCards_S?.data?.data?.compliance.map((metric:any, index:any) => (
+            {resComplainceCards_S?.data?.data?.compliance.map((metric: any, index: any) => (
               <Col xs={24} lg={6} key={index}>
                 <Card style={{ height: '100%' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
@@ -395,29 +394,28 @@ export default function ComplianceMetrics() {
                     </Title>
                     {metric.icon}
                   </div>
-                  
-                  <Title level={1} style={{ margin: 0, marginBottom: 8, fontSize: 32 }}>
+
+                  <Title level={3} style={{ margin: 0, marginBottom: 8}}>
                     {metric.total}
                   </Title>
                   {metric.name == "Overall Compliance" && <Progress percent={metric.change_percent} size="small" showInfo={false} style={{ width: 80 }} />}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-                    <Text style={{ 
-                      color:( metric.change_percent > 0) ? '#52c41a' : '#ff4d4f',
+                    <Text style={{
+                      color: metric.changeType === 'positive' ? '#52c41a' : '#ff4d4f',
                       fontWeight: 500
                     }}>
-                      {metric.change_percent}
+                      {metric.change_percent} <span style={{ color: "#8C8C8C" }}>vs previous</span>
                     </Text>
                     <Text style={{ color: '#8c8c8c', fontSize: 12 }}>
-                       from previous period
+                      {metric.subtitle}
                     </Text>
                   </div>
-
-                  {/* {metric.severity && (
+                  {/* {metric.details && (
                     <div style={{ fontSize: 12, color: '#8c8c8c' }}>
-                      {metric.details.map((detail:any, idx:any) => (
+                      {metric.details.map((detail, idx) => (
                         <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                           <span>{detail.label}</span>
-                          <span style={{ fontWeight: 500 }}>{detail.severity}</span>
+                          <span style={{ fontWeight: 500 }}>{detail.value}</span>
                         </div>
                       ))}
                     </div>
@@ -429,17 +427,14 @@ export default function ComplianceMetrics() {
 
           {/* Tabs Section */}
           <Card style={{ marginBottom: 32 }}>
-            <Tabs 
-              defaultActiveKey="overview" 
+            <Tabs
+              defaultActiveKey="overview"
               items={tabItems}
-              onChange={setTabValue}
             />
           </Card>
 
-          
         </Content>
       </Layout>
     </Layout>
   );
-
 }

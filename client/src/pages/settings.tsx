@@ -272,17 +272,17 @@ export default function Settings() {
   };
 
   return (
-    <Layout style={{ minHeight: '100vh', background: '#f5f5f5' }}>
+    <Layout style={{ minHeight: '100vh' }}>
       <Sidebar />
       
-      <Layout style={{ marginLeft: 256 }}>
+      <Layout style={{ marginLeft: 256 , background: '#f9fafb' }}>
         {/* Header */}
         <div style={{
           background: '#fff',
           borderBottom: '1px solid #f0f0f0',
           padding: '16px 32px'
         }}>
-          <Title level={2} style={{ margin: 0, marginBottom: 4 }}>
+          <Title level={3} style={{ margin: 0, marginBottom: 4 }}>
             Settings
           </Title>
           <Text style={{ color: '#8c8c8c' }}>

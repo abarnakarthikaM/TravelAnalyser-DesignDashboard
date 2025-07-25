@@ -8,6 +8,7 @@ import {
   TrendingDown
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Rupees } from "../ui/icons";
 
 interface MetricsCardsProps {
   metrics?: {
@@ -19,6 +20,7 @@ interface MetricsCardsProps {
 }
 
 export function MetricsCards({ metrics }: MetricsCardsProps) {
+  console.log(metrics)
   // const cards = [
   //   {
   //     title: "Total Expenses",
@@ -68,7 +70,7 @@ export function MetricsCards({ metrics }: MetricsCardsProps) {
      cards?.map((data:any)=>{
       switch(data.category){
         case 'Total expance':
-          data.icon = <DollarSign className="w-6 h-6 text-blue-600" />;
+          data.icon = <Rupees className="w-6 h-6 text-blue-600" />;
           data. borderColor= "border-t-red-400",
           data.bgColor= "bg-red-50" ,
           data.changeType= (data.previous_prd > 0) ? "positive" as const : "negative" as const
@@ -98,16 +100,16 @@ export function MetricsCards({ metrics }: MetricsCardsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       {cards.map((card:any, index:any) => (
-        <Card key={index} className={`${card.borderColor} border-t-4 ${card.bgColor}`}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card key={index} className={`border-t-4 ${card.borderColor} border-l-gray-200 border-r-gray-200 border-b-gray-200 border-l border-r border-b`} style={{backgroundColor:"#f9fafb"}}>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2" style={{padding:"12px 14px 14px 14px"}} >
             <CardTitle className="text-sm font-medium text-gray-600">
               {card.category}
             </CardTitle>
             {card.icon}
           </CardHeader>
-          <CardContent>
+          <CardContent style={{padding:"0px 14px 14px 14px"}}> 
             <div className=" font-bold text-gray-900 mb-1">
-              {currency} {card.amount}
+              <Rupees className="inline-block align-middle"/> {card.amount}
             </div>
             <div className="flex items-center text-xs">
               {card.changeType === "positive" ? (

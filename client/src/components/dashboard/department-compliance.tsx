@@ -1,6 +1,8 @@
 
 import React from 'react';
-import { Card, Progress, Button, Row, Col, Typography } from 'antd';
+import { Card, Progress, Button, Row, Col, Typography, Empty } from 'antd';
+import { BarChartLoader, DepartmentSkeleton, LoaderCard } from '../Loader/Loader';
+
 
 const { Title, Text } = Typography;
 
@@ -84,6 +86,7 @@ export function DepartmentCompliance(departmentCompliance:any) {
 
   return (
     <div style={{ padding: '24px' }}>
+      <DepartmentSkeleton />
       {/* Compliance by Department Section */}
       <div style={{ marginBottom: 32 }}>
         <Title level={3} style={{ marginBottom: 8 }}>
@@ -94,68 +97,72 @@ export function DepartmentCompliance(departmentCompliance:any) {
         </Text>
 
         <div style={{ maxWidth: 800 }}>
-          {departmentCompliance?.departmentComplianceData?.data?.departments_compliance?.data?.map((dept:any, index:any) => (
-            <div key={index} style={{ marginBottom: 16 }}>
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center', 
-                marginBottom: 8 
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
-                  <Text style={{ fontWeight: 500, minWidth: 100 }}>
-                    {dept.department}
-                  </Text>
+          {departmentData.length > 0 && departmentData !== undefined ? (
+            departmentData.map((dept, index) => (
+              <div key={index} style={{ marginBottom: 16 }}>
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: 8
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
+                    <Text style={{ fontWeight: 500, minWidth: 100 }}>
+                      {dept.department}
+                    </Text>
+                    <div style={{
+                      padding: '2px 8px',
+                      borderRadius: 4,
+                      backgroundColor: getStatusColor(dept.status),
+                      color: 'white',
+                      fontSize: 12,
+                      fontWeight: 500
+                    }}>
+                      {dept.status}
+                    </div>
+                  </div>
                   <div style={{
-                    padding: '2px 8px',
-                    borderRadius: 4,
-                    backgroundColor: getStatusColor(dept.status),
-                    color: 'white',
-                    fontSize: 12,
-                    fontWeight: 500
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 16,
+                    minWidth: 200,
+                    justifyContent: 'flex-end'
                   }}>
-                    {dept.status}
+                    <Text style={{ color: '#8c8c8c', fontSize: 12 }}>
+                      Violations: {dept.violations}
+                    </Text>
+                    <Text style={{ fontWeight: 600, minWidth: 40 }}>
+                      {dept.compliance}%
+                    </Text>
+                    <Text style={{
+                      color: dept.change.startsWith('+') ? '#52c41a' : '#ff4d4f',
+                      fontWeight: 500,
+                      minWidth: 50,
+                      fontSize: 12
+                    }}>
+                      {dept.change}
+                    </Text>
                   </div>
                 </div>
-                <div style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: 16,
-                  minWidth: 200,
-                  justifyContent: 'flex-end'
-                }}>
-                  <Text style={{ color: '#8c8c8c', fontSize: 12 }}>
-                    Violations: {dept.violations_count}
-                  </Text>
-                  <Text style={{ fontWeight: 600, minWidth: 40 }}>
-                    {dept.compliance_rate}%
-                  </Text>
-                  <Text style={{ 
-                    color: dept.status_color,
-                    fontWeight: 500,
-                    minWidth: 50,
-                    fontSize: 12
-                  }}>
-                    {dept.trend}
-                  </Text>
-                </div>
+                <Progress 
+                  percent={dept.compliance}
+                  strokeColor={getProgressColor(dept.compliance)}
+                  showInfo={false}
+                  strokeWidth={8}
+                />
               </div>
-              <Progress 
-                percent={dept.compliance_rate} 
-                strokeColor={getProgressColor(dept.compliance_rate)}
-                showInfo={false}
-                strokeWidth={8}
-              />
-            </div>
-          ))}
+            ))
+          ) : (
+            <Empty />
+          )}
         </div>
       </div>
-
+      <BarChartLoader />
       {/* Chart Placeholder */}
-      <div style={{ 
-        height: 200, 
-        display: 'flex', 
-        alignItems: 'center', 
+      <div style={{
+        height: 200,
+        display: 'flex',
+        alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#fafafa',
         borderRadius: 8,
@@ -169,7 +176,7 @@ export function DepartmentCompliance(departmentCompliance:any) {
           </Text>
         </div>
       </div>
-
+      <LoaderCard count={3}/>
       {/* Department Deep Dive: Sales */}
       <div style={{ marginBottom: 32 }}>
         <Title level={3} style={{ marginBottom: 8 }}>
@@ -186,37 +193,43 @@ export function DepartmentCompliance(departmentCompliance:any) {
               <Title level={4} style={{ marginBottom: 16 }}>
                 Common Violations
               </Title>
-              
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                {salesViolations.map((violation, index) => (
-                  <div key={index} style={{ 
-                    padding: 16,
-                    backgroundColor: '#f9f9f9',
-                    borderRadius: 8,
-                    border: '1px solid #f0f0f0'
-                  }}>
-                    <div style={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between', 
-                      alignItems: 'center',
-                      marginBottom: 8
-                    }}>
-                      <Text style={{ fontWeight: 600 }}>
-                        {violation.type}
-                      </Text>
-                      <Text style={{ 
-                        fontWeight: 600, 
-                        color: '#1890ff',
-                        fontSize: 16
+                {salesViolations.length > 0 && salesViolations !== undefined ?
+                  (
+                    salesViolations.map((violation, index) => (
+                      <div key={index} style={{
+                        padding: 16,
+                        backgroundColor: '#f9f9f9',
+                        borderRadius: 8,
+                        border: '1px solid #f0f0f0'
                       }}>
-                        {violation.count} violations
-                      </Text>
-                    </div>
-                    <Text style={{ color: '#666', fontSize: 13 }}>
-                      {violation.description}
-                    </Text>
-                  </div>
-                ))}
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          marginBottom: 8
+                        }}>
+                          <Text style={{ fontWeight: 600 }}>
+                            {violation.type}
+                          </Text>
+                          <Text style={{
+                            fontWeight: 600,
+                            color: '#1890ff',
+                            fontSize: 16
+                          }}>
+                            {violation.count} violations
+                          </Text>
+                        </div>
+                        <Text style={{ color: '#666', fontSize: 13 }}>
+                          {violation.description}
+                        </Text>
+                      </div>
+                    ))
+                  )
+                  : (
+                    <Empty />
+                  )}
               </div>
             </Card>
           </Col>
@@ -227,42 +240,46 @@ export function DepartmentCompliance(departmentCompliance:any) {
               <Title level={4} style={{ marginBottom: 16 }}>
                 Improvement Recommendations
               </Title>
-              
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                {recommendations.map((rec, index) => (
-                  <div key={index} style={{ 
-                    display: 'flex',
-                    gap: 12,
-                    padding: 16,
-                    backgroundColor: '#f6f8ff',
-                    borderRadius: 8,
-                    border: '1px solid #e6f0ff'
-                  }}>
-                    <div style={{
-                      width: 24,
-                      height: 24,
-                      backgroundColor: '#1890ff',
-                      borderRadius: '50%',
+                {recommendations.length > 0 && recommendations !== undefined ?
+                  (recommendations.map((rec, index) => (
+                    <div key={index} style={{
                       display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
-                      marginTop: 2
+                      gap: 12,
+                      padding: 16,
+                      backgroundColor: '#f6f8ff',
+                      borderRadius: 8,
+                      border: '1px solid #e6f0ff'
                     }}>
-                      <Text style={{ color: 'white', fontSize: 12, fontWeight: 600 }}>
-                        {index + 1}
-                      </Text>
+                      <div style={{
+                        width: 24,
+                        height: 24,
+                        backgroundColor: '#1890ff',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                        marginTop: 2
+                      }}>
+                        <Text style={{ color: 'white', fontSize: 12, fontWeight: 600 }}>
+                          {index + 1}
+                        </Text>
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <Text style={{ fontWeight: 600, display: 'block', marginBottom: 4 }}>
+                          {rec.title}
+                        </Text>
+                        <Text style={{ color: '#666', fontSize: 13 }}>
+                          {rec.description}
+                        </Text>
+                      </div>
                     </div>
-                    <div style={{ flex: 1 }}>
-                      <Text style={{ fontWeight: 600, display: 'block', marginBottom: 4 }}>
-                        {rec.title}
-                      </Text>
-                      <Text style={{ color: '#666', fontSize: 13 }}>
-                        {rec.description}
-                      </Text>
-                    </div>
-                  </div>
-                ))}
+                  )))
+                  : (
+                    <Empty />
+                  )}
               </div>
             </Card>
           </Col>
@@ -270,10 +287,10 @@ export function DepartmentCompliance(departmentCompliance:any) {
 
         {/* View Detailed Report Button */}
         <div style={{ marginTop: 24, textAlign: 'center' }}>
-          <Button 
-            type="primary" 
+          <Button
+            type="primary"
             size="large"
-            style={{ 
+            style={{
               backgroundColor: '#1c3a5e',
               borderColor: '#1c3a5e',
               minWidth: 200,

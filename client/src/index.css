@@ -94,8 +94,7 @@ body,
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   background: #f9fafb;
-  padding: 2px;
-  height: 40px;
+  padding: 4px;
 }
 
 .dashboard-tab {
@@ -122,13 +121,18 @@ body,
 .dashboard-tab.active {
   background-color: #0c265a;
   color: white;
-  border-radius: 4px;
 }
 
 /* Custom tabs styling for top spenders page */
 .custom-tabs .ant-tabs-nav {
   margin-bottom: 0;
 }
+.custom-tabs .ant-tabs-nav .ant-tabs-nav-wrap .ant-tabs-nav-list{
+  padding: 4px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
 
 .custom-tabs .ant-tabs-tab {
   background-color: transparent;
@@ -138,6 +142,10 @@ body,
   padding: 6px 20px;
   color: #6b7280;
   font-weight: 500;
+}
+
+.custom-tabs .ant-tabs-tab-active .ant-tabs-tab-btn{
+  color:#fff !important; 
 }
 
 .custom-tabs .ant-tabs-tab:first-child {
@@ -187,4 +195,25 @@ body,
 }
 .cls-topspender .ant-tabs-tab-active .ant-tabs-tab-btn{
   color:#fff !important;
+}
+.custom-range-picker-dropdown .ant-picker-range-arrow {
+  display: none !important;
+}
+.custom-range-picker-dropdown .ant-picker-range-wrapper{
+  bottom:10px;
+}
+.cls-whole-empty{
+  height:340px;
+  border: 1px solid #f1f1f1;
+  border-radius: 8px;
+  align-content: center;
+}
+
+.cls-topexpense .ant-card-body{
+  padding: 15px;
+}
+.cls-policyComplianceData{
+  max-width: 850px;
+  height:360px;
+  overflow-y: scroll;
 }
