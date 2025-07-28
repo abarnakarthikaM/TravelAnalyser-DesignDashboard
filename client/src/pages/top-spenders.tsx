@@ -36,8 +36,7 @@ const TopSpenders = () => {
   const [tabValue, setTabValue] = useState("department");
   const [open, setOpen] = useState(false);
   const [dateRange, setDateRange] = useState<any>([]);
-  const [resDatpickerValues, setDatpickerValues] = useState<any>(["2024-11-01",
-    "2025-07-31"]);
+  const [resDatpickerValues, setDatpickerValues] = useState<any>([]);
   const [resTopSpender_S, setTopSpender_S] = useState<any>([]);
   const [loader, setLoader] = useState<boolean>(true)
 
@@ -48,6 +47,7 @@ const TopSpenders = () => {
   const { Option } = Select;
   let topSpenderCards: any;
   let deptSpendingBreakdown: any;
+  let deptExpenseCategories:any;
   let topIndividualSpenders: any;
   let topCategorySpenders: any;
 
@@ -64,135 +64,7 @@ const TopSpenders = () => {
     { category: "Ground Transport", amount: <><Rupees className="inline-block" />28,717</>, percentage: "10%" },
   ];
 
-  const individualspender = [
-    {
-      rank: 1,
-      name: "Sarah Johnson",
-      department: "Sales",
-      role: "Sales Director",
-      trips: 18,
-      avgPerTrip: 2366,
-      totalSpend: 42580,
-    },
-    {
-      rank: 2,
-      name: "Michael Chen",
-      department: "Executive",
-      role: "VP of Business Development",
-      trips: 12,
-      avgPerTrip: 3229,
-      totalSpend: 38750,
-    },
-    {
-      rank: 3,
-      name: "David Rodriguez",
-      department: "Sales",
-      role: "Senior Account Manager",
-      trips: 15,
-      avgPerTrip: 2361,
-      totalSpend: 35420,
-    },
-    {
-      rank: 4,
-      name: "Emily Wilson",
-      department: "Marketing",
-      role: "Marketing Director",
-      trips: 10,
-      avgPerTrip: 3215,
-      totalSpend: 32150,
-    },
-    {
-      rank: 5,
-      name: "James Taylor",
-      department: "Engineering",
-      role: "Chief Technology Officer",
-      trips: 8,
-      avgPerTrip: 3621,
-      totalSpend: 28970,
-    },
-  ]
 
-  const distribution_role = [
-    {
-      role: "Directors & VPs",
-      amount: 425780,
-      percentage: 34,
-    },
-    { role: "Managers", amount: 312142, percentage: 25 },
-    {
-      role: "Sales Representatives",
-      amount: 249713,
-      percentage: 20,
-    },
-    { role: "Engineers", amount: 174799, percentage: 14 },
-    { role: "Other Roles", amount: 86133, percentage: 7 },
-  ]
-
-  const policyCompliance = [
-    {
-      name: "Sarah Johnson",
-      compliance: 92,
-      status: "Excellent",
-    },
-    {
-      name: "Michael Chen",
-      compliance: 88,
-      status: "Good",
-    },
-    {
-      name: "David Rodriguez",
-      compliance: 76,
-      status: "Needs Improvement",
-    },
-    {
-      name: "Emily Wilson",
-      compliance: 95,
-      status: "Excellent",
-    },
-    {
-      name: "James Taylor",
-      compliance: 90,
-      status: "Good",
-    },
-  ]
-
-  const departmentSpend = [
-    {
-      department: "Sales",
-      airTravel: <><Rupees className="inline-block" />262,199</>,
-      hotels: <><Rupees className="inline-block" />157,319</>,
-      groundTransport: <><Rupees className="inline-block" />104,880</>,
-      total: <><Rupees className="inline-block" />524,398</>,
-    },
-    {
-      department: "Engineering",
-      airTravel: <><Rupees className="inline-block" />143,585</>,
-      hotels: <><Rupees className="inline-block" />114,868</>,
-      groundTransport: <><Rupees className="inline-block" />28,717</>,
-      total: <><Rupees className="inline-block" />287,170</>,
-    },
-    {
-      department: "Marketing",
-      airTravel: <><Rupees className="inline-block" />89,897</>,
-      hotels: <><Rupees className="inline-block" />101,134</>,
-      groundTransport: <><Rupees className="inline-block" />33,711"</>,
-      total: <><Rupees className="inline-block" />224,742</>,
-    },
-    {
-      department: "Executive",
-      airTravel: <><Rupees className="inline-block" />49,943</>,
-      hotels: <><Rupees className="inline-block" />37,457</>,
-      groundTransport: <><Rupees className="inline-block" />37,457</>,
-      total: <><Rupees className="inline-block" />124,857</>,
-    },
-    {
-      department: "Other Departments",
-      airTravel: <><Rupees className="inline-block" />22,266</>,
-      hotels: <><Rupees className="inline-block" />21,378</>,
-      groundTransport: <><Rupees className="inline-block" />43,756</>,
-      total: <><Rupees className="inline-block" />87,400</>,
-    },
-  ]
   const getProgressColor = (change: string) => {
     return change.startsWith("+") ? "#52c41a" : "#ff4d4f";
   };
@@ -224,11 +96,15 @@ const TopSpenders = () => {
     }
 
   useEffect(() => {
-    console.log(tabValue)
-    const urlType = (tabValue === 'individual') ? "topspenders/individual/"
+    if (resDatpickerValues?.length=== 0) {
+      console.log(dateFilter)
+      setDatpickerValues(calculateDateValues(dateFilter))
+      
+    }
+    else if (resDatpickerValues?.length === 2) {
+       const urlType = (tabValue === 'individual') ? "topspenders/individual/"
       : (tabValue === 'category') ? "topspenders/category/"
-        : "topspenders/department/"
-    if (resDatpickerValues.length === 2) {
+        : "topspenders/department/";
       let reqData: any = {
         data: {
           start_date: resDatpickerValues[0],
@@ -255,6 +131,8 @@ const TopSpenders = () => {
     console.log(tabValue)
     topSpenderCards = resTopSpender_S?.data?.data?.top_spenders?.cards;
     deptSpendingBreakdown = resTopSpender_S?.data?.data?.spending_breakdown?.groups;
+    deptExpenseCategories = resTopSpender_S?.data?.data?.expense_categories;
+    console.log(deptExpenseCategories)
     if (tabValue === 'individual') topIndividualSpenders = resTopSpender_S.data;
     if (tabValue === 'category') topCategorySpenders = resTopSpender_S.data;
     console.log(topIndividualSpenders)
@@ -286,7 +164,7 @@ const TopSpenders = () => {
             </Text>
           </div>
 
-         <Space size="middle">
+         <Space size="middle" className="cls-datefilter-space">
               <Select
                 value={dateFilter}
                 style={{ width: 215 }}
@@ -481,7 +359,191 @@ const TopSpenders = () => {
                     <DepartmentSkeleton />
                   )
                 }
+                
               </Card>
+            
+                <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
+                {/* Top Expense Categories by Department */}
+                {deptExpenseCategories != undefined &&
+                  <Col xs={24} lg={12}>
+                    <Card style={{ height: 500 }}>
+                      <Title level={4} style={{ marginBottom: 8 }}>
+                        {deptExpenseCategories?.title}
+                      </Title>
+                      <Text
+                        style={{
+                          color: "#8c8c8c",
+                          display: "block",
+                          marginBottom: 24,
+                        }}
+                      >
+                       {deptExpenseCategories?.description}
+                      </Text>
+                        <div style={{height: 365,overflowY:'scroll'}}>
+                        {/* Sales Department */}
+                        {deptExpenseCategories?.groups?.map((data:any)=>(
+                          <div style={{ marginBottom: 32 }}>
+                          <Title level={5} style={{ marginBottom: 16, color: "#1890ff" }}>
+                            {data.group_name}
+                          </Title>
+                          {data?.categories.map((subdata:any)=>(
+                            <div style={{ marginBottom: 12 }}>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                marginBottom: 8,
+                              }}
+                            >
+                              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                <div
+                                  style={{
+                                    width: 8,
+                                    height: 8,
+                                    backgroundColor: "#1890ff",
+                                    borderRadius: "50%",
+                                  }}
+                                />
+                                <Text style={{ fontWeight: 500 }}>{subdata.category}</Text>
+                              </div>
+                              <Text style={{ fontWeight: 600 }}>{subdata.spend} ({subdata.percentage})</Text>
+                            </div>
+                          </div>
+                          ))}
+                          
+                        </div>
+                        ))}
+                        </div>
+                     
+                    </Card>
+                  </Col>
+                }
+                {/* Department Spending Trends */}
+                <Col xs={24} lg={12}>
+                  <Card style={{ height: 500 }}>
+                    <Title level={4} style={{ marginBottom: 8 }}>
+                      Department Spending Trends
+                    </Title>
+                    <Text
+                      style={{
+                        color: "#8c8c8c",
+                        display: "block",
+                        marginBottom: 24,
+                      }}
+                    >
+                      6-month spending pattern analysis
+                    </Text>
+
+                    <div
+                      style={{
+                        height: 236,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor: "#fafafa",
+                        borderRadius: 6,
+                        marginBottom: 24,
+                        flexDirection: "column",
+                        gap: 16,
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 80,
+                          height: 80,
+                          backgroundColor: "#d9d9d9",
+                          borderRadius: 8,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: 4,
+                            alignItems: "end",
+                          }}
+                        >
+                          {[1, 2, 3, 4, 5, 6].map((bar) => (
+                            <div
+                              key={bar}
+                              style={{
+                                width: 8,
+                                height: Math.random() * 30 + 20,
+                                backgroundColor: "#8c8c8c",
+                                borderRadius: 2,
+                              }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <Text style={{ color: "#8c8c8c", fontSize: 14 }}>
+                        Department spending trend chart would appear here
+                      </Text>
+                    </div>
+
+                    {/* Trend Summary */}
+                    <div style={{height:100,overflowY:'scroll'}}>
+                      <div style={{ marginBottom: 16 }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginBottom: 8,
+                          }}
+                        >
+                          <Text style={{ fontWeight: 500 }}>Sales Trend</Text>
+                          <Text style={{ color: "#52c41a", fontWeight: 600 }}>
+                            ↗ +8.2%
+                          </Text>
+                        </div>
+                        <Text style={{ color: "#8c8c8c", fontSize: 12 }}>
+                          Consistent growth over 6 months
+                        </Text>
+                      </div>
+                      <div style={{ marginBottom: 16 }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginBottom: 8,
+                          }}
+                        >
+                          <Text style={{ fontWeight: 500 }}>Engineering Trend</Text>
+                          <Text style={{ color: "#52c41a", fontWeight: 600 }}>
+                            ↗ +5.4%
+                          </Text>
+                        </div>
+                        <Text style={{ color: "#8c8c8c", fontSize: 12 }}>
+                          Steady increase in Q3
+                        </Text>
+                      </div>
+                      <div style={{ marginBottom: 16 }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginBottom: 8,
+                          }}
+                        >
+                          <Text style={{ fontWeight: 500 }}>Marketing Trend</Text>
+                          <Text style={{ color: "#52c41a", fontWeight: 600 }}>
+                            ↗ +2.3%
+                          </Text>
+                        </div>
+                        <Text style={{ color: "#8c8c8c", fontSize: 12 }}>
+                          Moderate growth pattern
+                        </Text>
+                      </div>
+                    </div>
+                  </Card>
+                </Col>
+              </Row>
             </TabPane>
 
             <TabPane tab="By Individual" key="individual">

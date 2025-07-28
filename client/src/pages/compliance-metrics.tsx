@@ -353,7 +353,7 @@ export default function ComplianceMetrics() {
             </Text>
           </div>
           
-           <Space size="middle">
+           <Space size="middle" className="cls-datefilter-space">
               <Select
                 value={dateFilter}
                 style={{ width: 215 }}

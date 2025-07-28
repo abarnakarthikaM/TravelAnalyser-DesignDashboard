@@ -379,7 +379,7 @@ export default function Transactions() {
             </Text>
           </div>
 
-          <Space size="middle">
+          <Space size="middle" className="cls-datefilter-space">
             <Select
               value={dateFilter}
               style={{ width: 215 }}

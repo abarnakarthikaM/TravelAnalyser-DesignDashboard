@@ -82,6 +82,7 @@ export default function Dashboard() {
     */
 
   useEffect(() => {
+    console.log(loader)
     if (resDashboardOverview?.isSuccess && resDashboardOverview?.data) {
       setResDashboardOverviewData_S(resDashboardOverview.data)
     }
@@ -109,20 +110,15 @@ export default function Dashboard() {
     if (activeTab == 'vendor-performance' && selectedVendorTab != 'all-vendors') {
       reqData.data.travel_type = selectedVendorTab
     }
+
     reqExpenseBreakdown({ RequestDataFormat: reqData });
   }, [resDatpickerValues, activeTab, selectedVendorTab])
 
   const getChartData = (vendorType: string) => {
     let vendorResData: any = [];
-    console.log(resCommonTabResponse_S)
     if (resCommonTabResponse_S.data.data.vendor_performance != undefined) {
       console.log(vendorType)
-      console.log(resCommonTabResponse_S)
-
       vendorResData = resCommonTabResponse_S?.data?.data?.vendor_performance?.chart_data
-
-      console.log(vendorResData)
-
     }
     return vendorResData
   };
@@ -189,7 +185,7 @@ export default function Dashboard() {
           </div>
 
           <div className="flex items-center gap-4">
-            <Space size="middle">
+            <Space size="middle" className="cls-datefilter-space">
               <Select
                 value={dateFilter}
                 style={{ width: 215 }}

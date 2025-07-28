@@ -217,3 +217,9 @@ body,
   height:360px;
   overflow-y: scroll;
 }
+.cls-datefilter-space{
+  position: relative;
+}
+.cls-datefilter-space .ant-picker-range{
+  right:10px;
+}
