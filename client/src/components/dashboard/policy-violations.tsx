@@ -87,7 +87,7 @@ const costImpactData = [
   { type: 'Other violations', amount: 3747, percentage: 3 }
 ];
 
-export function PolicyViolations(violationComplaince:any) {
+export function PolicyViolations(violationComplaince: any) {
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'High': return 'red';
@@ -112,7 +112,7 @@ export function PolicyViolations(violationComplaince:any) {
       dataIndex: 'date',
       key: 'date',
       sorter: true,
-      render:(date:any)=>(formatDate(date))
+      render: (date: any) => (formatDate(date))
     },
     {
       title: 'Employee',
@@ -154,193 +154,196 @@ export function PolicyViolations(violationComplaince:any) {
     }
   ];
 
-    return (
-     
-        <div style={{ padding: '24px' }}>
-          {/* Recent Policy Violations Table */}
-          <TableLoader />
+  return (
 
-          <div style={{ marginBottom: 32 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <div>
-                <h3 style={{ margin: 0, marginBottom: 4, fontSize: 18, fontWeight: 600 }}>
-                  Recent Policy Violations
-                </h3>
-                <p style={{ margin: 0, color: '#8c8c8c', fontSize: 14 }}>
-                  Details of recent travel policy violations
-                </p>
-              </div>
-              <Select
-                defaultValue="All Severities"
-                style={{ width: 140 }}
-                options={[
-                  { value: 'all', label: 'All Severities' },
-                  { value: 'high', label: 'High' },
-                  { value: 'medium', label: 'Medium' },
-                  { value: 'low', label: 'Low' }
-                ]}
-              />
-            </div>
-           
-            {data.length > 0 && data !== undefined ?
-          (
-            <>
-              <Table
-                columns={columns}
-                dataSource={violationComplaince?.violationComplaince?.data?.recent_policy_violations?.data}
-                pagination={false}
-                size="middle"
-                style={{ marginBottom: 16 }}
-              />
-              
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: '#8c8c8c', fontSize: 14 }}>
-                  Showing 5 of {violationComplaince?.violationComplaince?.data?.recent_policy_violations?.data.length} violations
-                </span>
-                <Pagination
-                  current={1}
-                  total={violationComplaince?.violationComplaince?.data?.recent_policy_violations?.data?.length}
-                  pageSize={5}
-                  showSizeChanger={false}
-                  simple
-                />
-              </div>
-            </>
-          ) : (
-            <Empty className='cls-whole-empty' />
-          )
-        }
-         
+    <div style={{ padding: '24px' }}>
+      {/* Recent Policy Violations Table */}
+      
 
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <div>
+            <h3 style={{ margin: 0, marginBottom: 4, fontSize: 18, fontWeight: 600 }}>
+              Recent Policy Violations
+            </h3>
+            <p style={{ margin: 0, color: '#8c8c8c', fontSize: 14 }}>
+              Details of recent travel policy violations
+            </p>
           </div>
-                 <LoaderCard count={2}/>
+          <Select
+            defaultValue="All Severities"
+            style={{ width: 140 }}
+            options={[
+              { value: 'all', label: 'All Severities' },
+              { value: 'high', label: 'High' },
+              { value: 'medium', label: 'Medium' },
+              { value: 'low', label: 'Low' }
+            ]}
+          />
+        </div>
 
-          {/* Bottom Cards Section */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-            {/* Violation Types Card */}
-            <Card>
-              <div style={{ marginBottom: 24 }}>
-                <h3 style={{ margin: 0, marginBottom: 4, fontSize: 18, fontWeight: 600 }}>
-                 {violationComplaince?.violationComplaince?.data?.violation_types?.title}
-                </h3>
-                <p style={{ margin: 0, color: '#8c8c8c', fontSize: 14 }}>
-                  {violationComplaince?.violationComplaince?.data?.violation_types?.description}
-                </p>
-              </div>
-              
-              <div style={{ maxHeight: 300, overflowY: 'auto' }}>
-                {violationTypes.length > 0 && violationTypes !== undefined ?
+        {
+          <>
+            {data.length > 0 && data !== undefined ?
               (
                 <>
-                {violationComplaince?.violationComplaince?.data?.violation_types?.data.map((violation:any, index:any) => (
-                  <div key={index} style={{ marginBottom: 20 }}>
-                    <div style={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between', 
-                      alignItems: 'center',
-                      marginBottom: 8 
-                    }}>
-                      <span style={{ fontWeight: 500, fontSize: 14 }}>
-                        {violation.violation_type}
-                      </span>
-                      <span style={{ fontWeight: 600, fontSize: 16 }}>
-                        {violation.count}
-                      </span>
-                    </div>
-                    <Progress
-                      percent={violation.percentage}
-                      showInfo={false}
-                      strokeColor="#1890ff"
-                      strokeWidth={8}
+                  <Table
+                    columns={columns}
+                    dataSource={violationComplaince?.violationComplaince?.data?.recent_policy_violations?.data}
+                    pagination={false}
+                    size="middle"
+                    style={{ marginBottom: 16 }}
+                  />
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ color: '#8c8c8c', fontSize: 14 }}>
+                      Showing 5 of {violationComplaince?.violationComplaince?.data?.recent_policy_violations?.data.length} violations
+                    </span>
+                    <Pagination
+                      current={1}
+                      total={violationComplaince?.violationComplaince?.data?.recent_policy_violations?.data?.length}
+                      pageSize={5}
+                      showSizeChanger={false}
+                      simple
                     />
-                    <div style={{ 
-                      fontSize: 12, 
-                      color: '#8c8c8c', 
-                      marginTop: 4,
-                      textAlign: 'right'
-                    }}>
-                      {violation.percentage}% of total violations
-                    </div>
                   </div>
-                ))}
+                </>
+              ) : (
+                <Empty className='cls-whole-empty' />
+              )
+            }
+          </>
+          // :(
+          //   <TableLoader />
+          // )
+        }
+      </div>
+      {/* Bottom Cards Section */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+        {/* Violation Types Card */}
+        <Card>
+          <div style={{ marginBottom: 24 }}>
+            <h3 style={{ margin: 0, marginBottom: 4, fontSize: 18, fontWeight: 600 }}>
+              {violationComplaince?.violationComplaince?.data?.violation_types?.title}
+            </h3>
+            <p style={{ margin: 0, color: '#8c8c8c', fontSize: 14 }}>
+              {violationComplaince?.violationComplaince?.data?.violation_types?.description}
+            </p>
+          </div>
+
+          <div style={{ maxHeight: 300, overflowY: 'auto' }}>
+            {violationTypes.length > 0 && violationTypes !== undefined ?
+              (
+                <>
+                  {violationComplaince?.violationComplaince?.data?.violation_types?.data.map((violation: any, index: any) => (
+                    <div key={index} style={{ marginBottom: 20 }}>
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: 8
+                      }}>
+                        <span style={{ fontWeight: 500, fontSize: 14 }}>
+                          {violation.violation_type}
+                        </span>
+                        <span style={{ fontWeight: 600, fontSize: 16 }}>
+                          {violation.count}
+                        </span>
+                      </div>
+                      <Progress
+                        percent={violation.percentage}
+                        showInfo={false}
+                        strokeColor="#1890ff"
+                        strokeWidth={8}
+                      />
+                      <div style={{
+                        fontSize: 12,
+                        color: '#8c8c8c',
+                        marginTop: 4,
+                        textAlign: 'right'
+                      }}>
+                        {violation.percentage}% of total violations
+                      </div>
+                    </div>
+                  ))}
                 </>
               )
               : (
                 <Empty />
               )
             }
+          </div>
+
+          {/* Placeholder for pie chart */}
+          <div style={{
+            height: 120,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#fafafa',
+            borderRadius: 8,
+            marginTop: 16,
+            border: '2px dashed #d9d9d9'
+          }}>
+            <span style={{ color: '#8c8c8c', fontSize: 14 }}>
+              Violation type distribution chart would appear here
+            </span>
+          </div>
+        </Card>
+
+        {/* Cost Impact Card */}
+        <Card >
+          <div style={{ marginBottom: 24 }}>
+            <h3 style={{ margin: 0, marginBottom: 4, fontSize: 18, fontWeight: 600 }}>
+              {violationComplaince?.violationComplaince?.data?.cost_impact?.title}
+            </h3>
+            <p style={{ margin: 0, color: '#8c8c8c', fontSize: 14 }}>
+              {violationComplaince?.violationComplaince?.data?.cost_impact?.description}
+
+            </p>
+
+          </div>
+
+          {/* Summary metrics */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: 16,
+            marginBottom: 24,
+            padding: 16,
+            backgroundColor: '#fafafa',
+            borderRadius: 8
+          }}>
+            <div>
+              <div style={{ fontSize: 12, color: '#8c8c8c', marginBottom: 4 }}>
+                Total Cost Impact
               </div>
-              
-              {/* Placeholder for pie chart */}
-              <div style={{ 
-                height: 120, 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                backgroundColor: '#fafafa',
-                borderRadius: 8,
-                marginTop: 16,
-                border: '2px dashed #d9d9d9'
-              }}>
-                <span style={{ color: '#8c8c8c', fontSize: 14 }}>
-                  Violation type distribution chart would appear here
-                </span>
+              <div style={{ fontSize: 20, fontWeight: 600, color: '#1f2937' }}>
+                <Rupees className='inline-block' height={"20px"} width={"20px"} />{violationComplaince?.violationComplaince?.data?.cost_impact?.total_cost_impact}
               </div>
-            </Card>
-
-            {/* Cost Impact Card */}
-            <Card >
-              <div style={{ marginBottom: 24 }}>
-                <h3 style={{ margin: 0, marginBottom: 4, fontSize: 18, fontWeight: 600 }}>
-                  {violationComplaince?.violationComplaince?.data?.cost_impact?.title}
-                </h3>
-                <p style={{ margin: 0, color: '#8c8c8c', fontSize: 14 }}>
-                   {violationComplaince?.violationComplaince?.data?.cost_impact?.description}
-
-                </p>
-                
+            </div>
+            <div>
+              <div style={{ fontSize: 12, color: '#8c8c8c', marginBottom: 4 }}>
+                Average per Violation
               </div>
-              
-              {/* Summary metrics */}
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: '1fr 1fr', 
-                gap: 16, 
-                marginBottom: 24,
-                padding: 16,
-                backgroundColor: '#fafafa',
-                borderRadius: 8
-              }}>
-                <div>
-                  <div style={{ fontSize: 12, color: '#8c8c8c', marginBottom: 4 }}>
-                    Total Cost Impact
-                  </div>
-                  <div style={{ fontSize: 20, fontWeight: 600, color: '#1f2937' }}>
-                    <Rupees className='inline-block' height={"20px"} width={"20px"}/>{violationComplaince?.violationComplaince?.data?.cost_impact?.total_cost_impact}
-                  </div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 12, color: '#8c8c8c', marginBottom: 4 }}>
-                    Average per Violation
-                  </div>
-                  <div style={{ fontSize: 20, fontWeight: 600, color: '#1f2937' }}>
-                    <Rupees className='inline-block' height={"20px"} width={"20px"}/>{violationComplaince?.violationComplaince?.data?.cost_impact?.average_per_violation}
+              <div style={{ fontSize: 20, fontWeight: 600, color: '#1f2937' }}>
+                <Rupees className='inline-block' height={"20px"} width={"20px"} />{violationComplaince?.violationComplaince?.data?.cost_impact?.average_per_violation}
 
-                  </div>
-                </div>
               </div>
+            </div>
+          </div>
 
-              {/* Impact by Violation Type */}
-              <div style={{ marginBottom: 16 }}>
-                <h4 style={{ margin: 0, marginBottom: 16, fontSize: 14, fontWeight: 500 }}>
-                  Impact by Violation Type
-                </h4>
-                
-                <div style={{ maxHeight: 200, overflowY: 'auto' }}>
-                {violationComplaince?.violationComplaince?.data?.cost_impact?.impact_by_violation_type.length >0 && costImpactData !== undefined ?
+          {/* Impact by Violation Type */}
+          <div style={{ marginBottom: 16 }}>
+            <h4 style={{ margin: 0, marginBottom: 16, fontSize: 14, fontWeight: 500 }}>
+              Impact by Violation Type
+            </h4>
 
-                  (violationComplaince?.violationComplaince?.data?.cost_impact?.impact_by_violation_type
-.map((item:any, index:any) => (
+            <div style={{ maxHeight: 200, overflowY: 'auto' }}>
+              {violationComplaince?.violationComplaince?.data?.cost_impact?.impact_by_violation_type.length > 0 && costImpactData !== undefined ?
+
+                (violationComplaince?.violationComplaince?.data?.cost_impact?.impact_by_violation_type
+                  .map((item: any, index: any) => (
                     <div key={index} style={{ marginBottom: 12 }}>
                       <div style={{
                         display: 'flex',
@@ -367,12 +370,13 @@ export function PolicyViolations(violationComplaince:any) {
                   <Empty />
                 )
               }
-                </div>
-              </div>
-            </Card>
+            </div>
           </div>
-        </div>
-    
-    );
-  
+        </Card>
+        {/* <LoaderCard count={2} /> */}
+      </div>
+    </div>
+
+  );
+
 }

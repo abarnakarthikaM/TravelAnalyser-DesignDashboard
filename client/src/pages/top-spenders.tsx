@@ -262,7 +262,7 @@ const TopSpenders = () => {
   }
 
   console.log('isSuccess:', resTopSpender.isSuccess);
-console.log('isLoading:', resTopSpender.isLoading);
+  console.log('isLoading:', resTopSpender.isLoading);
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Sidebar />
@@ -331,7 +331,7 @@ console.log('isLoading:', resTopSpender.isLoading);
               {/* Department content - existing code */}
               {/* Department Metrics Cards */}
               <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
-                {!resTopSpender.isLoading && resTopSpender.isSuccess && (resTopSpender?.data as any)?.data?.top_spenders ?
+                {!resTopSpender.isLoading && resTopSpender.isSuccess && (resTopSpender?.data as any)?.data?.spending_breakdown?.title === "Department Spending Breakdown" ?
                   (
                     <>
                       {topSpenderCards?.map((metric: any, index: number) => (
@@ -401,61 +401,62 @@ console.log('isLoading:', resTopSpender.isLoading);
                 >
                   Detailed analysis of departmental travel expenses
                 </Text>
-                {deptSpendingBreakdown != undefined && resTopSpender.isSuccess && deptSpendingBreakdown.length > 0 ?
+                {resTopSpender.isSuccess && (resTopSpender.data as any)?.data?.spending_breakdown && (resTopSpender?.data as any)?.data?.spending_breakdown?.title === "Department Spending Breakdown" ?
                   (<div style={{ marginBottom: 24, overflowY: "scroll", height: '300px' }}>
                     {deptSpendingBreakdown && deptSpendingBreakdown !== undefined ?
                       (
                         <>
-                          {(deptSpendingBreakdown != undefined) && deptSpendingBreakdown?.map((dept: any, index: number) => (
-                            <div key={index} style={{ marginBottom: 20 }}>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                  alignItems: "center",
-                                  marginBottom: 8,
-                                }}
-                              >
+                          {(deptSpendingBreakdown != undefined && deptSpendingBreakdown?.length > 0) ?
+                            deptSpendingBreakdown?.map((dept: any, index: number) => (
+                              <div key={index} style={{ marginBottom: 20 }}>
                                 <div
                                   style={{
                                     display: "flex",
+                                    justifyContent: "space-between",
                                     alignItems: "center",
-                                    gap: 16,
+                                    marginBottom: 8,
                                   }}
                                 >
-                                  <Text style={{ fontWeight: 500, minWidth: 120 }}>
-                                    {dept.name}
-                                  </Text>
-                                  <Text
+                                  <div
                                     style={{
-                                      color: dept.trend == "up"
-                                        ? "#52c41a"
-                                        : "#ff4d4f",
-                                      fontWeight: 500,
-                                      fontSize: 12,
+                                      display: "flex",
+                                      alignItems: "center",
+                                      gap: 16,
                                     }}
                                   >
-                                    {dept.percentage_of_total} %
-                                  </Text>
+                                    <Text style={{ fontWeight: 500, minWidth: 120 }}>
+                                      {dept.name}
+                                    </Text>
+                                    <Text
+                                      style={{
+                                        color: dept.trend == "up" ? "#52c41a" : "#ff4d4f",
+                                        fontWeight: 500,
+                                        fontSize: 12,
+                                      }}
+                                    >
+                                      {dept.percentage_of_total} %
+                                    </Text>
+                                  </div>
+                                  <div style={{ textAlign: "right" }}>
+                                    <Text style={{ fontWeight: 600, fontSize: 16 }}>
+                                      {dept.spend}
+                                    </Text>
+                                    <br />
+                                    <Text style={{ color: "#8c8c8c", fontSize: 12 }}>
+                                      {dept.change_percentage}%
+                                    </Text>
+                                  </div>
                                 </div>
-                                <div style={{ textAlign: "right" }}>
-                                  <Text style={{ fontWeight: 600, fontSize: 16 }}>
-                                    {dept.spend}
-                                  </Text>
-                                  <br />
-                                  <Text style={{ color: "#8c8c8c", fontSize: 12 }}>
-                                    {dept.change_percentage}%
-                                  </Text>
-                                </div>
+                                <Progress
+                                  percent={dept.percentage_of_total}
+                                  showInfo={false}
+                                  strokeColor={getProgressColor(dept.trend)}
+                                  style={{ marginBottom: 4 }}
+                                />
                               </div>
-                              <Progress
-                                percent={dept.percentage_of_total}
-                                showInfo={false}
-                                strokeColor={getProgressColor(dept.trend)}
-                                style={{ marginBottom: 4 }}
-                              />
-                            </div>
-                          ))}
+                            ))
+                            : <Empty />
+                          }
                           {/* Chart Placeholder */}
                           <div
                             style={{
@@ -475,7 +476,7 @@ console.log('isLoading:', resTopSpender.isLoading);
                         </>
                       )
                       : (
-                        <Empty className="cls-whole-empty" />
+                        <Empty />
                       )
                     }
                   </div>)
@@ -532,8 +533,8 @@ console.log('isLoading:', resTopSpender.isLoading);
 
                     {/* Individual Spenders List */}
                     <div style={{ marginBottom: 32 }}>
-                      {(topIndividualSpenders != undefined && topIndividualSpenders?.data?.top_individual_spenders?.individuals != undefined) ?
-                        <>
+                      {(topIndividualSpenders != undefined && topIndividualSpenders?.data?.top_individual_spenders?.individuals.length > 0) ?
+                        (<>
                           {topIndividualSpenders?.data?.top_individual_spenders?.individuals.map((person: any) => (
                             <div
                               key={person.rank}
@@ -622,7 +623,7 @@ console.log('isLoading:', resTopSpender.isLoading);
                               </div>
                             </div>
                           ))}
-                        </>
+                        </>)
                         : (
                           <Empty />
                         )
@@ -882,7 +883,7 @@ console.log('isLoading:', resTopSpender.isLoading);
                 <LoaderCard count={3} />
               }
               {/* Category Spending by Department Table */}
-              {resTopSpender.isSuccess && !resTopSpender.isLoading ?
+              {resTopSpender.isSuccess && !resTopSpender.isLoading && (resTopSpender?.data as any)?.data?.category_spending_by_department?.table_data ?
                 (topCategorySpenders != undefined && topCategorySpenders?.data?.category_spending_by_department != undefined) &&
                 <Card style={{ marginBottom: 32 }}>
                   <Title level={4} style={{ marginBottom: 8 }}>
@@ -1084,11 +1085,11 @@ console.log('isLoading:', resTopSpender.isLoading);
                     )
                   }
                 </Card>
-                :(
+                : (
                   <TableLoader />
                 )}
 
-                {/* barchart loader for future use upon api */}
+              {/* barchart loader for future use upon api */}
               {/* <BarChartLoader /> */}
 
               {/* Chart Placeholder */}
@@ -1146,59 +1147,60 @@ console.log('isLoading:', resTopSpender.isLoading);
             <TabPane tab="By band" key="band">
               {/* Department content - existing code */}
               {/* Department Metrics Cards */}
-              {/* {resTopSpender.isSuccess && !resTopSpender.isLoading && (resTopSpender.data as any)?.data?.spending_breakdown ? */}
+              {resTopSpender.isSuccess && !resTopSpender.isLoading && (resTopSpender.data as any)?.data?.spending_breakdown?.title === "Band Spending Breakdown" ?
                 <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
-                {topSpenderCards != undefined}{
-                  <>
-                    {topSpenderCards?.map((metric: any, index: number) => (
-                      <Col xs={24} lg={6} key={index}>
-                        <Card style={{ height: "100%" }}>
-                          <Title
-                            level={4}
-                            style={{ marginBottom: 16, fontSize: 16 }}
-                          >
-                            {metric.name}
-                          </Title>
+                  {topSpenderCards != undefined}{
+                    <>
+                      {topSpenderCards?.map((metric: any, index: number) => (
+                        <Col xs={24} lg={6} key={index}>
+                          <Card style={{ height: "100%" }}>
+                            <Title
+                              level={4}
+                              style={{ marginBottom: 16, fontSize: 16 }}
+                            >
+                              {metric.name}
+                            </Title>
 
-                          <Title
-                            level={3}
-                            style={{ margin: 0, marginBottom: 8, color: "#1890ff" }}
-                          >
-                            {metric.spend}
-                          </Title>
+                            <Title
+                              level={3}
+                              style={{ margin: 0, marginBottom: 8, color: "#1890ff" }}
+                            >
+                              {metric.spend}
+                            </Title>
 
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 8,
-                            }}
-                          >
-                            <Text
+                            <div
                               style={{
-                                color:
-                                  metric.trend === "up"
-                                    ? "#52c41a"
-                                    : "#ff4d4f",
-                                fontWeight: 500,
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 8,
                               }}
                             >
-                              {metric.change_percentage}
-                            </Text>
-                            <Text style={{ color: "#8c8c8c", fontSize: 12 }}>
-                              from previous period
-                            </Text>
-                          </div>
-                        </Card>
-                      </Col>
-                    ))}
-                  </>
-                }
+                              <Text
+                                style={{
+                                  color:
+                                    metric.trend === "up"
+                                      ? "#52c41a"
+                                      : "#ff4d4f",
+                                  fontWeight: 500,
+                                }}
+                              >
+                                {metric.change_percentage}
+                              </Text>
+                              <Text style={{ color: "#8c8c8c", fontSize: 12 }}>
+                                from previous period
+                              </Text>
+                            </div>
+                          </Card>
+                        </Col>
+                      ))}
+                    </>
+                  }
 
-              </Row>:
-              
-              {/* } */}
-              
+                </Row>
+                :
+                <CardLoader showBorder={false} />
+              }
+
 
               {/* Department Spending Breakdown */}
               <Card style={{ marginBottom: 32 }}>
@@ -1214,59 +1216,63 @@ console.log('isLoading:', resTopSpender.isLoading);
                 >
                   Detailed analysis of departmental travel expenses
                 </Text>
-
-                <div style={{ marginBottom: 24, overflowY: "scroll", height: '300px' }}>
-                  {(deptSpendingBreakdown != undefined) && deptSpendingBreakdown?.map((dept: any, index: number) => (
-                    <div key={index} style={{ marginBottom: 20 }}>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          marginBottom: 8,
-                        }}
-                      >
+                {resTopSpender.isSuccess && (resTopSpender.data as any)?.data?.spending_breakdown && (resTopSpender?.data as any)?.data?.spending_breakdown?.title === "Band Spending Breakdown" ?
+                  (<div style={{ marginBottom: 24, overflowY: "scroll", height: '300px' }}>
+                    {(deptSpendingBreakdown != undefined) && deptSpendingBreakdown?.map((dept: any, index: number) => (
+                      <div key={index} style={{ marginBottom: 20 }}>
                         <div
                           style={{
                             display: "flex",
+                            justifyContent: "space-between",
                             alignItems: "center",
-                            gap: 16,
+                            marginBottom: 8,
                           }}
                         >
-                          <Text style={{ fontWeight: 500, minWidth: 120 }}>
-                            {dept.name}
-                          </Text>
-                          <Text
+                          <div
                             style={{
-                              color: dept.trend == "up"
-                                ? "#52c41a"
-                                : "#ff4d4f",
-                              fontWeight: 500,
-                              fontSize: 12,
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 16,
                             }}
                           >
-                            {dept.percentage_of_total} %
-                          </Text>
+                            <Text style={{ fontWeight: 500, minWidth: 120 }}>
+                              {dept.name}
+                            </Text>
+                            <Text
+                              style={{
+                                color: dept.trend == "up"
+                                  ? "#52c41a"
+                                  : "#ff4d4f",
+                                fontWeight: 500,
+                                fontSize: 12,
+                              }}
+                            >
+                              {dept.percentage_of_total} %
+                            </Text>
+                          </div>
+                          <div style={{ textAlign: "right" }}>
+                            <Text style={{ fontWeight: 600, fontSize: 16 }}>
+                              {dept.spend}
+                            </Text>
+                            <br />
+                            <Text style={{ color: "#8c8c8c", fontSize: 12 }}>
+                              {dept.change_percentage}%
+                            </Text>
+                          </div>
                         </div>
-                        <div style={{ textAlign: "right" }}>
-                          <Text style={{ fontWeight: 600, fontSize: 16 }}>
-                            {dept.spend}
-                          </Text>
-                          <br />
-                          <Text style={{ color: "#8c8c8c", fontSize: 12 }}>
-                            {dept.change_percentage}%
-                          </Text>
-                        </div>
+                        <Progress
+                          percent={dept.percentage_of_total}
+                          showInfo={false}
+                          strokeColor={getProgressColor(dept.trend)}
+                          style={{ marginBottom: 4 }}
+                        />
                       </div>
-                      <Progress
-                        percent={dept.percentage_of_total}
-                        showInfo={false}
-                        strokeColor={getProgressColor(dept.trend)}
-                        style={{ marginBottom: 4 }}
-                      />
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>)
+                  : (
+                    <DepartmentSkeleton />
+                  )
+                }
 
                 {/* Chart Placeholder */}
                 <div
