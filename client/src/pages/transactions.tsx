@@ -253,8 +253,10 @@ export default function Transactions() {
    * Des:transaction over view service call
    */
   useEffect(() => {
-    console.log(tabValue)
-    if (resDatpickerValues.length === 2) {
+    if (resDatpickerValues?.length=== 0) {
+      setDatpickerValues(calculateDateValues(dateFilter))
+    }
+    else if (resDatpickerValues.length === 2) {
       let reqData: any = {
         data: {
           start_date: resDatpickerValues[0],
@@ -279,7 +281,10 @@ export default function Transactions() {
    * Des: Recent Transactions table data service call
    */
   useEffect(() => {
-    if (resDatpickerValues.length === 2) {
+    if (resDatpickerValues?.length=== 0) {
+      setDatpickerValues(calculateDateValues(dateFilter))
+    }
+    else if (resDatpickerValues.length === 2) {
       let reqData: any = {
         data: {
           start_date: resDatpickerValues[0],
