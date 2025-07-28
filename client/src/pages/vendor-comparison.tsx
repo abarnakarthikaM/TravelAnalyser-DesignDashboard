@@ -263,7 +263,7 @@ export default function VendorComparison() {
             </Text>
           </div>
           
-         <Space size="middle">
+         <Space size="middle" className="cls-datefilter-space">
               <Select
                 value={dateFilter}
                 style={{ width: 215 }}
@@ -371,7 +371,7 @@ export default function VendorComparison() {
                                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                   <Text style={{ fontSize: 12 }}>{company.on_time_performance}%</Text>
                                   <Tag 
-                                    color={(company.on_time_performance_status > 90) ? 'green' : (company.on_time_performance_status > 60) ? 'orange' : 'red'}
+                                    color={(company.on_time_performance > 90) ? 'green' : (company.on_time_performance > 60) ? 'orange' : 'red'}
                                     style={{ fontSize: 10, padding: '2px 6px' }}
                                   >
                                     {company.on_time_performance_status}

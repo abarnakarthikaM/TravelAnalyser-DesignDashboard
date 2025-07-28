@@ -86,7 +86,7 @@ export function DepartmentCompliance(departmentCompliance:any) {
 
   return (
     <div style={{ padding: '24px' }}>
-      <DepartmentSkeleton />
+      {/* <DepartmentSkeleton /> */}
       {/* Compliance by Department Section */}
       <div style={{ marginBottom: 32 }}>
         <Title level={3} style={{ marginBottom: 8 }}>
@@ -157,7 +157,8 @@ export function DepartmentCompliance(departmentCompliance:any) {
           )}
         </div>
       </div>
-      <BarChartLoader />
+      {/* <BarChartLoader /> */}
+
       {/* Chart Placeholder */}
       <div style={{
         height: 200,
@@ -176,7 +177,9 @@ export function DepartmentCompliance(departmentCompliance:any) {
           </Text>
         </div>
       </div>
-      <LoaderCard count={3}/>
+      
+      {/* <LoaderCard count={3}/> */}
+
       {/* Department Deep Dive: Sales */}
       <div style={{ marginBottom: 32 }}>
         <Title level={3} style={{ marginBottom: 8 }}>
