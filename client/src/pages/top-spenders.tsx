@@ -1224,8 +1224,8 @@ const TopSpenders = () => {
                             </Title>
 
                             <Title
-                              level={3}
-                              style={{ margin: 0, marginBottom: 8, color: "#1890ff" }}
+                              level={4}
+                              style={{ margin: 0, marginBottom: 8}}
                             >
                               {metric.spend}
                             </Title>
