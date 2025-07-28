@@ -45,10 +45,7 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("expense-breakdown");
   const [resDashboardOverviewData_S, setResDashboardOverviewData_S] = useState<any>();
   const [resCommonTabResponse_S, setCommonTabResponse_S] = useState<any>([]);
-  const [resDatpickerValues, setDatpickerValues] = useState<any>([
-    "2024-11-01",
-    "2025-07-31"
-  ]);
+  const [resDatpickerValues, setDatpickerValues] = useState<any>([]);
   const [dateFilter, setDateFilter] = useState("today");
   const [open, setOpen] = useState(false);
   const [dateRange, setDateRange] = useState<any>([]);
@@ -65,7 +62,12 @@ export default function Dashboard() {
    * request service call for Expense card and Top Expenses  service call
    */
   useEffect(() => {
-    if (resDatpickerValues.length === 2) {
+    if(resDatpickerValues.length===0){
+      console.log('zero length');
+     setDatpickerValues(calculateDateValues(dateFilter))
+    }
+    console.log(resDatpickerValues.length)
+    if (resDatpickerValues?.length === 2) {
       let reqData: any = {
         data: {
           start_date: resDatpickerValues[0],

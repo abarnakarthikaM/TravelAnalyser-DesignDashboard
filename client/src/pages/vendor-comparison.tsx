@@ -18,8 +18,7 @@ export default function VendorComparison() {
   const [dateFilter, setDateFilter] = useState("today");
   const [open, setOpen] = useState(false);
   const [dateRange, setDateRange] = useState<any>([]);
-  const [resDatpickerValues, setDatpickerValues] = useState<any>(["2025-06-01",
-    "2025-07-31"]);
+  const [resDatpickerValues, setDatpickerValues] = useState<any>([]);
   const [resVendorResponse_S, setVendorResponse_S] = useState<any>([]);
   const currency: string = "INR"
   const [tableData, SetTableData] = useState<any>([])
@@ -167,11 +166,13 @@ export default function VendorComparison() {
     }
   };
   useEffect(() => {
-    console.log(selectedTab)
-    let travelType = (selectedTab == 'Airlines') ? 'airline'
+    if(resDatpickerValues.length===0){
+      setDatpickerValues(calculateDateValues(dateFilter))
+    }
+    if (resDatpickerValues.length === 2) {
+       let travelType = (selectedTab == 'Airlines') ? 'airline'
       : (selectedTab == 'Hotels') ? 'hotel'
         : (selectedTab == 'Ground Transport') && 'ground'
-    if (resDatpickerValues.length === 2) {
       let reqData: any = {
         data: {
           start_date: resDatpickerValues[0],

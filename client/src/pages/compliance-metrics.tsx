@@ -16,8 +16,7 @@ const { Content } = Layout;
 const { Title, Text } = Typography;
 
 export default function ComplianceMetrics() {
-  const [resDatpickerValues, setDatpickerValues] = useState<any>(["2025-06-01",
-    "2025-07-31"]);
+  const [resDatpickerValues, setDatpickerValues] = useState<any>([]);
   const [dateFilter, setDateFilter] = useState("today");
   const [tabValue, setTabValue] = useState("overview");
   const [open, setOpen] = useState(false);
@@ -112,6 +111,9 @@ export default function ComplianceMetrics() {
   };
 
   useEffect(() => {
+    if (resDatpickerValues?.length=== 0) {
+      setDatpickerValues(calculateDateValues(dateFilter))
+    }
     console.log(tabValue)
     if (resDatpickerValues.length === 2) {
       let reqData: any = {

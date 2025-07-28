@@ -83,7 +83,6 @@ const TopSpenders = () => {
       setDatpickerValues(calculateDateValues(value))
       setOpen(false);
     }
-    console.log(resDatpickerValues)
   };
 
   const getStrokeColor = (percentage: any) => {
@@ -97,9 +96,7 @@ const TopSpenders = () => {
 
   useEffect(() => {
     if (resDatpickerValues?.length=== 0) {
-      console.log(dateFilter)
       setDatpickerValues(calculateDateValues(dateFilter))
-      
     }
     else if (resDatpickerValues?.length === 2) {
        const urlType = (tabValue === 'individual') ? "topspenders/individual/"
