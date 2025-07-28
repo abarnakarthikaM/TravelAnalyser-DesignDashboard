@@ -58,9 +58,8 @@ export default function Login() {
           borderRadius: 12,
           border: 'none'
         }}
-        bodyStyle={{ padding: '40px 32px' }}
       >
-        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
           <div
             style={{
               width: 60,
@@ -170,8 +169,7 @@ export default function Login() {
           </div>
         </Form>
 
-        <div style={{ 
-          marginTop: 32, 
+        {/* <div style={{ 
           paddingTop: 24, 
           borderTop: '1px solid #f0f0f0',
           textAlign: 'center' 
@@ -184,7 +182,7 @@ export default function Login() {
               Username: admin | Password: password
             </Text>
           </Space>
-        </div>
+        </div> */}
       </Card>
     </div>
   );
