@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Menu, Avatar, Typography } from 'antd';
+import { Layout, Menu, Avatar, Typography, Button } from 'antd';
 import type { MenuProps } from 'antd';
 import {
   HomeOutlined,
@@ -11,7 +11,7 @@ import {
   BulbOutlined,
   TransactionOutlined,
   SettingOutlined,
-  BuildingOutlined
+  LogoutOutlined,
 } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -195,7 +195,7 @@ export function Sidebar() {
           bottom: 0,
           left: 0,
           right: 0,
-          padding: '24px',
+          padding: '20px',
           borderTop: '1px solid #6b7280',
           display: 'flex',
           alignItems: 'center',
@@ -235,6 +235,26 @@ export function Sidebar() {
           </Text>
         </div>
       </div>
+      <Button
+        type="primary"
+        danger
+        icon={<LogoutOutlined />}
+        onClick={() => {
+          localStorage.removeItem('isAuthenticated');
+          localStorage.removeItem('username');
+          navigate('/login');
+        }}
+        block
+        style={{
+          background: 'unset',
+          position: 'absolute',
+          left: 60,
+          bottom: 25,
+          color: '#fff',
+        }}
+      >
+        Logout
+      </Button>
 
       <style>
         {`
