@@ -1,0 +1,77 @@
+.cls-card-loader {
+    margin: unset !important;
+   &:first-child {
+    padding-left: 0px;
+   }
+   &:nth-child(2) {
+    padding-right: 0px !important;
+   }
+}
+.cls-table-loader {
+    margin-top: 25px ;
+}
+
+.skeleton-spender-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0;
+    border-bottom: 1px solid #eee;
+    animation: pulse 1.5s infinite ease-in-out;
+  }
+  
+  .skeleton-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #e2e2e2;
+    flex-shrink: 0;
+  }
+  
+  .skeleton-info {
+    flex: 1;
+    margin-left: 12px;
+  }
+  
+  .skeleton-name,
+  .skeleton-title,
+  .skeleton-meta {
+    background: #e2e2e2;
+    border-radius: 4px;
+    margin-bottom: 6px;
+  }
+  
+  .skeleton-name {
+    width: 140px;
+    height: 14px;
+  }
+  
+  .skeleton-title {
+    width: 180px;
+    height: 12px;
+  }
+  
+  .skeleton-meta {
+    width: 160px;
+    height: 10px;
+  }
+  
+  .skeleton-amount {
+    width: 70px;
+    height: 16px;
+    background: #e2e2e2;
+    border-radius: 4px;
+  }
+  
+  @keyframes pulse {
+    0% {
+      background-color: #e2e2e2;
+    }
+    50% {
+      background-color: #f5f5f5;
+    }
+    100% {
+      background-color: #e2e2e2;
+    }
+  }
+  
