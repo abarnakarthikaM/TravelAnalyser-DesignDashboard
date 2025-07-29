@@ -71,7 +71,6 @@ export function ExpenseCharts({ metrics }: any) {
   // ];
   const distributionData = JSON.parse(JSON.stringify(metrics?.expense_breakdown[selectedPeriod].expense_distribution));
   const filteredDistributionData = distributionData.filter((data: any) => data.amount > 0);
-
   distributionData.map((data: any) => {
     switch (data.category) {
       case 'Air Travel':
@@ -130,7 +129,6 @@ export function ExpenseCharts({ metrics }: any) {
   const formatTooltip = (value: number, name: string) => {
     return [`$${value.toLocaleString()}`, name];
   };
-  console.log(selectedPeriod)
   const renderCustomizedLabel = ({
     cx,
     cy,

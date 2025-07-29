@@ -24,8 +24,7 @@ export const formatDate = (date: string | number | Date): string => {
 
 
 // Function to calculate date ranges based on selected filter value
-export const calculateDateValues = (value: any) => {
-  console.log(value)
+export const  calculateDateValues = (value: any) => {
   // Default start date as empty and end date as today's date
   let startDate = '';
   let endDate = dayjs().format('YYYY-MM-DD');
@@ -69,8 +68,8 @@ export const calculateDateValues = (value: any) => {
 
     default:
       // Reset values if no filter selected
-      startDate = '';
-      endDate = '';
+      ([startDate = '',
+      endDate = ''])
   }
 
 };

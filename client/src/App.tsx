@@ -15,6 +15,7 @@ import Settings from "./pages/settings";
 import { store } from "./stores/Store";
 import { Provider } from "react-redux";
 import './index.css';
+import'../../attached_assets/fonts/fonts.scss'
 
 // const queryClient = new queryClient();
 

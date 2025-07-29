@@ -11,6 +11,7 @@ import { Filter } from 'lucide-react';
 import { useLazyGetCompliancemetricsQuery } from '@/services/dashboard/dashboard';
 import { CardLoader, DepartmentSkeleton, LoaderCard } from '@/components/Loader/Loader';
 import { Rupees } from '@/components/ui/icons';
+import { MetricsCards } from '@/components/dashboard/metrics-cards';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -111,10 +112,9 @@ export default function ComplianceMetrics() {
   };
 
   useEffect(() => {
-    if (resDatpickerValues?.length=== 0) {
+    if (resDatpickerValues?.length === 0) {
       setDatpickerValues(calculateDateValues(dateFilter))
     }
-    console.log(tabValue)
     if (resDatpickerValues.length === 2) {
       let reqData: any = {
         data: {
@@ -130,12 +130,10 @@ export default function ComplianceMetrics() {
   useEffect(() => {
     setComplainceCards_S(resComplainceCardData)
   }, [resComplainceCardData])
-  console.log(resComplainceCards_S)
   /********
      * request service call for Expense card and Top Expenses  service call
      */
   useEffect(() => {
-    console.log(tabValue)
     const url =
       (tabValue == 'department') ? "compliance/by_department/" :
         (tabValue == 'violations') ? "compliance/violations/" :
@@ -156,13 +154,11 @@ export default function ComplianceMetrics() {
     */
 
   useEffect(() => {
-    console.log(tabValue)
     if (resComplainceTabData?.isSuccess) {
       (tabValue == 'overview') && setComplainceOverview_S(resComplainceTabData.data);
       (tabValue == 'violations') && setComplainceViolation_S(resComplainceTabData.data);
       (tabValue == 'department') && setComplainceDepartment_S(resComplainceTabData.data);
     }
-
     // if(resExpenseBreakdown?.isSuccess && resExpenseBreakdown?.data){
     //   setCommonTabResponse_S(resExpenseBreakdown)
     // }
@@ -214,7 +210,7 @@ export default function ComplianceMetrics() {
                   {resComplainceOverview_S?.data?.compliance_by_category.description}
                 </Text>
 
-                <div style={{ maxWidth: 800 }}>
+                <div style={{ maxWidth: "100%" }}>
                   {resComplainceOverview_S?.data?.compliance_by_category?.data.map((policy: any, index: any) => (
                     <div key={index} style={{ marginBottom: 20 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
@@ -321,7 +317,7 @@ export default function ComplianceMetrics() {
                 }
               </>)
               : (
-              <LoaderCard/>
+                <LoaderCard />
               )
             }
           </Row>
@@ -331,7 +327,7 @@ export default function ComplianceMetrics() {
     {
       key: 'violations',
       label: 'Policy Violations',
-      children: <PolicyViolations violationComplaince={resComplainceViolation_S} />
+      children: <PolicyViolations violationComplaince={resComplainceViolation_S} resComplainceTabData={resComplainceTabData} />
     },
     {
       key: 'department',
@@ -344,13 +340,12 @@ export default function ComplianceMetrics() {
       children: <div style={{ padding: 24 }}>Trends and analysis content</div>
     }
   ];
-  console.log(resComplainceCards_S?.data?.data?.compliance);
 
   return (
-    <Layout style={{ minHeight: '100vh', background: '#f5f5f5' }}>
+    <Layout style={{ minHeight: '100vh' }}>
       <Sidebar />
 
-      <Layout style={{ marginLeft: 256 }}>
+      <Layout style={{ marginLeft: 256, background: '#f9fafb' }}>
         {/* Header */}
         <div style={{
           background: '#fff',
@@ -368,21 +363,21 @@ export default function ComplianceMetrics() {
               Monitor and improve travel policy compliance across your organization
             </Text>
           </div>
-          
-           <Space size="middle" className="cls-datefilter-space">
-              <Select
-                value={dateFilter}
-                style={{ width: 215 }}
-                onChange={handleDateFilterChange}
-              >
-                <Option value="today">Today</Option>
-                <Option value="yesterday">Yesterday</Option>
-                <Option value="this-week">This week</Option>
-                <Option value="last-week">Last week</Option>
-                <Option value="this-month">This month</Option>
-                <Option value="last-month">Last month</Option>
-                <Option value="date-range">Date range</Option>
-              </Select>
+
+          <Space size="middle" className="cls-datefilter-space">
+            <Select
+              value={dateFilter}
+              style={{ width: 215 }}
+              onChange={handleDateFilterChange}
+            >
+              <Option value="today">Today</Option>
+              <Option value="yesterday">Yesterday</Option>
+              <Option value="this-week">This week</Option>
+              <Option value="last-week">Last week</Option>
+              <Option value="this-month">This month</Option>
+              <Option value="last-month">Last month</Option>
+              <Option value="date-range">Date range</Option>
+            </Select>
 
             <DatePicker.RangePicker
               open={open}
@@ -400,47 +395,10 @@ export default function ComplianceMetrics() {
 
         <Content style={{ padding: '32px' }}>
           {/* Top Metrics Cards */}
-          {resComplainceCardData.isSuccess && !resComplainceCardData.isLoading ?
+          {resComplainceCardData.isSuccess && !resComplainceCardData.isLoading && resComplainceCards_S?.data?.data?.compliance !== undefined ?
             (
-              <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
-                {resComplainceCards_S?.data?.data?.compliance.map((metric: any, index: any) => (
-                  <Col xs={24} lg={6} key={index}>
-                    <Card style={{ height: '100%' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                        <Title level={4} style={{ margin: 0, fontSize: 16 }}>
-                          {metric.name}
-                        </Title>
-                        {metric.icon}
-                      </div>
-
-                      <Title level={3} style={{ margin: 0, marginBottom: 8 }}>
-                        {metric.total}
-                      </Title>
-                      {metric.name == "Overall Compliance" && <Progress percent={metric.change_percent} size="small" showInfo={false} style={{ width: 80 }} />}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-                        <Text style={{
-                          color: metric.changeType === 'positive' ? '#52c41a' : '#ff4d4f',
-                          fontWeight: 500
-                        }}>
-                          {metric.change_percent} <span style={{ color: "#8C8C8C" }}>vs previous</span>
-                        </Text>
-                        <Text style={{ color: '#8c8c8c', fontSize: 12 }}>
-                          {metric.subtitle}
-                        </Text>
-                      </div>
-                      {/* {metric.details && (
-                    <div style={{ fontSize: 12, color: '#8c8c8c' }}>
-                      {metric.details.map((detail, idx) => (
-                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                          <span>{detail.label}</span>
-                          <span style={{ fontWeight: 500 }}>{detail.value}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )} */}
-                    </Card>
-                  </Col>
-                ))}
+              <Row gutter={[24, 24]} style={{ marginBottom: 0 }}>
+                <MetricsCards metrics={resComplainceCards_S?.data?.data?.compliance} pathName={"Compliance_metrics"} />
               </Row>
             )
             : (
@@ -453,6 +411,7 @@ export default function ComplianceMetrics() {
           <Card style={{ marginBottom: 32 }}>
             <Tabs
               defaultActiveKey="overview"
+              onChange={(key) => setTabValue(key)}
               items={tabItems}
             />
           </Card>

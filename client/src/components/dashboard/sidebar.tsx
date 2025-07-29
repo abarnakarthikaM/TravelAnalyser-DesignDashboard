@@ -236,6 +236,7 @@ export function Sidebar() {
         </div>
       </div>
       <Button
+        title="Logout"
         type="primary"
         danger
         icon={<LogoutOutlined />}
@@ -247,13 +248,16 @@ export function Sidebar() {
         block
         style={{
           background: 'unset',
+          border:"none",
           position: 'absolute',
-          left: 60,
+          left: 210,
           bottom: 25,
           color: '#fff',
+          fontSize:"18px",
+          boxShadow:"none",
+          width:30
         }}
       >
-        Logout
       </Button>
 
       <style>

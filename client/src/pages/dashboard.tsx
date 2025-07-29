@@ -20,6 +20,7 @@ import {
 import { useLazyGetDashboardOverviewQuery } from "@/services/dashboard/dashboard";
 import { BarChartLoader, CardLoader, DashboardLoader, LoaderCard, TableLoader } from "@/components/Loader/Loader";
 import { calculateDateValues, formatDate } from "@/utils/dateFunctions";
+import Header from "../components/dashboard/header"
 const tabItems = [
   {
     key: "expense-breakdown",
@@ -63,10 +64,8 @@ export default function Dashboard() {
    */
   useEffect(() => {
     if(resDatpickerValues.length===0){
-      console.log('zero length');
      setDatpickerValues(calculateDateValues(dateFilter))
     }
-    console.log(resDatpickerValues.length)
     if (resDatpickerValues?.length === 2) {
       let reqData: any = {
         data: {
@@ -84,7 +83,6 @@ export default function Dashboard() {
     */
 
   useEffect(() => {
-    console.log(loader)
     if (resDashboardOverview?.isSuccess && resDashboardOverview?.data) {
       setResDashboardOverviewData_S(resDashboardOverview.data)
     }
@@ -93,12 +91,10 @@ export default function Dashboard() {
       setCommonTabResponse_S(resExpenseBreakdown)
     }
   }, [resDashboardOverview, resExpenseBreakdown])
-  console.log(resCommonTabResponse_S)
   /*******
    * service call for Expense Breakdown charts when ever we change the date picker value,outer tab value
    */
   useEffect(() => {
-    console.log(activeTab)
     const urlvalue = (activeTab === 'vendor-performance') ? "dashboard/vendors_performance/"
       : (activeTab === 'compliance') ? "dashboard/compliance/"
         : "dashboard/expense_breakdown/";
@@ -119,7 +115,6 @@ export default function Dashboard() {
   const getChartData = (vendorType: string) => {
     let vendorResData: any = [];
     if (resCommonTabResponse_S.data.data.vendor_performance != undefined) {
-      console.log(vendorType)
       vendorResData = resCommonTabResponse_S?.data?.data?.vendor_performance?.chart_data
     }
     return vendorResData
@@ -137,7 +132,6 @@ export default function Dashboard() {
       setDatpickerValues(calculateDateValues(value))
       setOpen(false);
     }
-     console.log(resDatpickerValues)
   };
   /******
    * Des:this function hanndles the date range picker value changes
@@ -155,9 +149,7 @@ export default function Dashboard() {
     }
   };
 
-  const getVendorPerformancedata = ((type: string) => {
-    console.log(resCommonTabResponse_S)
-  })
+  
   if (isLoading) {
     return (
       <div className="min-h-screen">
@@ -169,13 +161,13 @@ export default function Dashboard() {
     );
   }
 
-  console.log(resExpenseBreakdown)
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sidebar />
 
       <Layout style={{ marginLeft: 256, background: '#f9fafb' }}>
-        <header className="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between">
+        <Header/>
+        {/* <header className="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-semibold text-gray-900 m-0">
               Travel Expense Dashboard
@@ -220,13 +212,12 @@ export default function Dashboard() {
               />
             </Space>
           </div>
-        </header>
-
+        </header> */}
         <Content style={{ padding: '32px' }}>
           {/* dashboard cards view starts */}
           {resDashboardOverview?.isSuccess && resDashboardOverview?.data ? (
             resDashboardOverviewData_S?.data?.expense !== undefined && resDashboardOverviewData_S?.data?.expense.length > 0 ? (
-              <MetricsCards metrics={resDashboardOverviewData_S?.data?.expense} />
+              <MetricsCards metrics={resDashboardOverviewData_S?.data?.expense} pathName={"Dashboard"}/>
             ) : (
               <Empty className="cls-whole-empty" />
             )
