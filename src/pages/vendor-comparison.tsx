@@ -147,7 +147,7 @@ export default function VendorComparison() {
       setDateFilter(value);
     } else {
       setDateRange([]);
-     setDatpickerValues(calculateDateValues(value))
+      setDatpickerValues(calculateDateValues(value))
       setOpen(false);
     }
   };
@@ -166,13 +166,13 @@ export default function VendorComparison() {
     }
   };
   useEffect(() => {
-    if(resDatpickerValues.length===0){
+    if (resDatpickerValues.length === 0) {
       setDatpickerValues(calculateDateValues(dateFilter))
     }
     if (resDatpickerValues.length === 2) {
-       let travelType = (selectedTab == 'Airlines') ? 'airline'
-      : (selectedTab == 'Hotels') ? 'hotel'
-        : (selectedTab == 'Ground Transport') && 'ground'
+      let travelType = (selectedTab == 'Airlines') ? 'airline'
+        : (selectedTab == 'Hotels') ? 'hotel'
+          : (selectedTab == 'Ground Transport') && 'ground'
       let reqData: any = {
         data: {
           start_date: resDatpickerValues[0],
@@ -192,7 +192,6 @@ export default function VendorComparison() {
   useEffect(() => {
     setVendorResponse_S(resVendorComparission)
   }, [resVendorComparission])
-  console.log(resVendorResponse_S)
 
   useEffect(() => {
     if (resVendorResponse_S.isSuccess) {
@@ -228,18 +227,33 @@ export default function VendorComparison() {
   ];
 
   const renderStars = (rating: number, max: number) => {
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
-    return (
-      <div style={{ display: 'flex', gap: 2 }}>
-        {[...Array(max)].map((_, i) => (
-          <span key={i} style={{ color: i < fullStars ? '#faad14' : i === fullStars && hasHalfStar ? '#faad14' : '#d9d9d9' }}>
-            ★
-          </span>
-        ))}
-      </div>
-    );
-  };
+  const fullStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 !== 0;
+  
+  return (
+    <div style={{ display: 'flex', gap: 2 }}>
+      {[...Array(max)].map((_, i) => {
+        let starStyle: React.CSSProperties = {
+          display: 'inline-block',
+          color: '#d9d9d9', // default empty
+        };
+
+        if (i < fullStars) {
+          starStyle.color = '#faad14'; // full star
+        } else if (i === fullStars && hasHalfStar) {
+          // Half-star using background gradient
+          starStyle = {
+            background: 'linear-gradient(to right, #faad14 50%, #d9d9d9 50%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          };
+        }
+
+        return <span key={i} style={starStyle}>★</span>;
+      })}
+    </div>
+  );
+};
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -263,34 +277,34 @@ export default function VendorComparison() {
               Compare performance metrics across all vendors
             </Text>
           </div>
-          
-         <Space size="middle" className="cls-datefilter-space">
-              <Select
-                value={dateFilter}
-                style={{ width: 215 }}
-                onChange={handleDateFilterChange}
-              >
-                <Option value="today">Today</Option>
-                <Option value="yesterday">Yesterday</Option>
-                <Option value="this-week">This week</Option>
-                <Option value="last-week">Last week</Option>
-                <Option value="this-month">This Month</Option>
-                <Option value="last-month">Last Month</Option>
-                <Option value="date-range">Date Range</Option>
-              </Select>
 
-              <DatePicker.RangePicker
-                open={open}
-                value={dateRange}
-                onChange={handleDateRangeChange}
-                onOpenChange={(status) => setOpen(status)}
-                style={{
-                  position: "absolute",
-                  opacity: 0,
-                  pointerEvents: "none",
-                }}
-              />
-            </Space>
+          <Space size="middle" className="cls-datefilter-space">
+            <Select
+              value={dateFilter}
+              style={{ width: 215 }}
+              onChange={handleDateFilterChange}
+            >
+              <Option value="today">Today</Option>
+              <Option value="yesterday">Yesterday</Option>
+              <Option value="this-week">This week</Option>
+              <Option value="last-week">Last week</Option>
+              <Option value="this-month">This Month</Option>
+              <Option value="last-month">Last Month</Option>
+              <Option value="date-range">Date Range</Option>
+            </Select>
+
+            <DatePicker.RangePicker
+              open={open}
+              value={dateRange}
+              onChange={handleDateRangeChange}
+              onOpenChange={(status) => setOpen(status)}
+              style={{
+                position: "absolute",
+                opacity: 0,
+                pointerEvents: "none",
+              }}
+            />
+          </Space>
         </div>
 
         {/* Tab Navigation */}
@@ -306,7 +320,7 @@ export default function VendorComparison() {
               border: "1px solid #e5e7eb",
               display: "inline-flex",
               gap: "2px",
-              width: "50%",
+              width: "55%",
               marginTop: "10px"
             }}
           >
@@ -317,7 +331,7 @@ export default function VendorComparison() {
                 style={{
                   padding: "8px 16px",
                   fontSize: "14px",
-                  fontWeight: selectedTab === tab.key ? "500" : "400",
+                  fontWeight: selectedTab === tab.key ? "600" : "400",
                   color: selectedTab === tab.key ? "#fff" : "#6b7280",
                   backgroundColor: selectedTab === tab.key ? "#0c265a" : "transparent",
                   border: "none",
@@ -325,7 +339,8 @@ export default function VendorComparison() {
                   cursor: "pointer",
                   transition: "all 0.2s ease",
                   boxShadow: selectedTab === tab.key ? "0 1px 2px 0 rgba(0, 0, 0, 0.05)" : "none",
-                  width: "33%"
+                  width: "33%",
+                  lineHeight:"1.5 !important"
                 }}
                 onMouseEnter={(e) => {
                   if (selectedTab !== tab.key) {
@@ -350,61 +365,65 @@ export default function VendorComparison() {
               {metricsData.map((metric, index) => (
                 <Col xs={24} lg={24} key={index}>
                   <Row gutter={[24, 0]}>
-                    <Col xs={24} lg={8} style={{ height:resVendorResponse_S?.data?.data?.summary_card?.per_vendor.length>0?'305px':"auto" }}>
+                    <Col xs={24} lg={8} style={{ height: resVendorResponse_S?.data?.data?.summary_card?.per_vendor.length > 0 ? '305px' : "auto" }}>
 
-                      <Card style={{ height: '100%' }}>
-                        <Title level={4} style={{ marginBottom: 6 }}>
+                      <Card style={{ height: '100%' }} >
+                        <Title level={4} style={{ marginBottom: 6 ,color:"#0c265a"}} >
                           Total Spend
                         </Title>
 
                         <div style={{ marginBottom: 24 }}>
-                          <Title level={4} style={{ margin: 0 }}>
-                            <Rupees className='inline-block' height={"25px"} width={"25px"} />{resVendorResponse_S?.data?.data?.summary_card.total_spend}
+                          <Title level={5}style={{ margin: 0 }}>
+                            <Rupees className='inline-block' height={"18px"} width={"18px"} />{resVendorResponse_S?.data?.data?.summary_card.total_spend}
                           </Title>
                         </div>
+                        <Row>
+                          {resVendorResponse_S?.data?.data?.summary_card?.per_vendor.map((company: any, idx: any) => (
+                            <Col span={12} style={{ marginBottom: 16,paddingRight:"20px"}}>
 
-                        {resVendorResponse_S?.data?.data?.summary_card?.per_vendor.map((company: any, idx: any) => (
-                          <div style={{ marginBottom: 16 }}>
-
-                            <div key={idx} style={{ marginBottom: 8 }}>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                                <Text style={{ fontSize: 12 }}>{company.vendor}</Text>
+                              <div key={idx} style={{ marginBottom: 8 }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                                  <Text style={{ fontSize: 12 }}>{company.vendor}</Text>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                  <Text style={{ fontSize: 12 }}>{company.spend_percentage}%</Text>
-                                  <Tag 
+                                    <Tag
                                     color={(company.on_time_performance > 90) ? 'green' : (company.on_time_performance > 60) ? 'orange' : 'red'}
-                                    style={{ fontSize: 10, padding: '2px 6px' }}
+                                    style={{ fontSize:10, padding: '0px 3px',marginRight:"0px",lineHeight:"1.5"}}
                                   >
                                     {company.on_time_performance_status}
                                   </Tag>
-                                </div>                              </div>
-                              <Progress
-                                percent={company.spend_percentage}
-                                size="small"
-                                showInfo={false}
-                                strokeColor={company.spend_percentage >= 85 ? '#52c41a'
-                                  : company.spend_percentage >= 65 ? '#722ed1'
-                                    : '#1890ff'}
+                                  </div>
+                                </div>
+                                <div style={{ display: 'flex', marginBottom: 4 }}>
+                                  <Text style={{ fontSize: 12,marginRight:"5px"}}>1123212</Text>
+                                  <Text style={{ fontSize: 12 }}>({company.spend_percentage}%)</Text>
+                                </div>
+                                <Progress
+                                  percent={company.spend_percentage}
+                                  size="small"
+                                  showInfo={false}
+                                  strokeColor={company.spend_percentage >= 85 ? '#52c41a'
+                                    : company.spend_percentage >= 65 ? '#722ed1'
+                                      : '#1890ff'}
 
-                              //  strokeColor={company.spend_percentage >= 85 ? '#1890ff' : idx === 1 ? '#722ed1' : '#52c41a'}
-                              />
-                            </div>
-                          </div>
-
-                        ))}
+                                //  strokeColor={company.spend_percentage >= 85 ? '#1890ff' : idx === 1 ? '#722ed1' : '#52c41a'}
+                                />
+                              </div>
+                            </Col>
+                          ))}
+                        </Row>
                       </Card>
                     </Col>
 
 
-                    <Col xs={24} lg={8} style={{ height:resVendorResponse_S?.data?.data?.summary_card?.per_vendor.length>0?'305px':"auto" }}>
+                    <Col xs={24} lg={8} style={{ height: resVendorResponse_S?.data?.data?.summary_card?.per_vendor.length > 0 ? '305px' : "auto" }}>
                       <Card style={{ height: '100%' }}>
-                        <Title level={4} style={{ marginBottom: 6 }}>
+                        <Title level={4} style={{ marginBottom: 6 ,color:"#0c265a"}}>
                           On-Time Performance
                         </Title>
 
                         <div style={{ marginBottom: 24 }}>
-                          <Title level={4} style={{ margin: 0 }}>
-                            {resVendorResponse_S?.data?.data?.summary_card?.overall_on_time_performance &&resVendorResponse_S?.data?.data?.summary_card?.overall_on_time_performance!==null?resVendorResponse_S?.data?.data?.summary_card?.overall_on_time_performance:'0'}%
+                          <Title level={5} style={{ margin: 0 }}>
+                            {resVendorResponse_S?.data?.data?.summary_card?.overall_on_time_performance && resVendorResponse_S?.data?.data?.summary_card?.overall_on_time_performance !== null ? resVendorResponse_S?.data?.data?.summary_card?.overall_on_time_performance : '0'}%
                           </Title>
                         </div>
 
@@ -421,10 +440,10 @@ export default function VendorComparison() {
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                                   <Text style={{ fontSize: 12 }}>{company.vendor}</Text>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                    <Text style={{ fontSize: 12 }}>{company.on_time_performance}%</Text>
+                                    <Text style={{ fontSize: 12 }}>1234567 ({company.on_time_performance}%)</Text>
                                     <Tag
                                       color={(company.on_time_performance_status > 90) ? 'green' : (company.on_time_performance_status > 60) ? 'orange' : 'red'}
-                                      style={{ fontSize: 10, padding: '2px 6px' }}
+                                      style={{ fontSize: 10, padding: '0px 3px' }}
                                     >
                                       {company.on_time_performance_status}
                                     </Tag>
@@ -438,15 +457,15 @@ export default function VendorComparison() {
                     </Col>
 
 
-                    <Col xs={24} lg={8} style={{ height:resVendorResponse_S?.data?.data?.summary_card?.per_vendor.length>0?'305px':"auto" }}>
+                    <Col xs={24} lg={8} style={{ height: resVendorResponse_S?.data?.data?.summary_card?.per_vendor.length > 0 ? '305px' : "auto" }}>
                       <Card style={{ height: '100%' }}>
-                        <Title level={4} style={{ marginBottom: 6 }}>
+                        <Title level={4} style={{ marginBottom: 6 ,color:"#0c265a"}}>
                           Customer Satisfaction
                         </Title>
 
                         <div style={{ marginBottom: 24 }}>
-                          <Title level={4} style={{ margin: 0 }}>
-                            {resVendorResponse_S?.data?.data?.summary_card?.overall_customer_satisfaction!==null?resVendorResponse_S?.data?.data?.summary_card?.overall_customer_satisfaction:"0"} / 5
+                          <Title level={5} style={{ margin: 0 }}>
+                            {resVendorResponse_S?.data?.data?.summary_card?.overall_customer_satisfaction !== null ? resVendorResponse_S?.data?.data?.summary_card?.overall_customer_satisfaction : "0"} / 5
                           </Title>
                         </div>
 
@@ -482,7 +501,7 @@ export default function VendorComparison() {
             <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
               Compare key metrics across {selectedTab.toLowerCase()} vendors
             </Text>
-            {resVendorResponse_S.isSuccess && !loader?
+            {resVendorResponse_S.isSuccess && !loader ?
               (tableData && tableData !== undefined ?
                 (
                   <Table

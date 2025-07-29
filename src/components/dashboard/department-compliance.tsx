@@ -26,7 +26,6 @@ interface RecommendationItem {
 }
 
 export function DepartmentCompliance(departmentCompliance:any) {
-  console.log(departmentCompliance)
   const departmentData: DepartmentComplianceData[] = [
     { department: 'Finance', compliance: 96, violations: 5, status: 'Excellent', change: '+2.1%' },
     { department: 'HR', compliance: 94, violations: 7, status: 'Excellent', change: '+1.5%' },
@@ -96,7 +95,7 @@ export function DepartmentCompliance(departmentCompliance:any) {
           {departmentCompliance?.departmentComplianceData?.data?.departments_compliance?.description}
         </Text>
 
-        <div style={{ maxWidth: 800 }}>
+        <div style={{ maxWidth: "100%" }}>
           {departmentData.length > 0 && departmentData !== undefined ? (
             departmentData.map((dept, index) => (
               <div key={index} style={{ marginBottom: 16 }}>

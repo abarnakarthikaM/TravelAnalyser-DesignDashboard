@@ -20,6 +20,7 @@ import {
 import { useLazyGetDashboardOverviewQuery } from "@/services/dashboard/dashboard";
 import { BarChartLoader, CardLoader, DashboardLoader, LoaderCard, TableLoader } from "@/components/Loader/Loader";
 import { calculateDateValues, formatDate } from "@/utils/dateFunctions";
+import Header from "@/components/dashboard/header";
 const tabItems = [
   {
     key: "expense-breakdown",
@@ -165,58 +166,12 @@ export default function Dashboard() {
       <Sidebar />
 
       <Layout style={{ marginLeft: 256, background: '#f9fafb' }}>
-        <header className="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold text-gray-900 m-0">
-              Travel Expense Dashboard
-            </h2>
-            <p className="text-gray-600" style={{ color: '#8c8c8c' }}>
-              Monitor and analyze your corporate travel expenses across all
-              travel modes
-            </p>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <Space size="middle" className="cls-datefilter-space">
-              <Select
-                value={dateFilter}
-                style={{ width: 215 }}
-                onChange={handleDateFilterChange}
-                onClear={() => {
-                  setOpen(false);
-                }}
-              >
-                <Option value="today">Today</Option>
-                <Option value="yesterday">Yesterday</Option>
-                <Option value="this-week">This week</Option>
-                <Option value="last-week">Last week</Option>
-                <Option value="this-month">This Month</Option>
-                <Option value="last-month">Last Month</Option>
-                <Option value="date-range">Date Range</Option>
-              </Select>
-
-              <DatePicker.RangePicker
-                open={open}
-                value={dateRange}
-                onChange={handleDateRangeChange}
-                onOpenChange={(status) => setOpen(status)}
-                style={{
-                  position: "absolute",
-                  opacity: 0,
-                  pointerEvents: "none",
-                  width: "0px"
-                }}
-                dropdownClassName="custom-range-picker-dropdown"
-              />
-            </Space>
-          </div>
-        </header>
-
+      <Header/>
         <Content style={{ padding: '32px' }}>
           {/* dashboard cards view starts */}
           {resDashboardOverview?.isSuccess && resDashboardOverview?.data ? (
             resDashboardOverviewData_S?.data?.expense !== undefined && resDashboardOverviewData_S?.data?.expense.length > 0 ? (
-              <MetricsCards metrics={resDashboardOverviewData_S?.data?.expense} />
+              <MetricsCards metrics={resDashboardOverviewData_S?.data?.expense} pathName={"Dashboard"}/>
             ) : (
               <Empty className="cls-whole-empty" />
             )

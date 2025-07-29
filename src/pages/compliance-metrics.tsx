@@ -11,6 +11,7 @@ import { Filter } from 'lucide-react';
 import { useLazyGetCompliancemetricsQuery } from '@/services/dashboard/dashboard';
 import { CardLoader, DepartmentSkeleton, LoaderCard } from '@/components/Loader/Loader';
 import { Rupees } from '@/components/ui/icons';
+import { MetricsCards } from '@/components/dashboard/metrics-cards';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -28,7 +29,64 @@ export default function ComplianceMetrics() {
   const [resComplainceOverview_S, setComplainceOverview_S] = useState<any>([]);
   const [resComplainceViolation_S, setComplainceViolation_S] = useState<any>([]);
   const [resComplainceDepartment_S, setComplainceDepartment_S] = useState<any>([]);
- 
+  // Metrics data
+  const metricsData = [
+    {
+      title: 'Overall Compliance',
+      value: '87%',
+      change: '+3.5%',
+      changeType: 'positive',
+      subtitle: 'from previous period',
+      icon: <CheckCircleOutlined style={{ color: '#52c41a' }} />
+    },
+    {
+      title: 'Policy Violations',
+      value: '143',
+      change: '-12%',
+      changeType: 'positive',
+      subtitle: 'from previous period',
+      icon: <ExclamationCircleOutlined style={{ color: '#ff4d4f' }} />,
+      details: [
+        { label: 'High Severity', value: 28 },
+        { label: 'Medium Severity', value: 67 },
+        { label: 'Low Severity', value: 48 }
+      ]
+    },
+    {
+      title: 'Pending Approvals',
+      value: '27',
+      change: '+34%',
+      changeType: 'negative',
+      subtitle: 'from previous period',
+      icon: <WarningOutlined style={{ color: '#faad14' }} />,
+      details: [
+        { label: 'Awaiting Manager', value: 18 },
+        { label: 'Awaiting Finance', value: 9 },
+        { label: 'Average Wait Time', value: '2.3 days' }
+      ]
+    },
+    {
+      title: 'Policy Savings',
+      value: '$87,450',
+      change: '+16.2%',
+      changeType: 'positive',
+      subtitle: 'from previous period',
+      icon: <InfoCircleOutlined style={{ color: '#1890ff' }} />,
+      details: [
+        { label: 'Estimated Annual Savings', value: '$349,800' }
+      ]
+    }
+  ];
+
+  // Policy compliance data
+  const policyComplianceData = [
+    { category: 'Advance Booking', percentage: 92, status: 'Excellent', change: '+4.5%', color: '#52c41a' },
+    { category: 'Preferred Vendors', percentage: 88, status: 'Good', change: '+2.1%', color: '#1890ff' },
+    { category: 'Expense Documentation', percentage: 85, status: 'Good', change: '+5.3%', color: '#1890ff' },
+    { category: 'Approval Workflow', percentage: 95, status: 'Excellent', change: '+1.2%', color: '#52c41a' },
+    { category: 'Lodging Limits', percentage: 76, status: 'Needs Improvement', change: '-2.8%', color: '#faad14' },
+    { category: 'Class of Service', percentage: 82, status: 'Good', change: '+3.7%', color: '#1890ff' }
+  ];
 
   // Employee data
   const topCompliantEmployees = [
@@ -54,10 +112,9 @@ export default function ComplianceMetrics() {
   };
 
   useEffect(() => {
-    if (resDatpickerValues?.length=== 0) {
+    if (resDatpickerValues?.length === 0) {
       setDatpickerValues(calculateDateValues(dateFilter))
     }
-    console.log(tabValue)
     if (resDatpickerValues.length === 2) {
       let reqData: any = {
         data: {
@@ -73,12 +130,10 @@ export default function ComplianceMetrics() {
   useEffect(() => {
     setComplainceCards_S(resComplainceCardData)
   }, [resComplainceCardData])
-  console.log(resComplainceCards_S)
   /********
      * request service call for Expense card and Top Expenses  service call
      */
   useEffect(() => {
-    console.log(tabValue)
     const url =
       (tabValue == 'department') ? "compliance/by_department/" :
         (tabValue == 'violations') ? "compliance/violations/" :
@@ -99,18 +154,16 @@ export default function ComplianceMetrics() {
     */
 
   useEffect(() => {
-    console.log(tabValue)
     if (resComplainceTabData?.isSuccess) {
       (tabValue == 'overview') && setComplainceOverview_S(resComplainceTabData.data);
       (tabValue == 'violations') && setComplainceViolation_S(resComplainceTabData.data);
       (tabValue == 'department') && setComplainceDepartment_S(resComplainceTabData.data);
     }
-
     // if(resExpenseBreakdown?.isSuccess && resExpenseBreakdown?.data){
     //   setCommonTabResponse_S(resExpenseBreakdown)
     // }
   }, [resComplainceTabData])
-  console.log(resComplainceViolation_S)
+
   /***********
    * Des:this function call's when change the date picker option
    */
@@ -157,7 +210,7 @@ export default function ComplianceMetrics() {
                   {resComplainceOverview_S?.data?.compliance_by_category.description}
                 </Text>
 
-                <div style={{ maxWidth: 800 }}>
+                <div style={{ maxWidth: "100%" }}>
                   {resComplainceOverview_S?.data?.compliance_by_category?.data.map((policy: any, index: any) => (
                     <div key={index} style={{ marginBottom: 20 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
@@ -264,7 +317,7 @@ export default function ComplianceMetrics() {
                 }
               </>)
               : (
-              <LoaderCard/>
+                <LoaderCard />
               )
             }
           </Row>
@@ -274,7 +327,7 @@ export default function ComplianceMetrics() {
     {
       key: 'violations',
       label: 'Policy Violations',
-      children: <PolicyViolations violationComplaince={resComplainceViolation_S} />
+      children: <PolicyViolations violationComplaince={resComplainceViolation_S} resComplainceTabData={resComplainceTabData} />
     },
     {
       key: 'department',
@@ -287,13 +340,12 @@ export default function ComplianceMetrics() {
       children: <div style={{ padding: 24 }}>Trends and analysis content</div>
     }
   ];
-  console.log(resComplainceCards_S?.data?.data?.compliance);
 
   return (
-    <Layout style={{ minHeight: '100vh', background: '#f5f5f5' }}>
+    <Layout style={{ minHeight: '100vh' }}>
       <Sidebar />
 
-      <Layout style={{ marginLeft: 256 }}>
+      <Layout style={{ marginLeft: 256, background: '#f9fafb' }}>
         {/* Header */}
         <div style={{
           background: '#fff',
@@ -311,21 +363,21 @@ export default function ComplianceMetrics() {
               Monitor and improve travel policy compliance across your organization
             </Text>
           </div>
-          
-           <Space size="middle" className="cls-datefilter-space">
-              <Select
-                value={dateFilter}
-                style={{ width: 215 }}
-                onChange={handleDateFilterChange}
-              >
-                <Option value="today">Today</Option>
-                <Option value="yesterday">Yesterday</Option>
-                <Option value="this-week">This week</Option>
-                <Option value="last-week">Last week</Option>
-                <Option value="this-month">This month</Option>
-                <Option value="last-month">Last month</Option>
-                <Option value="date-range">Date range</Option>
-              </Select>
+
+          <Space size="middle" className="cls-datefilter-space">
+            <Select
+              value={dateFilter}
+              style={{ width: 215 }}
+              onChange={handleDateFilterChange}
+            >
+              <Option value="today">Today</Option>
+              <Option value="yesterday">Yesterday</Option>
+              <Option value="this-week">This week</Option>
+              <Option value="last-week">Last week</Option>
+              <Option value="this-month">This month</Option>
+              <Option value="last-month">Last month</Option>
+              <Option value="date-range">Date range</Option>
+            </Select>
 
             <DatePicker.RangePicker
               open={open}
@@ -343,48 +395,10 @@ export default function ComplianceMetrics() {
 
         <Content style={{ padding: '32px' }}>
           {/* Top Metrics Cards */}
-          {resComplainceCardData.isSuccess && !resComplainceCardData.isLoading ?
+          {resComplainceCardData.isSuccess && !resComplainceCardData.isLoading && resComplainceCards_S?.data?.data?.compliance !== undefined ?
             (
-              <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
-                {resComplainceCards_S?.data?.data?.compliance.map((metric: any, index: any) => (
-                  <Col xs={24} lg={6} key={index}>
-                    <Card style={{ height: '100%' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                        <Title level={4} style={{ margin: 0, fontSize: 16 }}>
-                          {metric.name}
-                        </Title>
-                        {metric.icon}
-                      </div>
-
-                      <Title level={3} style={{ margin: 0, marginBottom: 8 }}>
-                        {metric.total}
-                      </Title>
-                      {metric.name == "Overall Compliance" && 
-                      <Progress percent={metric.total} size="small" showInfo={false} style={{ width: 80 }} />}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-                        <Text style={{
-                          color: metric.changeType === 'positive' ? '#52c41a' : '#ff4d4f',
-                          fontWeight: 500
-                        }}>
-                          {metric.change_percent} <span style={{ color: "#8C8C8C" }}>vs previous</span>
-                        </Text>
-                        <Text style={{ color: '#8c8c8c', fontSize: 12 }}>
-                          {metric.subtitle}
-                        </Text>
-                      </div>
-                      {/* {metric.details && (
-                    <div style={{ fontSize: 12, color: '#8c8c8c' }}>
-                      {metric.details.map((detail, idx) => (
-                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                          <span>{detail.label}</span>
-                          <span style={{ fontWeight: 500 }}>{detail.value}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )} */}
-                    </Card>
-                  </Col>
-                ))}
+              <Row gutter={[24, 24]} style={{ marginBottom: 0 }}>
+                <MetricsCards metrics={resComplainceCards_S?.data?.data?.compliance} pathName={"Compliance_metrics"} />
               </Row>
             )
             : (
@@ -397,6 +411,7 @@ export default function ComplianceMetrics() {
           <Card style={{ marginBottom: 32 }}>
             <Tabs
               defaultActiveKey="overview"
+              onChange={(key) => setTabValue(key)}
               items={tabItems}
             />
           </Card>

@@ -1,16 +1,16 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
-import { AuthService, CommonService } from "../services/service";
+import { CommonService } from "../services/service";
+import {headerReducer} from "./Headerslice"
 
 export const store = configureStore({
   reducer: {
     [CommonService.reducerPath]: CommonService.reducer,
-    [AuthService.reducerPath]:AuthService.reducer
+    headerReducer
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(CommonService.middleware)
-  .concat(AuthService.middleware),
+    getDefaultMiddleware().concat(CommonService.middleware),
 });
 
 setupListeners(store.dispatch);

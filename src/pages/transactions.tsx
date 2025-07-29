@@ -29,6 +29,7 @@ import { calculateDateValues, formatDate } from "@/utils/dateFunctions";
 import { Filter } from "lucide-react";
 import { useLazyGetTransactionServiceQuery } from "@/services/dashboard/dashboard";
 import { Rupees } from "@/components/ui/icons";
+import { MetricsCards } from "@/components/dashboard/metrics-cards";
 
 const { RangePicker } = DatePicker;
 const { Content } = Layout;
@@ -237,7 +238,6 @@ export default function Transactions() {
     }
   };
   const handleStatusFilterChange = (value: string) => {
-    console.log(value)
     setStatusFilter(value);
     setCurrentPage(1); // Reset to first page when filtering
   };
@@ -253,7 +253,7 @@ export default function Transactions() {
    * Des:transaction over view service call
    */
   useEffect(() => {
-    if (resDatpickerValues?.length=== 0) {
+    if (resDatpickerValues?.length === 0) {
       setDatpickerValues(calculateDateValues(dateFilter))
     }
     else if (resDatpickerValues.length === 2) {
@@ -276,12 +276,11 @@ export default function Transactions() {
       setTransactionOverview_S(resTransactionOverview)
     }
   }, [resTransactionOverview])
-  console.log(resDatpickerValues);
   /**************
    * Des: Recent Transactions table data service call
    */
   useEffect(() => {
-    if (resDatpickerValues?.length=== 0) {
+    if (resDatpickerValues?.length === 0) {
       setDatpickerValues(calculateDateValues(dateFilter))
     }
     else if (resDatpickerValues.length === 2) {
@@ -314,7 +313,6 @@ export default function Transactions() {
    */
   useEffect(() => {
     if (resDatpickerValues.length === 2) {
-      console.log(activeTab)
       let reqData: any = {
         data: {
           start_date: '2025-03-15',
@@ -322,7 +320,6 @@ export default function Transactions() {
         },
         url: "transactions/" + activeTab + '/'
       }
-      console.log(reqData)
       reqTransactionTabData({ RequestDataFormat: reqData });
     }
   }, [resDatpickerValues, activeTab]);
@@ -334,10 +331,8 @@ export default function Transactions() {
 
     if (resTransactiontabData.isSuccess) {
       setResTransactiontabData_S(resTransactiontabData)
-      console.log(resTransactiontabData)
     }
   }, [resTransactiontabData])
-  console.log(resTransactiontabData_S)
   // Filter transactions based on search and filters
   const filteredTransactions = resRecentTransaction_S?.data?.transactions.filter((transaction: any) => {
     const matchesSearch =
@@ -415,10 +410,10 @@ export default function Transactions() {
 
         <Content style={{ padding: "32px" }}>
           {/* Metrics Cards */}
-          {resTransactionOverview.isSuccess && !resTransactionOverview.isLoading ?
+          {resTransactionOverview.isSuccess && !resTransactionOverview.isLoading && resTransactionOverview_S?.data?.data?.overview_cards !== undefined ?
             (
-              <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
-                {resTransactionOverview_S?.data?.data?.overview_cards.map((overviewData: any) => (
+              <Row gutter={[24, 24]} style={{ marginTop: 16 }}>
+                {/* {resTransactionOverview_S?.data?.data?.overview_cards.map((overviewData: any) => (
                   <Col style={{ width: "196px", height: "150px" }}>
                     <Card style={{ height: "100%" }}>
                       <Statistic
@@ -432,7 +427,8 @@ export default function Transactions() {
                       />
                     </Card>
                   </Col>
-                ))}
+                ))} */}
+                <MetricsCards metrics={resTransactionOverview_S?.data?.data?.overview_cards} pathName={"Transaction"} />
               </Row>
             ) :
             (
@@ -657,9 +653,9 @@ export default function Transactions() {
                         // {resTransactiontabData?.data?.data?.category_overview}
                         <div>
                           {/* Category Summary Cards */}
-                          {resTransactiontabData.isSuccess && !resTransactiontabData.isLoading ?
+                          {resTransactiontabData.isSuccess && !resTransactiontabData.isLoading && resTransactiontabData_S?.data?.data?.category_overview?.cards !== undefined ?
                             (<Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
-                              {resTransactiontabData_S?.data?.data?.category_overview?.cards?.map((data: any) => (
+                              {/* {resTransactiontabData_S?.data?.data?.category_overview?.cards?.map((data: any) => (
                                 <Col xs={24} sm={12} lg={6}>
                                   <Card style={{ height: "100%" }}>
                                     <Title
@@ -701,7 +697,8 @@ export default function Transactions() {
                                     </Text>
                                   </Card>
                                 </Col>
-                              ))}
+                              ))} */}
+                              <MetricsCards metrics={resTransactiontabData_S?.data?.data?.category_overview?.cards} pathName={"Transaction_category"} />
                             </Row>
                             ) :
                             (
@@ -831,8 +828,9 @@ export default function Transactions() {
                       children: (
                         <div>
                           {/* Payment Method Summary Cards */}
-                          <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
-                            {resTransactiontabData_S?.data?.data?.payment_method_overview?.cards?.map((data: any) => (
+                          {resTransactiontabData.isSuccess && !resTransactiontabData.isLoading && resTransactiontabData_S?.data?.data?.payment_method_overview?.cards !== undefined ?
+                            (<Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
+                              {/* {resTransactiontabData_S?.data?.data?.payment_method_overview?.cards?.map((data: any) => (
                               <Col xs={24} sm={12} lg={6}>
                                 <Card style={{ height: "100%" }}>
 
@@ -879,8 +877,13 @@ export default function Transactions() {
                                   </Text>
                                 </Card>
                               </Col>
-                            ))}
-                          </Row>
+                            ))} */}
+                              <MetricsCards metrics={resTransactiontabData_S?.data?.data?.payment_method_overview?.cards} pathName={"Transaction_payments"} />
+                            </Row>) :
+                            (
+                              <CardLoader showBorder={false} />
+                            )
+                          }
 
                           {/* Payment Method Analysis */}
                           <Card style={{ marginBottom: 32 }}>

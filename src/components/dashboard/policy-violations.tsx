@@ -87,7 +87,13 @@ const costImpactData = [
   { type: 'Other violations', amount: 3747, percentage: 3 }
 ];
 
-export function PolicyViolations(violationComplaince: any) {
+export function PolicyViolations({
+  violationComplaince,
+  resComplainceTabData
+}: {
+  violationComplaince: any;
+  resComplainceTabData:any;
+}) {
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'High': return 'red';
@@ -152,9 +158,7 @@ export function PolicyViolations(violationComplaince: any) {
         <Tag color={getStatusColor(status)}>{status}</Tag>
       ),
     }
-  ];
-
-  return (
+  ];return (
 
     <div style={{ padding: '24px' }}>
       {/* Recent Policy Violations Table */}
@@ -182,14 +186,14 @@ export function PolicyViolations(violationComplaince: any) {
           />
         </div>
 
-        {
-          <>
-            {data.length > 0 && data !== undefined ?
+        {resComplainceTabData?.data?.data?.recent_policy_violations ?
+          (<>
+            {violationComplaince?.data?.recent_policy_violations?.data!==undefined && violationComplaince?.data?.recent_policy_violations?.data.length>0 ?
               (
                 <>
                   <Table
                     columns={columns}
-                    dataSource={violationComplaince?.violationComplaince?.data?.recent_policy_violations?.data}
+                    dataSource={violationComplaince?.data?.recent_policy_violations?.data}
                     pagination={false}
                     size="middle"
                     style={{ marginBottom: 16 }}
@@ -197,11 +201,11 @@ export function PolicyViolations(violationComplaince: any) {
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ color: '#8c8c8c', fontSize: 14 }}>
-                      Showing 5 of {violationComplaince?.violationComplaince?.data?.recent_policy_violations?.data.length} violations
+                      Showing 5 of {violationComplaince?.data?.recent_policy_violations?.data.length} violations
                     </span>
                     <Pagination
                       current={1}
-                      total={violationComplaince?.violationComplaince?.data?.recent_policy_violations?.data?.length}
+                      total={violationComplaince?.data?.recent_policy_violations?.data?.length}
                       pageSize={5}
                       showSizeChanger={false}
                       simple
@@ -212,10 +216,10 @@ export function PolicyViolations(violationComplaince: any) {
                 <Empty className='cls-whole-empty' />
               )
             }
-          </>
-          // :(
-          //   <TableLoader />
-          // )
+          </>)
+          :(
+            <TableLoader />
+          )
         }
       </div>
       {/* Bottom Cards Section */}
@@ -224,18 +228,18 @@ export function PolicyViolations(violationComplaince: any) {
         <Card>
           <div style={{ marginBottom: 24 }}>
             <h3 style={{ margin: 0, marginBottom: 4, fontSize: 18, fontWeight: 600 }}>
-              {violationComplaince?.violationComplaince?.data?.violation_types?.title}
+              {violationComplaince?.data?.violation_types?.title}
             </h3>
             <p style={{ margin: 0, color: '#8c8c8c', fontSize: 14 }}>
-              {violationComplaince?.violationComplaince?.data?.violation_types?.description}
+              {violationComplaince?.data?.violation_types?.description}
             </p>
           </div>
 
           <div style={{ maxHeight: 300, overflowY: 'auto' }}>
-            {violationTypes.length > 0 && violationTypes !== undefined ?
+            {violationTypes.length > 0 && violationTypes !== undefined && violationComplaince?.data?.violation_types?.data.length>0 ?
               (
                 <>
-                  {violationComplaince?.violationComplaince?.data?.violation_types?.data.map((violation: any, index: any) => (
+                  {violationComplaince?.data?.violation_types?.data.map((violation: any, index: any) => (
                     <div key={index} style={{ marginBottom: 20 }}>
                       <div style={{
                         display: 'flex',
@@ -295,10 +299,10 @@ export function PolicyViolations(violationComplaince: any) {
         <Card >
           <div style={{ marginBottom: 24 }}>
             <h3 style={{ margin: 0, marginBottom: 4, fontSize: 18, fontWeight: 600 }}>
-              {violationComplaince?.violationComplaince?.data?.cost_impact?.title}
+              {violationComplaince?.data?.cost_impact?.title}
             </h3>
             <p style={{ margin: 0, color: '#8c8c8c', fontSize: 14 }}>
-              {violationComplaince?.violationComplaince?.data?.cost_impact?.description}
+              {violationComplaince?.data?.cost_impact?.description}
 
             </p>
 
@@ -319,7 +323,7 @@ export function PolicyViolations(violationComplaince: any) {
                 Total Cost Impact
               </div>
               <div style={{ fontSize: 20, fontWeight: 600, color: '#1f2937' }}>
-                <Rupees className='inline-block' height={"20px"} width={"20px"} />{violationComplaince?.violationComplaince?.data?.cost_impact?.total_cost_impact}
+                <Rupees className='inline-block' height={"20px"} width={"20px"} />{violationComplaince?.data?.cost_impact?.total_cost_impact}
               </div>
             </div>
             <div>
@@ -327,7 +331,7 @@ export function PolicyViolations(violationComplaince: any) {
                 Average per Violation
               </div>
               <div style={{ fontSize: 20, fontWeight: 600, color: '#1f2937' }}>
-                <Rupees className='inline-block' height={"20px"} width={"20px"} />{violationComplaince?.violationComplaince?.data?.cost_impact?.average_per_violation}
+                <Rupees className='inline-block' height={"20px"} width={"20px"} />{violationComplaince?.data?.cost_impact?.average_per_violation}
 
               </div>
             </div>
@@ -339,10 +343,10 @@ export function PolicyViolations(violationComplaince: any) {
               Impact by Violation Type
             </h4>
 
-            <div style={{ maxHeight: 200, overflowY: 'auto' }}>
-              {violationComplaince?.violationComplaince?.data?.cost_impact?.impact_by_violation_type.length > 0 && costImpactData !== undefined ?
+            <div style={{ maxHeight: 300, overflowY: 'auto' }}>
+              {violationComplaince?.data?.cost_impact?.impact_by_violation_type.length > 0 && costImpactData !== undefined ?
 
-                (violationComplaince?.violationComplaince?.data?.cost_impact?.impact_by_violation_type
+                (violationComplaince?.data?.cost_impact?.impact_by_violation_type
                   .map((item: any, index: any) => (
                     <div key={index} style={{ marginBottom: 12 }}>
                       <div style={{
