@@ -182,7 +182,6 @@ export const commonServices = CommonService.enhanceEndpoints({
   endpoints: (build) => ({
     postCommonService: build.mutation<ApiResponse<any>, {RequestDataFormat: any }>({
       query: ({ params }: any) => {
-        console.log(params)
         return {
         url: params.RequestDataFormat.url,
         method: "POST",

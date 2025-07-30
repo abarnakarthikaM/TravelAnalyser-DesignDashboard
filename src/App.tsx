@@ -16,33 +16,38 @@ import { store } from "./stores/Store";
 import { Provider } from "react-redux";
 import './index.css';
 import '../attached_assets/fonts/fonts.scss';
-
+// import { PersistGate } from 'redux-persist/integration/react';
+// import { persistStore } from 'redux-persist';
 // const queryClient = new queryClient();
 
 function App() {
+  // const persistor = persistStore(store);
   return (
-     <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-        {/* <BrowserRouter> */}
-        <Router>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/transactions" element={<ProtectedRoute><Transactions /></ProtectedRoute>} />
-            <Route path="/top-spenders" element={<ProtectedRoute><TopSpenders /></ProtectedRoute>} />
-            <Route path="/spending-trends" element={<ProtectedRoute><SpendingTrends /></ProtectedRoute>} />
-            <Route path="/vendor-comparison" element={<ProtectedRoute><VendorComparison /></ProtectedRoute>} />
-            <Route path="/compliance-metrics" element={<ProtectedRoute><ComplianceMetrics /></ProtectedRoute>} />
-            <Route path="/ai-insights" element={<ProtectedRoute><AIInsights /></ProtectedRoute>} />
-            <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-            <Route path="*" element={<NotFound />} />
-            <Route path="/" element={<Login />} />
-          </Routes>
-        </Router>
-        {/* </BrowserRouter> */}
-      </QueryClientProvider>
-      </Provider>
+    <Provider store={store}>
+      {/* <PersistGate loading={null} persistor={persistor}> */}
+
+        <QueryClientProvider client={queryClient}>
+          {/* <BrowserRouter> */}
+          <Router>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/transactions" element={<ProtectedRoute><Transactions /></ProtectedRoute>} />
+              <Route path="/top-spenders" element={<ProtectedRoute><TopSpenders /></ProtectedRoute>} />
+              <Route path="/spending-trends" element={<ProtectedRoute><SpendingTrends /></ProtectedRoute>} />
+              <Route path="/vendor-comparison" element={<ProtectedRoute><VendorComparison /></ProtectedRoute>} />
+              <Route path="/compliance-metrics" element={<ProtectedRoute><ComplianceMetrics /></ProtectedRoute>} />
+              <Route path="/ai-insights" element={<ProtectedRoute><AIInsights /></ProtectedRoute>} />
+              <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+              <Route path="*" element={<NotFound />} />
+              <Route path="/" element={<Login />} />
+            </Routes>
+          </Router>
+          {/* </BrowserRouter> */}
+        </QueryClientProvider>
+      {/* </PersistGate> */}
+    </Provider>
   );
 }
 

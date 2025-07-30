@@ -21,6 +21,8 @@ import { useLazyGetDashboardOverviewQuery } from "@/services/dashboard/dashboard
 import { BarChartLoader, CardLoader, DashboardLoader, LoaderCard, TableLoader } from "@/components/Loader/Loader";
 import { calculateDateValues, formatDate } from "@/utils/dateFunctions";
 import Header from "@/components/dashboard/header";
+import { useDispatch, useSelector } from "react-redux";
+import { setFilterdate } from "../stores/Headerslice"
 const tabItems = [
   {
     key: "expense-breakdown",
@@ -36,24 +38,26 @@ const tabItems = [
   },
 ];
 
-
-
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 const { Content } = Layout
 
 export default function Dashboard() {
+  const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState("expense-breakdown");
   const [resDashboardOverviewData_S, setResDashboardOverviewData_S] = useState<any>();
   const [resCommonTabResponse_S, setCommonTabResponse_S] = useState<any>([]);
   const [resDatpickerValues, setDatpickerValues] = useState<any>([]);
-  const [dateFilter, setDateFilter] = useState("today");
-  const [open, setOpen] = useState(false);
-  const [dateRange, setDateRange] = useState<any>([]);
+ 
   const [selectedVendorTab, setSelectedVendorTab] = useState("all-modes");
   const { data: metrics, isLoading } = useQuery({
     queryKey: ["/api/dashboard/metrics"],
   });
+  const { dateFilter: Datetype, filterValue: DateRange } = useSelector(
+    (state: any) => state.header
+  );
+  const [dateFilter, setDateFilter] = useState(Datetype);
+
   const [loader, setloader] = useState<boolean>(true)
 
   const [reqDashboardOverview, resDashboardOverview] = useLazyGetDashboardOverviewQuery();
@@ -63,21 +67,78 @@ export default function Dashboard() {
    * request service call for Expense card and Top Expenses  service call
    */
   useEffect(() => {
-    if(resDatpickerValues.length===0){
-     setDatpickerValues(calculateDateValues(dateFilter))
+    if (Datetype !== "date-range") {
+      if (resDatpickerValues.length === 0) {
+        dispatch(setFilterdate({ date: calculateDateValues(dateFilter) }))
+      }
+      if (resDatpickerValues?.length === 2) {
+        let reqData: any = {
+          data: {
+            start_date: resDatpickerValues[0],
+            end_date: resDatpickerValues[1],
+          },
+          url: 'dashboard/overview/'
+        }
+
+        reqDashboardOverview({ RequestDataFormat: reqData });
+      }
+    } else {
+      if (DateRange?.length === 2) {
+        let reqData: any = {
+          data: {
+            start_date: DateRange[0],
+            end_date: DateRange[1],
+          },
+          url: 'dashboard/overview/'
+        }
+
+        reqDashboardOverview({ RequestDataFormat: reqData });
+      }
+      // const urlvalue = (activeTab === 'vendor-performance') ? "dashboard/vendors_performance/"
+      //   : (activeTab === 'compliance') ? "dashboard/compliance/"
+      //     : "dashboard/expense_breakdown/";
+      // let reqData: any = {
+      //   data: {
+      //     start_date: DateRange[0],
+      //     end_date: DateRange[1],
+      //   },
+      //   url: urlvalue
+      // }
+      // if (activeTab == 'vendor-performance' && selectedVendorTab != 'all-modes') {
+      //   reqData.data.travel_type = selectedVendorTab
+      // }
+      // reqExpenseBreakdown({ RequestDataFormat: reqData });
     }
-    if (resDatpickerValues?.length === 2) {
+  }, [resDatpickerValues]);
+
+  useEffect(() => {
+    if (DateRange?.length === 2) {
       let reqData: any = {
         data: {
-          start_date: resDatpickerValues[0],
-          end_date: resDatpickerValues[1],
+          start_date: DateRange[0],
+          end_date: DateRange[1],
         },
         url: 'dashboard/overview/'
       }
-      
+
       reqDashboardOverview({ RequestDataFormat: reqData });
     }
-  }, [resDatpickerValues]);
+    const urlvalue = (activeTab === 'vendor-performance') ? "dashboard/vendors_performance/"
+      : (activeTab === 'compliance') ? "dashboard/compliance/"
+        : "dashboard/expense_breakdown/";
+    let reqData: any = {
+      data: {
+        start_date: DateRange[0],
+        end_date: DateRange[1],
+      },
+      url: urlvalue
+    }
+    if (activeTab == 'vendor-performance' && selectedVendorTab != 'all-modes') {
+      reqData.data.travel_type = selectedVendorTab
+    }
+    reqExpenseBreakdown({ RequestDataFormat: reqData });
+
+  }, [DateRange, activeTab, selectedVendorTab])
   /********
     *get response for Expense card and Top Expenses  service call
     */
@@ -100,8 +161,8 @@ export default function Dashboard() {
         : "dashboard/expense_breakdown/";
     let reqData: any = {
       data: {
-        start_date: resDatpickerValues[0],
-        end_date: resDatpickerValues[1],
+        start_date: DateRange[0],
+        end_date: DateRange[1],
       },
       url: urlvalue
     }
@@ -109,9 +170,7 @@ export default function Dashboard() {
       reqData.data.travel_type = selectedVendorTab
     }
     reqExpenseBreakdown({ RequestDataFormat: reqData });
-  }, [resDatpickerValues, activeTab, selectedVendorTab])
-  console.log(resExpenseBreakdown)
-  console.log(resCommonTabResponse_S)
+  }, [resDatpickerValues])
 
   const getChartData = (vendorType: string) => {
     let vendorResData: any = [];
@@ -123,33 +182,7 @@ export default function Dashboard() {
   /***********
    * Des:this function call's when change the date picker option
    */
-  const handleDateFilterChange = (value: any) => {
-    setDateFilter(value);
-    if (value === "date-range") {
-      setOpen(true);
-      setDateFilter(value);
-    } else {
-      setDateRange([]);
-      setDatpickerValues(calculateDateValues(value))
-      setOpen(false);
-    }
-  };
-  /******
-   * Des:this function hanndles the date range picker value changes
-   */
-  const handleDateRangeChange = (dates: any, dateStrings: [any, any]) => {
-
-    setDateFilter("date-range");
-    setDateRange(dates);
-    setOpen(false);
-    if (dates && dates.length === 2) {
-      if (dateFilter === "date-range" && dateStrings && dateStrings.length === 2) {
-        setDatpickerValues(dateStrings);
-      }
-      setDateFilter(formatDate(dateStrings[0]) + ' - ' + formatDate(dateStrings[1]));
-    }
-  };
-
+  
   if (isLoading) {
     return (
       <div className="min-h-screen">
@@ -166,12 +199,12 @@ export default function Dashboard() {
       <Sidebar />
 
       <Layout style={{ marginLeft: 256, background: '#f9fafb' }}>
-      <Header/>
+        <Header Title={"Travel Expense Dashboard"} description={"Monitor and analyze your corporate travel expenses across all vendors"} />
         <Content style={{ padding: '32px' }}>
           {/* dashboard cards view starts */}
           {resDashboardOverview?.isSuccess && resDashboardOverview?.data ? (
             resDashboardOverviewData_S?.data?.expense !== undefined && resDashboardOverviewData_S?.data?.expense.length > 0 ? (
-              <MetricsCards metrics={resDashboardOverviewData_S?.data?.expense} pathName={"Dashboard"}/>
+              <MetricsCards metrics={resDashboardOverviewData_S?.data?.expense} pathName={"Dashboard"} />
             ) : (
               <Empty className="cls-whole-empty" />
             )
@@ -215,12 +248,12 @@ export default function Dashboard() {
               </>
             )}
 
-            {(activeTab === "vendor-performance" &&  
+            {(activeTab === "vendor-performance" &&
               (
                 <>
                   {/* {resCommonTabResponse_S.data?.data?.vendor_performance != undefined && resCommonTabResponse_S.data?.data?.vendor_performance ? <VendorPerformanceTab /> : <Empty className="cls-whole-empty" />} */}
                   {
-                
+
                     <VendorPerformanceTab />
                   }
                 </>
@@ -229,213 +262,213 @@ export default function Dashboard() {
             {(activeTab === "compliance" &&
               (
                 <>
-                  {resExpenseBreakdown.status==="pending" ?
-                     (
+                  {resExpenseBreakdown.status === "pending" ?
+                    (
                       (<LoaderCard count={3} />)
                     )
                     :
-                     (
-                        <div
-                          className="bg-white rounded-lg"
-                          style={{ minHeight: 340, border: "1px solid #d1d5db" }}
-                        >
-                          <div style={{ padding: "24px" }}>
-                            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                              Compliance Overview
-                            </h3>
-                            <p className="text-gray-600 mb-6">
-                              Monitor policy compliance across departments
-                            </p>
+                    (
+                      <div
+                        className="bg-white rounded-lg"
+                        style={{ minHeight: 340, border: "1px solid #d1d5db" }}
+                      >
+                        <div style={{ padding: "24px" }}>
+                          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                            Compliance Overview
+                          </h3>
+                          <p className="text-gray-600 mb-6">
+                            Monitor policy compliance across departments
+                          </p>
 
-                            {/* Compliance Metrics Cards */}
+                          {/* Compliance Metrics Cards */}
+                          <div
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns:
+                                "repeat(auto-fit, minmax(285px, 1fr))",
+                              gap: 24,
+                              marginBottom: 32,
+                            }}
+                          >
+                            {/* Overall Compliance Card */}
                             <div
                               style={{
-                                display: "grid",
-                                gridTemplateColumns:
-                                  "repeat(auto-fit, minmax(285px, 1fr))",
-                                gap: 24,
-                                marginBottom: 32,
+                                backgroundColor: "#fff",
+                                border: "1px solid #e5e7eb",
+                                borderRadius: "8px",
+                                padding: "24px",
+                                boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
                               }}
                             >
-                              {/* Overall Compliance Card */}
-                              <div
-                                style={{
-                                  backgroundColor: "#fff",
-                                  border: "1px solid #e5e7eb",
-                                  borderRadius: "8px",
-                                  padding: "24px",
-                                  boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
-                                }}
-                              >
-                                <div style={{ marginBottom: 16 }}>
+                              <div style={{ marginBottom: 16 }}>
+                                <div
+                                  style={{
+                                    fontSize: 14,
+                                    color: "#6b7280",
+                                    fontWeight: 500,
+                                    marginBottom: 8,
+                                  }}
+                                >
+                                  Overall Compliance
+                                </div>
+                                <div
+                                  style={{
+                                    fontSize: 32,
+                                    fontWeight: 600,
+                                    color: "#10b981",
+                                    marginBottom: 12,
+                                  }}
+                                >
+                                  {resCommonTabResponse_S.data?.data?.compliance?.overall_compliance?.value}
+                                </div>
+                                {/* Progress bar */}
+                                <div
+                                  style={{
+                                    width: "100%",
+                                    height: 8,
+                                    backgroundColor: "#f3f4f6",
+                                    borderRadius: 4,
+                                    overflow: "hidden",
+                                  }}
+                                >
                                   <div
                                     style={{
-                                      fontSize: 14,
-                                      color: "#6b7280",
-                                      fontWeight: 500,
-                                      marginBottom: 8,
-                                    }}
-                                  >
-                                    Overall Compliance
-                                  </div>
-                                  <div
-                                    style={{
-                                      fontSize: 32,
-                                      fontWeight: 600,
-                                      color: "#10b981",
-                                      marginBottom: 12,
-                                    }}
-                                  >
-                                    {resCommonTabResponse_S.data?.data?.compliance?.overall_compliance?.value}
-                                  </div>
-                                  {/* Progress bar */}
-                                  <div
-                                    style={{
-                                      width: "100%",
-                                      height: 8,
-                                      backgroundColor: "#f3f4f6",
+                                      width: resCommonTabResponse_S.data?.data?.compliance?.overall_compliance?.value,
+                                      height: "100%",
+                                      backgroundColor: "#10b981",
                                       borderRadius: 4,
-                                      overflow: "hidden",
                                     }}
-                                  >
-                                    <div
-                                      style={{
-                                        width: resCommonTabResponse_S.data?.data?.compliance?.overall_compliance?.value,
-                                        height: "100%",
-                                        backgroundColor: "#10b981",
-                                        borderRadius: 4,
-                                      }}
-                                    ></div>
-                                  </div>
+                                  ></div>
                                 </div>
                               </div>
+                            </div>
 
-                              {/* Policy Violations Card */}
-                              <div
-                                style={{
-                                  backgroundColor: "#fff",
-                                  border: "1px solid #e5e7eb",
-                                  borderRadius: "8px",
-                                  padding: "24px",
-                                  boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
-                                }}
-                              >
-                                <div style={{ marginBottom: 16 }}>
-                                  <div
+                            {/* Policy Violations Card */}
+                            <div
+                              style={{
+                                backgroundColor: "#fff",
+                                border: "1px solid #e5e7eb",
+                                borderRadius: "8px",
+                                padding: "24px",
+                                boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+                              }}
+                            >
+                              <div style={{ marginBottom: 16 }}>
+                                <div
+                                  style={{
+                                    fontSize: 14,
+                                    color: "#6b7280",
+                                    fontWeight: 500,
+                                    marginBottom: 8,
+                                  }}
+                                >
+                                  Policy Violations
+                                </div>
+                                <div
+                                  style={{
+                                    fontSize: 32,
+                                    fontWeight: 600,
+                                    color: "#ef4444",
+                                    marginBottom: 8,
+                                  }}
+                                >
+                                  {resCommonTabResponse_S.data?.data?.compliance?.policy_violations?.count}
+                                </div>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 4,
+                                  }}
+                                >
+                                  <span
                                     style={{
                                       fontSize: 14,
-                                      color: "#6b7280",
+                                      color: "#10b981",
                                       fontWeight: 500,
-                                      marginBottom: 8,
                                     }}
                                   >
-                                    Policy Violations
-                                  </div>
-                                  <div
+                                    ↓{resCommonTabResponse_S.data?.data?.compliance?.policy_violations?.trend}
+
+                                  </span>
+                                  <span
                                     style={{
-                                      fontSize: 32,
-                                      fontWeight: 600,
+                                      fontSize: 12,
+                                      color: "#6b7280",
+                                    }}
+                                  >
+                                    from previous period
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Pending Approvals Card */}
+                            <div
+                              style={{
+                                backgroundColor: "#fff",
+                                border: "1px solid #e5e7eb",
+                                borderRadius: "8px",
+                                padding: "24px",
+                                boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+                              }}
+                            >
+                              <div style={{ marginBottom: 16 }}>
+                                <div
+                                  style={{
+                                    fontSize: 14,
+                                    color: "#6b7280",
+                                    fontWeight: 500,
+                                    marginBottom: 8,
+                                  }}
+                                >
+                                  Late Approvals
+                                </div>
+                                <div
+                                  style={{
+                                    fontSize: 32,
+                                    fontWeight: 600,
+                                    color: "#1f2937",
+                                    marginBottom: 8,
+                                  }}
+                                >
+                                  {resCommonTabResponse_S.data?.data?.compliance?.late_approvals?.count}
+                                </div>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 4,
+                                  }}
+                                >
+                                  <span
+                                    style={{
+                                      fontSize: 14,
                                       color: "#ef4444",
-                                      marginBottom: 8,
-                                    }}
-                                  >
-                                    {resCommonTabResponse_S.data?.data?.compliance?.policy_violations?.count}
-                                  </div>
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      gap: 4,
-                                    }}
-                                  >
-                                    <span
-                                      style={{
-                                        fontSize: 14,
-                                        color: "#10b981",
-                                        fontWeight: 500,
-                                      }}
-                                    >
-                                      ↓{resCommonTabResponse_S.data?.data?.compliance?.policy_violations?.trend}
-
-                                    </span>
-                                    <span
-                                      style={{
-                                        fontSize: 12,
-                                        color: "#6b7280",
-                                      }}
-                                    >
-                                      from previous period
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Pending Approvals Card */}
-                              <div
-                                style={{
-                                  backgroundColor: "#fff",
-                                  border: "1px solid #e5e7eb",
-                                  borderRadius: "8px",
-                                  padding: "24px",
-                                  boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
-                                }}
-                              >
-                                <div style={{ marginBottom: 16 }}>
-                                  <div
-                                    style={{
-                                      fontSize: 14,
-                                      color: "#6b7280",
                                       fontWeight: 500,
-                                      marginBottom: 8,
                                     }}
                                   >
-                                    Late Approvals
-                                  </div>
-                                  <div
+                                    ↑ {resCommonTabResponse_S.data?.data?.compliance?.late_approvals?.trend}
+                                  </span>
+                                  <span
                                     style={{
-                                      fontSize: 32,
-                                      fontWeight: 600,
-                                      color: "#1f2937",
-                                      marginBottom: 8,
+                                      fontSize: 12,
+                                      color: "#6b7280",
                                     }}
                                   >
-                                    {resCommonTabResponse_S.data?.data?.compliance?.late_approvals?.count}
-                                  </div>
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      gap: 4,
-                                    }}
-                                  >
-                                    <span
-                                      style={{
-                                        fontSize: 14,
-                                        color: "#ef4444",
-                                        fontWeight: 500,
-                                      }}
-                                    >
-                                      ↑ {resCommonTabResponse_S.data?.data?.compliance?.late_approvals?.trend}
-                                    </span>
-                                    <span
-                                      style={{
-                                        fontSize: 12,
-                                        color: "#6b7280",
-                                      }}
-                                    >
-                                      from previous period
-                                    </span>
-                                  </div>
+                                    from previous period
+                                  </span>
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      )
+                      </div>
+                    )
                   }
 
 
-                 
+
                 </>
               )
             )}
@@ -542,7 +575,7 @@ export default function Dashboard() {
         </div>
 
         {/* Chart area */}
-        {(resCommonTabResponse_S?.data?.data?.vendor_performance?.chart_data?.length>0 && resCommonTabResponse_S?.data?.data?.vendor_performance?.chart_data !=undefined) ?
+        {(resCommonTabResponse_S?.data?.data?.vendor_performance?.chart_data?.length > 0 && resCommonTabResponse_S?.data?.data?.vendor_performance?.chart_data != undefined) ?
           (
             <div style={{ padding: "0 24px 24px" }}>
               <div style={{ height: 350, position: "relative" }}>
@@ -698,7 +731,7 @@ export default function Dashboard() {
           :
           (<Empty className="cls-whole-empty" />)
         }
-        
+
       </div>
     );
   }

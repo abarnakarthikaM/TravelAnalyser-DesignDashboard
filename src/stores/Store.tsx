@@ -7,7 +7,7 @@ import {headerReducer} from "./Headerslice"
 export const store = configureStore({
   reducer: {
     [CommonService.reducerPath]: CommonService.reducer,
-    headerReducer
+    header: headerReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(CommonService.middleware),

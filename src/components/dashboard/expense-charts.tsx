@@ -130,7 +130,6 @@ export function ExpenseCharts({ metrics }: any) {
   const formatTooltip = (value: number, name: string) => {
     return [`$${value.toLocaleString()}`, name];
   };
-  console.log(selectedPeriod)
   const renderCustomizedLabel = ({
     cx,
     cy,

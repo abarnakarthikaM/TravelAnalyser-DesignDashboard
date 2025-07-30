@@ -1,34 +1,39 @@
 import { calculateDateValues, formatDate } from "@/utils/dateFunctions";
 import { Select, DatePicker, Row, Space } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setFilterdate, setDatetype } from "../../stores/Headerslice"
+import { setFilterdate, setDatetype, setViewType } from "../../stores/Headerslice"
 
 const { Option } = Select;
 
-const Header = () => {
-    const { dateFilter: DateRange, filterValue: Datetype } = useSelector(
-        (state: any) => state.headerReducer
+const Header = ({ Title, description }: any) => {
+    const { dateFilter: Datetype, filterValue: DateRange,viewType:viewType } = useSelector(
+        (state: any) => state.header
     );
-    console.log(DateRange,Datetype)
     const dispatch = useDispatch();
-    const [dateFilter, setDateFilter] = useState("today");
+    const [dateFilter, setDateFilter] = useState(Datetype);
     const [open, setOpen] = useState(false);
     const [dateRange, setDateRange] = useState<any>([]);
-    const [resDatpickerValues, setDatpickerValues] = useState<any>([]);
+    /***********
+   * Des:this function call's when change the date picker option* 
+   */
     const handleDateFilterChange = (value: any) => {
         setDateFilter(value);
         if (value === "date-range") {
             setOpen(true);
             setDateFilter(value);
-            dispatch(setDatetype({ date: value }));
+            dispatch(setDatetype({ filtertype: value }));
         } else {
             setDateRange([]);
-            dispatch(setDatetype({ date: value }));
-            dispatch(setFilterdate({ filtertype: calculateDateValues(value) }));
+            dispatch(setDatetype({ filtertype: value }));
+            dispatch(setFilterdate({ date: calculateDateValues(value) }));
             setOpen(false);
         }
     };
+
+    /******
+   * Des:this function hanndles the date range picker value changes
+   */
     const handleDateRangeChange = (dates: any, dateStrings: [any, any]) => {
 
         setDateFilter("date-range");
@@ -36,31 +41,38 @@ const Header = () => {
         setOpen(false);
         if (dates && dates.length === 2) {
             if (dateFilter === "date-range" && dateStrings && dateStrings.length === 2) {
-                console.log(dateStrings)
-                setDatpickerValues(dateStrings);
-                dispatch(setFilterdate({ filtertype: dateStrings }));
+                dispatch(setFilterdate({ date: dateStrings }));
             }
             setDateFilter(formatDate(dateStrings[0]) + ' - ' + formatDate(dateStrings[1]));
         }
     };
-    console.log(resDatpickerValues)
+
+    const handleviewChange =(value:any)=>{
+        dispatch(setViewType({viewtype:value}));
+    }
     return (
         <Row className="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between">
             <div>
                 <h2 className="text-2xl font-semibold text-gray-900 m-0">
-                    Travel Expense Dashboard
+                    {Title}
                 </h2>
                 <p className="text-gray-600" style={{ color: '#8c8c8c' }}>
-                    Monitor and analyze your corporate travel expenses across all
-                    vendors
+                    {description}
                 </p>
             </div>
-
             <div className="flex items-center gap-4">
                 <Space size="middle" className="cls-datefilter-space">
+                    <Select 
+                        value={viewType}
+                        style={{ width: 150 }}
+                        onChange={handleviewChange}
+                    >
+                        <Option value="corporate">Corporate view</Option>
+                        <Option value="vendor">Vendor view</Option>
+                    </Select>
                     <Select
                         value={dateFilter}
-                        style={{ width: 215 }}
+                        style={{ width: 150 }}
                         onChange={handleDateFilterChange}
                         onClear={() => {
                             setOpen(false);

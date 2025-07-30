@@ -30,6 +30,9 @@ import { Filter } from "lucide-react";
 import { useLazyGetTransactionServiceQuery } from "@/services/dashboard/dashboard";
 import { Rupees } from "@/components/ui/icons";
 import { MetricsCards } from "@/components/dashboard/metrics-cards";
+import Header from "@/components/dashboard/header";
+import { useDispatch, useSelector } from "react-redux";
+import { setFilterdate } from "../stores/Headerslice"
 
 const { RangePicker } = DatePicker;
 const { Content } = Layout;
@@ -47,13 +50,13 @@ interface Transaction {
   status: "Approved" | "Pending" | "Rejected";
 }
 export default function Transactions() {
+  const dispatch = useDispatch();
+  const { dateFilter: Datetype, filterValue: DateRange } = useSelector(
+    (state: any) => state.header
+  );
   const [activeTab, setActiveTab] = useState("transactionsummary");
-  const [dateFilter, setDateFilter] = useState("today");
-  const [tabValue, setTabValue] = useState("overview");
-  const [open, setOpen] = useState(false);
-  const [dateRange, setDateRange] = useState<any>([]);
+  const [dateFilter, setDateFilter] = useState(Datetype);
   const { Option } = Select;
-  const [resDatpickerValues, setDatpickerValues] = useState<any>([]);
   const [resTransactionOverview_S, setTransactionOverview_S] = useState<any>([])
   const [resRecentTransaction_S, setRecentTransaction_S] = useState<any>([])
   const [resTransactiontabData_S, setResTransactiontabData_S] = useState<any>([])
@@ -209,34 +212,7 @@ export default function Transactions() {
       },
     },
   ];
-  /***********
-    * Des:this function call's when change the date picker option
-    */
-  const handleDateFilterChange = (value: any) => {
-    setDateFilter(value);
-    if (value === "date-range") {
-      setOpen(true);
-      setDateFilter(value);
-    } else {
-      setDateRange([]);
-      setDatpickerValues(calculateDateValues(value))
-      setOpen(false);
-    }
-  };
-  /******
-   * Des:this function hanndles the date range picker value changes
-   */
-  const handleDateRangeChange = (dates: any, dateStrings: [any, any]) => {
-    setDateFilter("date-range");
-    setDateRange(dates);
-    setOpen(false);
-    if (dates && dates.length === 2) {
-      if (dateFilter === "date-range" && dateStrings && dateStrings.length === 2) {
-        setDatpickerValues(dateStrings);
-      }
-      setDateFilter(formatDate(dateStrings[0]) + ' - ' + formatDate(dateStrings[1]));
-    }
-  };
+  
   const handleStatusFilterChange = (value: string) => {
     setStatusFilter(value);
     setCurrentPage(1); // Reset to first page when filtering
@@ -253,20 +229,20 @@ export default function Transactions() {
    * Des:transaction over view service call
    */
   useEffect(() => {
-    if (resDatpickerValues?.length === 0) {
-      setDatpickerValues(calculateDateValues(dateFilter))
+    if (DateRange?.length === 0) {
+      dispatch(setFilterdate({ date: calculateDateValues(dateFilter) }))
     }
-    else if (resDatpickerValues.length === 2) {
+    else if (DateRange.length === 2) {
       let reqData: any = {
         data: {
-          start_date: resDatpickerValues[0],
-          end_date: resDatpickerValues[1],
+          start_date: DateRange[0],
+          end_date: DateRange[1],
         },
         url: "transactions/overview/"
       }
       reqTransactionOverview({ RequestDataFormat: reqData });
     }
-  }, [resDatpickerValues]);
+  }, [DateRange]);
 
   /**********
  * Des:transaction over view service call response
@@ -280,14 +256,14 @@ export default function Transactions() {
    * Des: Recent Transactions table data service call
    */
   useEffect(() => {
-    if (resDatpickerValues?.length === 0) {
-      setDatpickerValues(calculateDateValues(dateFilter))
+    if (DateRange?.length === 0) {
+      dispatch(setFilterdate({ date: calculateDateValues(dateFilter) }))
     }
-    else if (resDatpickerValues.length === 2) {
+    else if (DateRange.length === 2) {
       let reqData: any = {
         data: {
-          start_date: resDatpickerValues[0],
-          end_date: resDatpickerValues[1],
+          start_date: DateRange[0],
+          end_date: DateRange[1],
           status: 'all',
           travel_type: 'all',
           page: 1,
@@ -297,7 +273,7 @@ export default function Transactions() {
       }
       reqRecentTransaction({ RequestDataFormat: reqData });
     }
-  }, [resDatpickerValues]);
+  }, [DateRange]);
   /**********
  * Des:transaction over view service call response
  */
@@ -312,7 +288,7 @@ export default function Transactions() {
    * Des:transaction tab based service call
    */
   useEffect(() => {
-    if (resDatpickerValues.length === 2) {
+    if (DateRange.length === 2) {
       let reqData: any = {
         data: {
           start_date: '2025-03-15',
@@ -322,7 +298,7 @@ export default function Transactions() {
       }
       reqTransactionTabData({ RequestDataFormat: reqData });
     }
-  }, [resDatpickerValues, activeTab]);
+  }, [DateRange, activeTab]);
 
   /**********
  * Des:transaction over view service call response
@@ -360,53 +336,7 @@ export default function Transactions() {
 
       <Layout style={{ marginLeft: 256, background: '#f9fafb' }}>
         {/* Header */}
-        <div
-          style={{
-            background: "#fff",
-            borderBottom: "1px solid #f0f0f0",
-            padding: "16px 32px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <div>
-            <Title level={3} style={{ margin: 0, marginBottom: 4 }}>
-              Transactions
-            </Title>
-            <Text style={{ color: "#8c8c8c" }}>
-              View and manage all travel expense transactions
-            </Text>
-          </div>
-
-          <Space size="middle" className="cls-datefilter-space">
-            <Select
-              value={dateFilter}
-              style={{ width: 215 }}
-              onChange={handleDateFilterChange}
-            >
-              <Option value="today">Today</Option>
-              <Option value="yesterday">Yesterday</Option>
-              <Option value="this-week">This week</Option>
-              <Option value="last-week">Last week</Option>
-              <Option value="this-month">This Month</Option>
-              <Option value="last-month">Last Month</Option>
-              <Option value="date-range">Date Range</Option>
-            </Select>
-
-            <DatePicker.RangePicker
-              open={open}
-              value={dateRange}
-              onChange={handleDateRangeChange}
-              onOpenChange={(status) => setOpen(status)}
-              style={{
-                position: "absolute",
-                opacity: 0,
-                pointerEvents: "none",
-              }}
-            />
-          </Space>
-        </div>
+        <Header Title={"Transactions"} description={"View and manage all travel expense transactions"}/>
 
         <Content style={{ padding: "32px" }}>
           {/* Metrics Cards */}

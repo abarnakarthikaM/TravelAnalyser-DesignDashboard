@@ -1,6 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 // Function to prepare headers by adding an authentication token to the request headers
-console.log(import.meta.env.VITE_AUTH_API_URL)
 const prepareHeader = (headers: Headers) => {
   // Retrieving the user object from localStorage
   const user = JSON.parse(atob(localStorage.getItem("user") || ""));

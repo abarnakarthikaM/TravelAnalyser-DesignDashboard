@@ -78,7 +78,6 @@ export function Sidebar() {
           localStorage.removeItem('user');
           navigate('/login');
            let data:any=await reqLogOut({Authorization:'Token '+loginDetails.token});
-           console.log(data)
   }
   const getSelectedKey = () => {
     if (location.pathname === '/vendor-comparison') return 'vendor';

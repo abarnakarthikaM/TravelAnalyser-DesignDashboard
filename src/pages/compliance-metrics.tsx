@@ -12,16 +12,20 @@ import { useLazyGetCompliancemetricsQuery } from '@/services/dashboard/dashboard
 import { CardLoader, DepartmentSkeleton, LoaderCard } from '@/components/Loader/Loader';
 import { Rupees } from '@/components/ui/icons';
 import { MetricsCards } from '@/components/dashboard/metrics-cards';
+import Header from "@/components/dashboard/header";
+import { useDispatch, useSelector } from "react-redux";
+import { setFilterdate } from "../stores/Headerslice"
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
 
 export default function ComplianceMetrics() {
-  const [resDatpickerValues, setDatpickerValues] = useState<any>([]);
-  const [dateFilter, setDateFilter] = useState("today");
+  const dispatch = useDispatch();
+  const { dateFilter: Datetype, filterValue: DateRange } = useSelector(
+    (state: any) => state.header
+  );
+  const [dateFilter, setDateFilter] = useState(Datetype);
   const [tabValue, setTabValue] = useState("overview");
-  const [open, setOpen] = useState(false);
-  const [dateRange, setDateRange] = useState<any>([]);
   const { Option } = Select;
   const [reqComplainceTabdata, resComplainceTabData] = useLazyGetCompliancemetricsQuery();
   const [reqComplainceCardData, resComplainceCardData] = useLazyGetCompliancemetricsQuery();
@@ -112,20 +116,20 @@ export default function ComplianceMetrics() {
   };
 
   useEffect(() => {
-    if (resDatpickerValues?.length === 0) {
-      setDatpickerValues(calculateDateValues(dateFilter))
+    if (DateRange?.length === 0) {
+      dispatch(setFilterdate({ date: calculateDateValues(dateFilter) }))
     }
-    if (resDatpickerValues.length === 2) {
+    if (DateRange.length === 2) {
       let reqData: any = {
         data: {
-          start_date: resDatpickerValues[0],
-          end_date: resDatpickerValues[1],
+          start_date: DateRange[0],
+          end_date: DateRange[1],
         },
         url: "compliance/metrics/"
       }
       reqComplainceCardData({ RequestDataFormat: reqData });
     }
-  }, [resDatpickerValues]);
+  }, [DateRange]);
 
   useEffect(() => {
     setComplainceCards_S(resComplainceCardData)
@@ -138,17 +142,17 @@ export default function ComplianceMetrics() {
       (tabValue == 'department') ? "compliance/by_department/" :
         (tabValue == 'violations') ? "compliance/violations/" :
           "compliance/overview/";
-    if (resDatpickerValues.length === 2) {
+    if (DateRange.length === 2) {
       let reqData: any = {
         data: {
-          start_date: resDatpickerValues[0],
-          end_date: resDatpickerValues[1],
+          start_date: DateRange[0],
+          end_date: DateRange[1],
         },
         url: url
       }
       reqComplainceTabdata({ RequestDataFormat: reqData });
     }
-  }, [resDatpickerValues, tabValue]);
+  }, [DateRange, tabValue]);
   /********
     *get response for Expense card and Top Expenses  service call
     */
@@ -167,31 +171,7 @@ export default function ComplianceMetrics() {
   /***********
    * Des:this function call's when change the date picker option
    */
-  const handleDateFilterChange = (value: any) => {
-    setDateFilter(value);
-    if (value === "date-range") {
-      setOpen(true);
-      setDateFilter(value);
-    } else {
-      setDateRange([]);
-      setDatpickerValues(calculateDateValues(value))
-      setOpen(false);
-    }
-  };
-  /******
-   * Des:this function hanndles the date range picker value changes
-   */
-  const handleDateRangeChange = (dates: any, dateStrings: [any, any]) => {
-    setDateFilter("date-range");
-    setDateRange(dates);
-    setOpen(false);
-    if (dates && dates.length === 2) {
-      if (dateFilter === "date-range" && dateStrings && dateStrings.length === 2) {
-        setDatpickerValues(dateStrings);
-      }
-      setDateFilter(formatDate(dateStrings[0]) + ' - ' + formatDate(dateStrings[1]));
-    }
-  };
+  
 
   const tabItems = [
     {
@@ -347,51 +327,7 @@ export default function ComplianceMetrics() {
 
       <Layout style={{ marginLeft: 256, background: '#f9fafb' }}>
         {/* Header */}
-        <div style={{
-          background: '#fff',
-          borderBottom: '1px solid #f0f0f0',
-          padding: '16px 32px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
-          <div>
-            <Title level={2} style={{ margin: 0, marginBottom: 4 }}>
-              Compliance Metrics
-            </Title>
-            <Text style={{ color: '#8c8c8c' }}>
-              Monitor and improve travel policy compliance across your organization
-            </Text>
-          </div>
-
-          <Space size="middle" className="cls-datefilter-space">
-            <Select
-              value={dateFilter}
-              style={{ width: 215 }}
-              onChange={handleDateFilterChange}
-            >
-              <Option value="today">Today</Option>
-              <Option value="yesterday">Yesterday</Option>
-              <Option value="this-week">This week</Option>
-              <Option value="last-week">Last week</Option>
-              <Option value="this-month">This month</Option>
-              <Option value="last-month">Last month</Option>
-              <Option value="date-range">Date range</Option>
-            </Select>
-
-            <DatePicker.RangePicker
-              open={open}
-              value={dateRange}
-              onChange={handleDateRangeChange}
-              onOpenChange={(status) => setOpen(status)}
-              style={{
-                position: "absolute",
-                opacity: 0,
-                pointerEvents: "none",
-              }}
-            />
-          </Space>
-        </div>
+        <Header Title={"Compliance Metrics"} description={"Monitor and improve travel policy compliance across your organization"} />
 
         <Content style={{ padding: '32px' }}>
           {/* Top Metrics Cards */}

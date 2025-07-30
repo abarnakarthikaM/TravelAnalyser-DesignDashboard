@@ -30,14 +30,18 @@ import { useLazyGettopSpenderQuery } from "@/services/dashboard/dashboard";
 import { formatDate, calculateDateValues } from "@/utils/dateFunctions";
 import { Filter, TrendingDown, TrendingUp } from "lucide-react";
 import { MetricsCards } from "@/components/dashboard/metrics-cards";
+import Header from "@/components/dashboard/header";
+import { useDispatch, useSelector } from "react-redux";
+import { setFilterdate } from "../stores/Headerslice"
 
 
 const TopSpenders = () => {
-  const [dateFilter, setDateFilter] = useState("today");
+  const dispatch = useDispatch();
+  const { dateFilter: Datetype, filterValue: DateRange } = useSelector(
+    (state: any) => state.header
+  );
+  const [dateFilter, setDateFilter] = useState(Datetype);
   const [tabValue, setTabValue] = useState("department");
-  const [open, setOpen] = useState(false);
-  const [dateRange, setDateRange] = useState<any>([]);
-  const [resDatpickerValues, setDatpickerValues] = useState<any>([]);
   const [resTopSpender_S, setTopSpender_S] = useState<any>([]);
   const [loader, setLoader] = useState<boolean>(true)
 
@@ -70,42 +74,41 @@ const TopSpenders = () => {
     return change.startsWith("+") ? "#52c41a" : "#ff4d4f";
   };
 
-  /******
-   * Des:this function hanndles the date range picker value changes
-   */
-  const handleDateFilterChange = (value: any) => {
-    setDateFilter(value);
-    if (value === "date-range") {
-      setOpen(true);
-      setDateFilter(value);
-    } else {
-      setDateRange([]);
-      setDatpickerValues(calculateDateValues(value))
-      setOpen(false);
-    }
-  };
 
-  const getStrokeColor = (percentage: any) => {
-    if (percentage < 30) return '#722ed1'
-    if (percentage > 30 && percentage < 50) return '#1890ff'; // red
-    if (percentage > 50 && percentage < 75) return '#fa8c16'; // orange
-    if (percentage > 75 && percentage < 99) return '#eb2f96'; // orange
-
-    return '#52c41a'; // green
-  }
+  // useEffect(() => {
+  //   if (DateRange?.length === 0) {
+  //     setDatpickerValues(calculateDateValues(dateFilter))
+  //   }
+  //   else if (DateRange?.length === 2) {
+  //     const urlType = (tabValue === 'individual') ? "topspenders/individual/"
+  //       : (tabValue === 'category') ? "topspenders/category/"
+  //         : "topspenders/department/";
+  //     let reqData: any = {
+  //       data: {
+  //         start_date: DateRange[0],
+  //         end_date: DateRange[1],
+  //       },
+  //       url: urlType
+  //     };
+  //     if (tabValue === 'department' || tabValue === 'band') {
+  //       reqData.data.grouping_type = tabValue
+  //     }
+  //     reqTopSpender({ RequestDataFormat: reqData });
+  //   }
+  // }, []);
 
   useEffect(() => {
-    if (resDatpickerValues?.length === 0) {
-      setDatpickerValues(calculateDateValues(dateFilter))
+    if (DateRange?.length === 0) {
+      dispatch(setFilterdate({ date: calculateDateValues(dateFilter) }))
     }
-    else if (resDatpickerValues?.length === 2) {
+    else if (DateRange?.length === 2) {
       const urlType = (tabValue === 'individual') ? "topspenders/individual/"
         : (tabValue === 'category') ? "topspenders/category/"
           : "topspenders/department/";
       let reqData: any = {
         data: {
-          start_date: resDatpickerValues[0],
-          end_date: resDatpickerValues[1],
+          start_date: DateRange[0],
+          end_date: DateRange[1],
         },
         url: urlType
       };
@@ -114,7 +117,7 @@ const TopSpenders = () => {
       }
       reqTopSpender({ RequestDataFormat: reqData });
     }
-  }, [resDatpickerValues, tabValue]);
+  }, [DateRange, tabValue]);
   /********
     *get response for Expense card and Top Expenses  service call
     */
@@ -122,6 +125,7 @@ const TopSpenders = () => {
   useEffect(() => {
     setTopSpender_S(resTopSpender)
   }, [resTopSpender])
+
   if (resTopSpender_S != undefined) {
     topSpenderCards = resTopSpender_S?.data?.data?.top_spenders?.cards;
     deptSpendingBreakdown = resTopSpender_S?.data?.data?.spending_breakdown?.groups;
@@ -130,61 +134,13 @@ const TopSpenders = () => {
     if (tabValue === 'category') topCategorySpenders = resTopSpender_S.data;
   }
 
-    return (
+  return (
     <Layout style={{ minHeight: "100vh" }}>
       <Sidebar />
 
       <Layout style={{ marginLeft: 256, background: '#f9fafb' }}>
         {/* Header */}
-        <div
-          style={{
-            background: "#fff",
-            borderBottom: "1px solid #f0f0f0",
-            padding: "16px 32px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <div>
-            <Title level={3} style={{ margin: 0, marginBottom: 4 }}>
-              Top Spenders
-            </Title>
-            <Text style={{ color: "#8c8c8c" }}>
-              Analyze spending patterns across departments and individuals
-            </Text>
-          </div>
-
-          <Space size="middle" className="cls-datefilter-space">
-            <Select
-              value={dateFilter}
-              style={{ width: 215 }}
-              onChange={handleDateFilterChange}
-            >
-              <Option value="today">Today</Option>
-              <Option value="yesterday">Yesterday</Option>
-              <Option value="this-week">This week</Option>
-              <Option value="last-week">Last week</Option>
-              <Option value="this-month">This month</Option>
-              <Option value="last-month">Last month</Option>
-              <Option value="date-range">Date range</Option>
-            </Select>
-
-            <DatePicker.RangePicker
-              open={open}
-              value={dateRange}
-              onChange={handleDateFilterChange}
-              onOpenChange={(status) => setOpen(status)}
-              style={{
-                position: "absolute",
-                opacity: 0,
-                pointerEvents: "none",
-              }}
-            />
-
-
-          </Space>
-        </div>
+        <Header Title={"Top Spenders"} description={"Analyze spending patterns across departments and individuals"} />
 
         <Content style={{ padding: "32px" }}>
           {/* Tabs */}
@@ -263,7 +219,7 @@ const TopSpenders = () => {
                                     </div>
                                     <div style={{ textAlign: "right" }}>
                                       <Text style={{ fontWeight: 600, fontSize: 16 }}>
-                                        {dept.spend}
+                                        <Rupees className="inline-block"/>{dept.spend}
                                       </Text>
                                       <br />
                                       <Text style={{ color: "#8c8c8c", fontSize: 12 }}>
@@ -339,7 +295,7 @@ const TopSpenders = () => {
                             {/* Sales Department */}
                             {deptExpenseCategories?.groups?.map((data: any) => (
                               <div style={{ marginBottom: 32 }}>
-                                <Title level={5} style={{ marginBottom: 16, color: "#1890ff" }}>
+                                <Title level={5} style={{ marginBottom: 16 }}>
                                   {data.group_name}
                                 </Title>
                                 {data?.categories.map((subdata: any) => (
@@ -357,13 +313,13 @@ const TopSpenders = () => {
                                           style={{
                                             width: 8,
                                             height: 8,
-                                            backgroundColor: "#1890ff",
+                                            backgroundColor: "#000",
                                             borderRadius: "50%",
                                           }}
                                         />
                                         <Text style={{ fontWeight: 500 }}>{subdata.category}</Text>
                                       </div>
-                                      <Text style={{ fontWeight: 600 }}>{subdata.spend} ({subdata.percentage})</Text>
+                                      <Text style={{ fontWeight: 600 }}><Rupees className="inline-block"/>{subdata.spend} ({subdata.percentage}%)</Text>
                                     </div>
                                   </div>
                                 ))}
@@ -1254,7 +1210,7 @@ const TopSpenders = () => {
                   resTopSpender.isSuccess &&
                     (resTopSpender.data as any)?.data?.spending_breakdown &&
                     (resTopSpender.data as any)?.data?.spending_breakdown?.title === "Band Spending Breakdown" ? (
-                    <div style={{ marginBottom: 24, overflowY: "auto", height: "300px",alignContent:"center" }}>
+                    <div style={{ marginBottom: 24, overflowY: "auto", height: "300px", alignContent: "center" }}>
                       {deptSpendingBreakdown !== undefined && deptSpendingBreakdown.length > 0 ? (
                         <>
                           {deptSpendingBreakdown.map((dept: any, index: number) => (

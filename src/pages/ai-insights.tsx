@@ -1,9 +1,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { Layout, Typography, Button, Space, Card, Row, Col, Tabs, Badge, Progress, DatePicker, Select } from 'antd';
-import { 
-  CalendarOutlined, 
-  FilterOutlined, 
+import {
+  CalendarOutlined,
+  FilterOutlined,
   DownloadOutlined,
   CheckCircleOutlined,
   ExclamationCircleOutlined,
@@ -13,20 +13,23 @@ import {
 import { Sidebar } from '@/components/dashboard/sidebar';
 import { calculateDateValues, formatDate } from '@/utils/dateFunctions';
 import { useLazyGetinsightServiceQuery } from '@/services/dashboard/dashboard';
+import Header from "@/components/dashboard/header";
+import { useDispatch, useSelector } from "react-redux";
+import { setFilterdate } from "../stores/Headerslice"
 const { Title, Text } = Typography;
 const { Option } = Select;
 
 const AIInsights = () => {
- 
-const [dateFilter, setDateFilter] = useState("today");
-const [open, setOpen] = useState(false);
-const [dateRange, setDateRange] = useState<any>([]);
-const [resDatpickerValues, setDatpickerValues] = useState<any>([]);
-const [loader, setLoader] = useState<boolean>(true)
-const [activeTab, setActiveTab] = React.useState('insights');
-const [reqAiInsightTab,resAiInsightTab] = useLazyGetinsightServiceQuery();
-const [resAiInsightTab_S,setresAiInsightTab_S]=useState<any>([])
-  
+  const dispatch = useDispatch();
+  const { dateFilter: Datetype, filterValue: DateRange } = useSelector(
+    (state: any) => state.header
+  );
+  const [dateFilter, setDateFilter] = useState(Datetype);
+  const [loader, setLoader] = useState<boolean>(true)
+  const [activeTab, setActiveTab] = React.useState('insights');
+  const [reqAiInsightTab, resAiInsightTab] = useLazyGetinsightServiceQuery();
+  const [resAiInsightTab_S, setresAiInsightTab_S] = useState<any>([])
+
   const tabItems = [
     { key: 'insights', label: 'Key Insights' },
     { key: 'recommendations', label: 'Recommendations' },
@@ -93,126 +96,52 @@ const [resAiInsightTab_S,setresAiInsightTab_S]=useState<any>([])
   /********
    * Des:initial service call for insights
    */
-    useEffect(()=>{
-      console.log(activeTab)
+  useEffect(() => {
 
-       if(resDatpickerValues.length===0){
-            setDatpickerValues(calculateDateValues(dateFilter))
-          }
-          console.log(resDatpickerValues)
-          if (resDatpickerValues.length === 2) {
-             let insightType = (activeTab == 'insights') ? 'keyinsights'
-            : (activeTab == 'recommendations') ? 'recommendations' :  'predictions'
-            let reqData: any = {
-              data: {
-                start_date: resDatpickerValues[0],
-                end_date: resDatpickerValues[1],
-              },
-              url: 'aiinsights/'+insightType+'/'
-            }
-             setLoader(true);
-            reqAiInsightTab({ RequestDataFormat: reqData });
-           
-          }
-    },[resDatpickerValues,activeTab])
-
-    /**
-     * Des:ersponse for the insight 
-     */
-    useEffect(()=>{
-    
-      if(resAiInsightTab.isSuccess){
-        setLoader(false);
-        setresAiInsightTab_S(resAiInsightTab.data)
+    if (DateRange.length === 0) {
+      dispatch(setFilterdate({ date: calculateDateValues(dateFilter) }))
+    }
+    if (DateRange.length === 2) {
+      let insightType = (activeTab == 'insights') ? 'keyinsights'
+        : (activeTab == 'recommendations') ? 'recommendations' : 'predictions'
+      let reqData: any = {
+        data: {
+          start_date: DateRange[0],
+          end_date: DateRange[1],
+        },
+        url: 'aiinsights/' + insightType + '/'
       }
-    },[resAiInsightTab])
-      console.log(resAiInsightTab_S)
+      setLoader(true);
+      reqAiInsightTab({ RequestDataFormat: reqData });
 
-    /***********
-   * Des:this function call's when change the date picker option
+    }
+  }, [DateRange, activeTab])
+
+  /**
+   * Des:ersponse for the insight 
    */
-    const handleDateFilterChange = (value: any) => {
-      setDateFilter(value);
-      if (value === "date-range") {
-        setOpen(true);
-        setDateFilter(value);
-      } else {
-        setDateRange([]);
-       setDatpickerValues(calculateDateValues(value))
-        setOpen(false);
-      }
-    };
-    /******
-     * Des:this function hanndles the date range picker value changes
-     */
-    const handleDateRangeChange = (dates: any, dateStrings: [any, any]) => {
-      setDateFilter("date-range");
-      setDateRange(dates);
-      setOpen(false);
-      if (dates && dates.length === 2) {
-        if (dateFilter === "date-range" && dateStrings && dateStrings.length === 2) {
-          setDatpickerValues(dateStrings);
-        }
-        setDateFilter(formatDate(dateStrings[0]) + ' - ' + formatDate(dateStrings[1]));
-      }
-    };
+  useEffect(() => {
+
+    if (resAiInsightTab.isSuccess) {
+      setLoader(false);
+      setresAiInsightTab_S(resAiInsightTab.data)
+    }
+  }, [resAiInsightTab])
+
+  
   return (
     <Layout style={{ minHeight: '100vh', background: '#f5f5f5' }}>
       <Sidebar />
-      
+
       <Layout style={{ marginLeft: 256 }}>
         {/* Header */}
-        <div style={{
-          background: '#fff',
-          borderBottom: '1px solid #f0f0f0',
-          padding: '16px 32px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
-          <div>
-            <Title level={2} style={{ margin: 0, marginBottom: 4 }}>
-              AI-Powered Insights
-            </Title>
-            <Text style={{ color: '#8c8c8c' }}>
-              Smart recommendations and predictive analytics for your travel expenses
-            </Text>
-          </div>
-          
-            <Space size="middle" className="cls-datefilter-space">
-              <Select
-                value={dateFilter}
-                style={{ width: 215 }}
-                onChange={handleDateFilterChange}
-              >
-                <Option value="today">Today</Option>
-                <Option value="yesterday">Yesterday</Option>
-                <Option value="this-week">This week</Option>
-                <Option value="last-week">Last week</Option>
-                <Option value="this-month">This Month</Option>
-                <Option value="last-month">Last Month</Option>
-                <Option value="date-range">Date Range</Option>
-              </Select>
-
-              <DatePicker.RangePicker
-                open={open}
-                value={dateRange}
-                onChange={handleDateRangeChange}
-                onOpenChange={(status) => setOpen(status)}
-                style={{
-                  position: "absolute",
-                  opacity: 0,
-                  pointerEvents: "none",
-                }}
-              />
-            </Space>
-        </div>
+        <Header Title={"AI-Powered Insights"} description={"Smart recommendations and predictive analytics for your travel expenses"} />
 
         {/* Content */}
         <div style={{ padding: '32px' }}>
           {/* Tabs */}
-          <Tabs 
-            defaultActiveKey="insights" 
+          <Tabs
+            defaultActiveKey="insights"
             items={tabItems}
             style={{ marginBottom: 32 }}
             onChange={(activeKey) => setActiveTab(activeKey)}
@@ -223,7 +152,7 @@ const [resAiInsightTab_S,setresAiInsightTab_S]=useState<any>([])
             <>
               {/* Top Metrics Cards */}
               <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
-                {resAiInsightTab_S?.data?.cost_saving_opportunities && 
+                {resAiInsightTab_S?.data?.cost_saving_opportunities &&
                   <Col xs={24} md={8}>
                     <Card>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
@@ -233,14 +162,14 @@ const [resAiInsightTab_S,setresAiInsightTab_S]=useState<any>([])
                         <Badge count="High impact" style={{ backgroundColor: '#1890ff' }} />
                       </div>
                       <Title level={2} style={{ margin: 0, marginBottom: 4 }}>
-                       {resAiInsightTab_S?.data?.cost_saving_opportunities?.potential_savings}
+                        {resAiInsightTab_S?.data?.cost_saving_opportunities?.potential_savings}
                       </Title>
                       <Text style={{ color: '#8c8c8c' }}>
                         Potential annual savings identified
                       </Text>
-                      
+
                       <div style={{ marginTop: 16 }}>
-                        {resAiInsightTab_S?.data?.cost_saving_opportunities?.message?.map((item:any, index:any) => (
+                        {resAiInsightTab_S?.data?.cost_saving_opportunities?.message?.map((item: any, index: any) => (
                           <div key={index} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 12 }}>
                             <CheckCircleOutlined style={{ color: '#52c41a' }} />
                             <div>
@@ -254,15 +183,15 @@ const [resAiInsightTab_S,setresAiInsightTab_S]=useState<any>([])
                           </div>
                         ))}
                       </div>
-                       {resAiInsightTab_S?.data?.cost_saving_opportunities?.message?.lenght>2 &&
-                      <Button type="link" style={{ padding: 0, marginTop: 8 }}>
-                        View All Opportunities
-                      </Button>
+                      {resAiInsightTab_S?.data?.cost_saving_opportunities?.message?.lenght > 2 &&
+                        <Button type="link" style={{ padding: 0, marginTop: 8 }}>
+                          View All Opportunities
+                        </Button>
                       }
                     </Card>
                   </Col>
                 }
-                {resAiInsightTab_S?.data?.spending_anomalies && 
+                {resAiInsightTab_S?.data?.spending_anomalies &&
                   <Col xs={24} md={8}>
                     <Card>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
@@ -277,11 +206,11 @@ const [resAiInsightTab_S,setresAiInsightTab_S]=useState<any>([])
                       <Text style={{ color: '#8c8c8c' }}>
                         Unusual spending patterns detected
                       </Text>
-                      
+
                       <div style={{ marginTop: 16 }}>
-                        {resAiInsightTab_S?.data?.spending_anomalies?.message?.map((item:any, index:any) => (
+                        {resAiInsightTab_S?.data?.spending_anomalies?.message?.map((item: any, index: any) => (
                           <div key={index} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 12 }}>
-                             <ExclamationCircleOutlined style={{ color: '#ff4d4f' }} />
+                            <ExclamationCircleOutlined style={{ color: '#ff4d4f' }} />
                             <div>
                               <Text style={{ fontWeight: 500, display: 'block', fontSize: 14 }}>
                                 {item.title}
@@ -293,7 +222,7 @@ const [resAiInsightTab_S,setresAiInsightTab_S]=useState<any>([])
                           </div>
                         ))}
                       </div>
-                      {resAiInsightTab_S?.data?.spending_anomalies?.message?.lenght>2 &&
+                      {resAiInsightTab_S?.data?.spending_anomalies?.message?.lenght > 2 &&
                         <Button type="link" style={{ padding: 0, marginTop: 8 }}>
                           View All Anomalies
                         </Button>
@@ -301,7 +230,7 @@ const [resAiInsightTab_S,setresAiInsightTab_S]=useState<any>([])
                     </Card>
                   </Col>
                 }
-                {resAiInsightTab_S?.data?.policy_violations_summary && 
+                {resAiInsightTab_S?.data?.policy_violations_summary &&
                   <Col xs={24} md={8}>
                     <Card>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
@@ -316,9 +245,9 @@ const [resAiInsightTab_S,setresAiInsightTab_S]=useState<any>([])
                       <Text style={{ color: '#8c8c8c' }}>
                         Overall policy compliance rate
                       </Text>
-                      
+
                       <div style={{ marginTop: 16 }}>
-                        {resAiInsightTab_S?.data?.policy_violations_summary?.message?.map((item:any, index:any) => (
+                        {resAiInsightTab_S?.data?.policy_violations_summary?.message?.map((item: any, index: any) => (
                           <div key={index} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 12 }}>
                             <RiseOutlined style={{ color: '#1890ff' }} />
                             <div>
@@ -332,83 +261,83 @@ const [resAiInsightTab_S,setresAiInsightTab_S]=useState<any>([])
                           </div>
                         ))}
                       </div>
-                        {resAiInsightTab_S?.data?.spending_anomalies?.message?.lenght>2 &&
-                          <Button type="link" style={{ padding: 0, marginTop: 8 }}>
-                            View Compliance Details
-                          </Button>
-                        }
+                      {resAiInsightTab_S?.data?.spending_anomalies?.message?.lenght > 2 &&
+                        <Button type="link" style={{ padding: 0, marginTop: 8 }}>
+                          View Compliance Details
+                        </Button>
+                      }
                     </Card>
                   </Col>
                 }
-          </Row>
+              </Row>
 
-          {/* Trend Analysis */}
-          <Card style={{ marginBottom: 32 }}>
-            <Title level={4} style={{ marginBottom: 8 }}>
-              Trend Analysis
-            </Title>
-            <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
-              AI-detected patterns in your expense data
-            </Text>
-            
-            <Row gutter={[24, 24]}>
-              <Col xs={24} md={12}>
-                <Card 
-                  size="small" 
-                  title="Seasonal Patterns"
-                  style={{ height: 300 }}
-                >
-                  <div style={{ 
-                    height: 200, 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    backgroundColor: '#fafafa',
-                    borderRadius: 6,
-                    color: '#8c8c8c'
-                  }}>
-                    Seasonal trend chart would appear here
-                  </div>
-                </Card>
-              </Col>
-              
-              <Col xs={24} md={12}>
-                <Card 
-                  size="small" 
-                  title="Vendor Performance Trends"
-                  style={{ height: 300 }}
-                >
-                  <div style={{ 
-                    height: 200, 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    backgroundColor: '#fafafa',
-                    borderRadius: 6,
-                    color: '#8c8c8c'
-                  }}>
-                    Vendor performance chart would appear here
-                  </div>
-                </Card>
-              </Col>
-            </Row>
-          </Card>
+              {/* Trend Analysis */}
+              <Card style={{ marginBottom: 32 }}>
+                <Title level={4} style={{ marginBottom: 8 }}>
+                  Trend Analysis
+                </Title>
+                <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
+                  AI-detected patterns in your expense data
+                </Text>
 
-          {/* Trend Insights Grid */}
-          <Row gutter={[24, 24]}>
-            {trendInsights.map((insight, index) => (
-              <Col xs={24} md={12} key={index}>
-                <Card size="small" style={{ height: '100%' }}>
-                  <Title level={5} style={{ margin: 0, marginBottom: 8, fontSize: 16 }}>
-                    {insight.title}
-                  </Title>
-                  <Text style={{ color: '#8c8c8c', fontSize: 14, lineHeight: 1.5 }}>
-                    {insight.description}
-                  </Text>
-                </Card>
-              </Col>
-            ))}
-          </Row>
+                <Row gutter={[24, 24]}>
+                  <Col xs={24} md={12}>
+                    <Card
+                      size="small"
+                      title="Seasonal Patterns"
+                      style={{ height: 300 }}
+                    >
+                      <div style={{
+                        height: 200,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: '#fafafa',
+                        borderRadius: 6,
+                        color: '#8c8c8c'
+                      }}>
+                        Seasonal trend chart would appear here
+                      </div>
+                    </Card>
+                  </Col>
+
+                  <Col xs={24} md={12}>
+                    <Card
+                      size="small"
+                      title="Vendor Performance Trends"
+                      style={{ height: 300 }}
+                    >
+                      <div style={{
+                        height: 200,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: '#fafafa',
+                        borderRadius: 6,
+                        color: '#8c8c8c'
+                      }}>
+                        Vendor performance chart would appear here
+                      </div>
+                    </Card>
+                  </Col>
+                </Row>
+              </Card>
+
+              {/* Trend Insights Grid */}
+              <Row gutter={[24, 24]}>
+                {trendInsights.map((insight, index) => (
+                  <Col xs={24} md={12} key={index}>
+                    <Card size="small" style={{ height: '100%' }}>
+                      <Title level={5} style={{ margin: 0, marginBottom: 8, fontSize: 16 }}>
+                        {insight.title}
+                      </Title>
+                      <Text style={{ color: '#8c8c8c', fontSize: 14, lineHeight: 1.5 }}>
+                        {insight.description}
+                      </Text>
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
             </>
           )}
 
@@ -416,11 +345,11 @@ const [resAiInsightTab_S,setresAiInsightTab_S]=useState<any>([])
           {(activeTab === 'recommendations' && resAiInsightTab_S?.data?.strategic_recommendations) && (
             <div>
               {/* Header with filters */}
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center', 
-                marginBottom: 24 
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: 24
               }}>
                 <Title level={3} style={{ margin: 0 }}>
                   Strategic Recommendations
@@ -438,58 +367,58 @@ const [resAiInsightTab_S,setresAiInsightTab_S]=useState<any>([])
               {/* Recommendations Grid */}
               <Row gutter={[24, 24]}>
                 {/* Vendor Optimization */}
-                 {resAiInsightTab_S?.data?.strategic_recommendations?.map((recommendationData:any)=>(
+                {resAiInsightTab_S?.data?.strategic_recommendations?.map((recommendationData: any) => (
                   <Col xs={24} lg={12}>
-                  <Card style={{ height: '100%' }}>
-                    <div style={{ marginBottom: 16 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-                        <Title level={4} style={{ margin: 0 }}>
-                           {recommendationData.title}
-                        </Title>
-                        <Badge count="High Impact" style={{ backgroundColor: '#52c41a' }} />
+                    <Card style={{ height: '100%' }}>
+                      <div style={{ marginBottom: 16 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                          <Title level={4} style={{ margin: 0 }}>
+                            {recommendationData.title}
+                          </Title>
+                          <Badge count="High Impact" style={{ backgroundColor: '#52c41a' }} />
+                        </div>
+                        <Text style={{ color: '#8c8c8c' }}>
+                          Consolidate vendors for better rates and service
+                        </Text>
                       </div>
-                      <Text style={{ color: '#8c8c8c' }}>
-                        Consolidate vendors for better rates and service
-                      </Text>
-                    </div>
 
-                    <div style={{ marginBottom: 20 }}>
-                      <Text strong style={{ display: 'block', marginBottom: 8 }}>Current Situation</Text>
-                      <Text style={{ color: '#8c8c8c', fontSize: 14, lineHeight: 1.5 }}>
-                        {recommendationData.message}
-                      </Text>
-                    </div>
+                      <div style={{ marginBottom: 20 }}>
+                        <Text strong style={{ display: 'block', marginBottom: 8 }}>Current Situation</Text>
+                        <Text style={{ color: '#8c8c8c', fontSize: 14, lineHeight: 1.5 }}>
+                          {recommendationData.message}
+                        </Text>
+                      </div>
 
-                    <div style={{ marginBottom: 20 }}>
-                      <Text strong style={{ display: 'block', marginBottom: 8 }}>Recommendation</Text>
-                      <Text style={{ color: '#8c8c8c', fontSize: 14, lineHeight: 1.5 }}>
-                        Consolidate to 3 preferred hotel vendors (GlobalStay, TravelEase, and LuxStay) based on coverage, service quality, and pricing. Negotiate volume-based discounts with these vendors.
-                      </Text>
-                    </div>
+                      <div style={{ marginBottom: 20 }}>
+                        <Text strong style={{ display: 'block', marginBottom: 8 }}>Recommendation</Text>
+                        <Text style={{ color: '#8c8c8c', fontSize: 14, lineHeight: 1.5 }}>
+                          Consolidate to 3 preferred hotel vendors (GlobalStay, TravelEase, and LuxStay) based on coverage, service quality, and pricing. Negotiate volume-based discounts with these vendors.
+                        </Text>
+                      </div>
 
-                    <Row gutter={16} style={{ marginBottom: 20 }}>
-                      <Col span={12}>
-                        <div>
-                          <Text style={{ fontSize: 12, color: '#8c8c8c' }}>Potential Savings</Text>
-                          <Title level={3} style={{ margin: 0, color: '#52c41a' }}>$000000</Title>
-                          <Text style={{ fontSize: 12, color: '#8c8c8c' }}>Annual estimate</Text>
-                        </div>
-                      </Col>
-                      <Col span={12}>
-                        <div>
-                          <Text style={{ fontSize: 12, color: '#8c8c8c' }}>Implementation Effort</Text>
-                          <Title level={3} style={{ margin: 0 }}>Medium</Title>
-                          <Text style={{ fontSize: 12, color: '#8c8c8c' }}>3-4 months to fully implement</Text>
-                        </div>
-                      </Col>
-                    </Row>
+                      <Row gutter={16} style={{ marginBottom: 20 }}>
+                        <Col span={12}>
+                          <div>
+                            <Text style={{ fontSize: 12, color: '#8c8c8c' }}>Potential Savings</Text>
+                            <Title level={3} style={{ margin: 0, color: '#52c41a' }}>$000000</Title>
+                            <Text style={{ fontSize: 12, color: '#8c8c8c' }}>Annual estimate</Text>
+                          </div>
+                        </Col>
+                        <Col span={12}>
+                          <div>
+                            <Text style={{ fontSize: 12, color: '#8c8c8c' }}>Implementation Effort</Text>
+                            <Title level={3} style={{ margin: 0 }}>Medium</Title>
+                            <Text style={{ fontSize: 12, color: '#8c8c8c' }}>3-4 months to fully implement</Text>
+                          </div>
+                        </Col>
+                      </Row>
 
-                    <Button type="primary" block style={{ backgroundColor: '#1e3a8a' }}>
-                      View Implementation Plan
-                    </Button>
-                  </Card>
-                </Col>
-                 ))}
+                      <Button type="primary" block style={{ backgroundColor: '#1e3a8a' }}>
+                        View Implementation Plan
+                      </Button>
+                    </Card>
+                  </Col>
+                ))}
               </Row>
             </div>
           )}
@@ -508,11 +437,11 @@ const [resAiInsightTab_S,setresAiInsightTab_S]=useState<any>([])
 
                 {/* Main Forecast Chart */}
                 <Card style={{ marginBottom: 24 }}>
-                  <div style={{ 
-                    height: 300, 
-                    display: 'flex', 
+                  <div style={{
+                    height: 300,
+                    display: 'flex',
                     flexDirection: 'column',
-                    alignItems: 'center', 
+                    alignItems: 'center',
                     justifyContent: 'center',
                     backgroundColor: '#fafafa',
                     borderRadius: 6,
@@ -542,7 +471,7 @@ const [resAiInsightTab_S,setresAiInsightTab_S]=useState<any>([])
                           Confidence: 92%
                         </Text>
                       </div>
-                      
+
                       <div style={{ marginBottom: 8 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                           <Text style={{ fontSize: 12 }}>Air Travel</Text>
@@ -589,7 +518,7 @@ const [resAiInsightTab_S,setresAiInsightTab_S]=useState<any>([])
                           Confidence: 85%
                         </Text>
                       </div>
-                      
+
                       <div style={{ marginBottom: 8 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                           <Text style={{ fontSize: 12 }}>Air Travel</Text>
@@ -636,7 +565,7 @@ const [resAiInsightTab_S,setresAiInsightTab_S]=useState<any>([])
                           Confidence: 78%
                         </Text>
                       </div>
-                      
+
                       <div style={{ marginBottom: 8 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                           <Text style={{ fontSize: 12 }}>Air Travel</Text>
@@ -681,12 +610,12 @@ const [resAiInsightTab_S,setresAiInsightTab_S]=useState<any>([])
                     <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
                       Projected impact on departmental budgets
                     </Text>
-                    
-                    <div style={{ 
-                      height: 200, 
-                      display: 'flex', 
+
+                    <div style={{
+                      height: 200,
+                      display: 'flex',
                       flexDirection: 'column',
-                      alignItems: 'center', 
+                      alignItems: 'center',
                       justifyContent: 'center',
                       backgroundColor: '#fafafa',
                       borderRadius: 6,
@@ -699,7 +628,7 @@ const [resAiInsightTab_S,setresAiInsightTab_S]=useState<any>([])
 
                     <div style={{ marginBottom: 16 }}>
                       <Text strong style={{ display: 'block', marginBottom: 8 }}>Budget Risk Assessment</Text>
-                      
+
                       <div style={{ marginBottom: 12 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                           <Text style={{ fontSize: 14 }}>Sales Department</Text>
@@ -741,12 +670,12 @@ const [resAiInsightTab_S,setresAiInsightTab_S]=useState<any>([])
                     <Text style={{ color: '#8c8c8c', display: 'block', marginBottom: 24 }}>
                       Forecasted changes in travel market conditions
                     </Text>
-                    
-                    <div style={{ 
-                      height: 200, 
-                      display: 'flex', 
+
+                    <div style={{
+                      height: 200,
+                      display: 'flex',
                       flexDirection: 'column',
-                      alignItems: 'center', 
+                      alignItems: 'center',
                       justifyContent: 'center',
                       backgroundColor: '#fafafa',
                       borderRadius: 6,
@@ -759,7 +688,7 @@ const [resAiInsightTab_S,setresAiInsightTab_S]=useState<any>([])
 
                     <div style={{ marginBottom: 16 }}>
                       <Text strong style={{ display: 'block', marginBottom: 8 }}>Predicted Market Changes</Text>
-                      
+
                       <div style={{ marginBottom: 12 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                           <Text style={{ fontSize: 14 }}>Airline Pricing</Text>

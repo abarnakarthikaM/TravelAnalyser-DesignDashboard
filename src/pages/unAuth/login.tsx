@@ -25,14 +25,12 @@ export default function Login() {
     setError(null);
 
     try {
-      console.log(values)
       // Simulate login API call
       // await new Promise(resolve => setTimeout(resolve, 1500));
       
       // For demo purposes, accept any login
       if (values.username && values.password) {
         let data:any=await reqCommonService({  username: values.username, password: values.password});
-        console.log(data)
         
         if(data.data.success){
             localStorage.setItem('isAuthenticated', 'true');
