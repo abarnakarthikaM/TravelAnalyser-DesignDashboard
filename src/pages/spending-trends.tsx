@@ -1,48 +1,22 @@
 
-import React from 'react';
-import { Layout, Typography, Card, Row, Col, Select, Button, Space, Table, Tag, DatePicker, Empty } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Layout, Typography, Card, Row, Col, Select, Button, Space, Table, Tag, DatePicker, Empty, Tooltip } from 'antd';
 import { CalendarOutlined, FilterOutlined, DownloadOutlined, RiseOutlined, FallOutlined } from '@ant-design/icons';
 import { Sidebar } from '@/components/dashboard/sidebar';
 import { Rupees } from '@/components/ui/icons';
 import { BarChartLoader, CardLoader, LoaderCard, TableLoader } from '@/components/Loader/Loader';
+import { useLazyGetSpendingTrendsServiceQuery } from '@/services/dashboard/dashboard';
+import { CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import { ExpenseTrendsChart } from '@/components/dashboard/spendingTrends/expense-trends-chart';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
-const { Option } = Select;
-
 const SpendingTrends = () => {
-  // Metrics data for the top cards
-  const metricsData = [
-    {
-      title: 'YTD Expenses',
-      value: '1,248,567',
-      change: '+5.2%',
-      changeType: 'positive',
-      subtitle: 'vs. previous year'
-    },
-    {
-      title: 'Monthly Average',
-      value: '156,071',
-      change: '+2.1%',
-      changeType: 'positive',
-      subtitle: 'vs. previous period'
-    },
-    {
-      title: 'Projected Q4',
-      value: '487,250',
-      change: '+8.3%',
-      changeType: 'positive',
-      subtitle: 'vs. previous Q4'
-    },
-    {
-      title: 'Annual Forecast',
-      value: '1,735,817',
-      change: '+6.7%',
-      changeType: 'positive',
-      subtitle: 'vs. previous year'
-    }
-  ];
-
+    const [reqSpendingTrendsData, resSpendingTrendsData] = useLazyGetSpendingTrendsServiceQuery();
+    const [resSpendingTrendsData_S, setSpendingTrendsData_S] = useState<any>([]);
+    
+    let YTYKeys:any=[];
+    let comparisonColumns:any;
   // Category breakdown data
   const categoryData = [
     { category: 'Air Travel', percentage: '45%', amount: '567,800' },
@@ -75,103 +49,79 @@ const SpendingTrends = () => {
       type: 'info'
     }
   ];
+    useEffect(() => {
+        let reqData: any = {
+          url: "spendingtrend/spending-trends/"
+        }
+        reqSpendingTrendsData({ RequestDataFormat: reqData });
+    }, []);
+    useEffect(()=>{
+       setSpendingTrendsData_S(resSpendingTrendsData.data)
+    })
+  console.log(resSpendingTrendsData_S)
 
-  // Year-over-year comparison table data
-  const comparisonData = [
-    {
-      key: '1',
-      category: 'Air Travel',
-      ytd2022: '481,790',
-      ytd2023: '567,800',
-      change: '+17.9%',
-      projected2023: '750,500',
-      projected2024: '865,750'
-    },
-    {
-      key: '2',
-      category: 'Hotels',
-      ytd2022: '445,320',
-      ytd2023: '435,900',
-      change: '-2.1%',
-      projected2023: '586,000',
-      projected2024: '623,000'
-    },
-    {
-      key: '3',
-      category: 'Ground Transport',
-      ytd2022: '209,450',
-      ytd2023: '248,521',
-      change: '+18.7%',
-      projected2023: '340,317',
-      projected2024: '434,250'
-    },
-    {
-      key: '4',
-      category: 'Total',
-      ytd2022: '1,156,920',
-      ytd2023: '1,248,567',
-      change: '+7.9%',
-      projected2023: '1,735,817',
-      projected2024: '1,925,000'
-    }
-  ];
+ if(resSpendingTrendsData_S?.data !=undefined){
+    YTYKeys=Object.keys(resSpendingTrendsData_S?.data?.year_over_year_comparison[0]) as Array <any>;
+  console.log(YTYKeys);
+ }
 
-  const comparisonColumns = [
-    {
-      title: 'Category',
-      dataIndex: 'category',
-      key: 'category',
-      width: 150,
-    },
-    {
-      title: '2022 YTD',
-      dataIndex: 'ytd2022',
-      key: 'ytd2022',
-      width: 120,
-      render:(data:any)=>(
-        <span><Rupees className='inline-block'/>{data}</span>
-      )
-    },
-    {
-      title: '2023 YTD',
-      dataIndex: 'ytd2023',
-      key: 'ytd2023',
-      width: 120,
-      render:(data:any)=>(
-        <span><Rupees className='inline-block'/>{data}</span>
-      )
-    },
-    {
-      title: 'Change',
-      dataIndex: 'change',
-      key: 'change',
-      width: 100,
-      render: (change: string) => (
-        <Tag color={change.startsWith('+') ? 'green' : 'red'}>
-          {change.startsWith('+') ? <RiseOutlined /> : <FallOutlined />} {change}
-        </Tag>
-      ),
-    },
-    {
-      title: 'Projected 2023',
-      dataIndex: 'projected2023',
-      key: 'projected2023',
-      width: 130,
-      render:(data:any)=>(
-        <span><Rupees className='inline-block'/>{data}</span>
-      )
-    },
-    {
-      title: 'Projected 2024',
-      dataIndex: 'projected2024',
-      key: 'projected2024',
-      width: 130,
-      render:(data:any)=>(
-        <span><Rupees className='inline-block'/>{data}</span>
-      )
-    },
-  ];
-
+  if(YTYKeys.length>0){
+    comparisonColumns = [
+      {
+        title: 'Category',
+        dataIndex: YTYKeys[0],
+        key: YTYKeys[0],
+        width: 150,
+      },
+      {
+        title: YTYKeys[1],
+        dataIndex: YTYKeys[1],
+        key: YTYKeys[1],
+        width: 120,
+        render:(data:any)=>(
+          <span><Rupees className='inline-block'/>{data}</span>
+        )
+      },
+      {
+        title:  YTYKeys[2],
+        dataIndex:  YTYKeys[2],
+        key:  YTYKeys[2],
+        width: 120,
+        render:(data:any)=>(
+          <span><Rupees className='inline-block'/>{data}</span>
+        )
+      },
+      {
+        title:  YTYKeys[3],
+        dataIndex:  YTYKeys[3],
+        key:  YTYKeys[3],
+        width: 100,
+        render: (change: string) => (
+          <Tag color={change.startsWith('+') ? 'green' : 'red'}>
+            {change.startsWith('+') ? <RiseOutlined /> : <FallOutlined />} {change}
+          </Tag>
+        ),
+      },
+      {
+        title:  YTYKeys[4],
+        dataIndex:  YTYKeys[4],
+        key:  YTYKeys[4],
+        width: 130,
+        render:(data:any)=>(
+          <span><Rupees className='inline-block'/>{data}</span>
+        )
+      },
+      {
+        title:  YTYKeys[5],
+        dataIndex:  YTYKeys[5],
+        key:  YTYKeys[5],
+        width: 130,
+        render:(data:any)=>(
+          <span><Rupees className='inline-block'/>{data}</span>
+        )
+      },
+    ];
+  }
   return (
     <Layout style={{ minHeight: '100vh'}}>
       <Sidebar />
@@ -194,38 +144,28 @@ const SpendingTrends = () => {
               Analyze historical spending patterns and view future projections
             </Text>
           </div>
-
-          <Space>
-            <DatePicker.RangePicker
-              suffixIcon={<CalendarOutlined />}
-              defaultValue={[null, null]}
-              placeholder={['Jan 01, 2023', 'Jul 16, 2025']}
-              style={{ width: 240 }}
-            />
-            <Button icon={<FilterOutlined />}>Filters</Button>
-            <Button icon={<DownloadOutlined />}>Export</Button>
-          </Space>
         </div>
 
         <Content style={{ padding: '32px' }}>
-           <CardLoader showBorder={false}/>
+          {resSpendingTrendsData_S?.data===undefined && <CardLoader showBorder={false}/>}
           {/* Top Metrics Cards */}
           <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
-            {metricsData.map((metric, index) => (
+            {resSpendingTrendsData_S?.data?.spending_trends?.map((metric:any, index:number) => (
               <Col xs={24} sm={12} lg={6} key={index}>
                 <Card style={{ height: '100%', textAlign: 'center' }}>
                   <Title level={4} style={{ color: '#8c8c8c', fontSize: 14, fontWeight: 400, marginBottom: 4 }}>
-                    {metric.title}
+                    {metric.label}
                   </Title>
                   <Title level={3} style={{ margin: 0, marginBottom: 8 }}>
                     {metric.value}
                   </Title>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-                    <Tag color="green" style={{ margin: 0 }}>
-                      <RiseOutlined /> {metric.change}
+                    <Tag color={parseInt(metric.growth)>0 ?'green' : 'red'} style={{ margin: 0 }}>
+                      {parseInt(metric.growth) >0 ? <RiseOutlined /> : <FallOutlined /> } {metric.growth}
+                      
                     </Tag>
                      <Text style={{ color: '#8c8c8c', fontSize: 12 }}>
-                    {metric.subtitle}
+                    {metric.comparison}
                   </Text>
                   </div>
                  
@@ -233,55 +173,15 @@ const SpendingTrends = () => {
               </Col>
             ))}
           </Row>
-           <BarChartLoader />
+          {resSpendingTrendsData_S==undefined || resSpendingTrendsData_S.length==0 && <BarChartLoader />}
+          
 
           {/* Expense Trends Chart */}
-          <Card style={{ marginBottom: 32 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-              <div>
-                <Title level={4} style={{ margin: 0, marginBottom: 4 }}>
-                  Expense Trends Over Time
-                </Title>
-                <Text style={{ color: '#8c8c8c' }}>
-                  Monthly expense breakdown by category
-                </Text>
-              </div>
-              <Space>
-                <Select defaultValue="monthly" style={{ width: 120 }}>
-                  <Option value="monthly">Monthly</Option>
-                  <Option value="quarterly">Quarterly</Option>
-                  <Option value="yearly">Yearly</Option>
-                </Select>
-                <Select defaultValue="all" style={{ width: 140 }}>
-                  <Option value="all">All Categories</Option>
-                  <Option value="air">Air Travel</Option>
-                  <Option value="hotels">Hotels</Option>
-                  <Option value="transport">Transport</Option>
-                </Select>
-              </Space>
-            </div>
-
-            <div style={{
-              height: 300,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: '#fafafa',
-              borderRadius: 6,
-              color: '#8c8c8c',
-              flexDirection: 'column',
-              gap: 8
-            }}>
-              <RiseOutlined style={{ fontSize: 48, color: '#d9d9d9' }} />
-              <Text style={{ color: '#8c8c8c' }}>
-                Expense trend chart would appear here
-              </Text>
-              <Text style={{ color: '#8c8c8c', fontSize: 12 }}>
-                Showing monthly trends across all expense categories
-              </Text>
-            </div>
-          </Card>
-          <LoaderCard count={2} />
+         {/* Expense Trends Chart */}
+         { resSpendingTrendsData_S?.data?.expense_forcast !=undefined && 
+            <ExpenseTrendsChart chartData={resSpendingTrendsData_S?.data?.expense_forcast}/>
+         }
+           {resSpendingTrendsData_S?.data===undefined && <LoaderCard count={2} />}
           {/* Bottom Row - Category Distribution and Spending Projections */}
           <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
             {/* Category Distribution */}
@@ -357,7 +257,7 @@ const SpendingTrends = () => {
                         <Text strong style={{ display: 'block' }}>{item.period}</Text>
                         <Text style={{ color: '#8c8c8c', fontSize: 12 }}>{item.subtitle}</Text>
                       </div>
-                      <Text strong style={{ color: '#1890ff', fontSize: 16 }}>{item.amount}</Text>
+                      <Text strong style={{ color: '#000', fontSize: 16 }}>{item.amount}</Text>
                     </div>
                   ))}
                 </div>
@@ -399,16 +299,17 @@ const SpendingTrends = () => {
               )
             }
           </Card>
-           <TableLoader />
+           {resSpendingTrendsData_S?.data===undefined&& <TableLoader />}
           {/* Year-over-Year Comparison */}
           <Card>
             <Title level={4} style={{ marginBottom: 16 }}>
               Year-over-Year Comparison
             </Title>
-            {comparisonData.length > 0 && comparisonData !== undefined ?
+           
+            {resSpendingTrendsData_S?.data?.year_over_year_comparison?.length > 0 && resSpendingTrendsData_S?.data?.year_over_year_comparison !== undefined ?
               (
                 <Table
-                  dataSource={comparisonData}
+                  dataSource={resSpendingTrendsData_S?.data?.year_over_year_comparison}
                   columns={comparisonColumns}
                   pagination={false}
                   size="middle"

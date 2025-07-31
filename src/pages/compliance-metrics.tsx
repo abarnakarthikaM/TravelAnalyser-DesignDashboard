@@ -167,6 +167,7 @@ export default function ComplianceMetrics() {
     //   setCommonTabResponse_S(resExpenseBreakdown)
     // }
   }, [resComplainceTabData])
+  console.log(resComplainceTabData)
 
   /***********
    * Des:this function call's when change the date picker option

@@ -456,148 +456,62 @@ const AIInsights = () => {
                 </Card>
 
                 {/* Forecast Cards */}
+                {resAiInsightTab_S?.data !=undefined && 
                 <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
-                  <Col xs={24} md={8}>
-                    <Card>
-                      <div style={{ textAlign: 'center', marginBottom: 16 }}>
-                        <Text style={{ fontSize: 12, color: '#8c8c8c' }}>Q4 2023 Forecast</Text>
-                        <Title level={2} style={{ margin: 0, marginBottom: 4 }}>
-                          $487,250
-                        </Title>
-                        <Text style={{ fontSize: 12, color: '#8c8c8c' }}>
-                          -31% vs Q3 actual
-                        </Text>
-                        <Text style={{ fontSize: 12, color: '#8c8c8c', display: 'block' }}>
-                          Confidence: 92%
-                        </Text>
-                      </div>
+                  {resAiInsightTab_S?.data.map((cardData:any)=>(
+                     <Col xs={24} md={8}>
+                      <Card>
+                        <div style={{ textAlign: 'center', marginBottom: 16 }}>
+                          <Text style={{ fontSize: 12, color: '#8c8c8c' }}>{cardData.label}</Text>
+                          <Title level={2} style={{ margin: 0, marginBottom: 4 }}>
+                           <Rupees className='inline-block' height={"18px"} width={"18px"} />{cardData.total}
+                          </Title>
+                          <Text style={{ fontSize: 12, color: '#8c8c8c' }}>
+                            {cardData.change}
+                          </Text>
+                        </div>
+                        
+                        <div style={{ marginBottom: 8 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                            <Text style={{ fontSize: 12 }}>Air Travel</Text>
+                            <Text style={{ fontSize: 12, fontWeight: 500 }}>
+                              <Rupees className='inline-block' height={"12px"} width={"12px"} />{cardData.breakdown.AirTravel} ({cardData.breakdown.AirTravelpercent})
+                              </Text>
+                          </div>
+                          <div style={{ height: 4, backgroundColor: '#f0f0f0', borderRadius: 2, marginBottom: 4 }}>
+                            <div style={{ width: cardData.breakdown.AirTravelpercent, height: '100%', backgroundColor: '#1890ff', borderRadius: 2 }}></div>
+                          </div>
+                        </div>
 
-                      <div style={{ marginBottom: 8 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                          <Text style={{ fontSize: 12 }}>Air Travel</Text>
-                          <Text style={{ fontSize: 12, fontWeight: 500 }}>$210,260</Text>
+                        <div style={{ marginBottom: 8 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                            <Text style={{ fontSize: 12 }}>Hotels</Text>
+                            <Text style={{ fontSize: 12, fontWeight: 500 }}>
+                              <Rupees className='inline-block' height={"12px"} width={"12px"} />{cardData.breakdown.Hotels} ({ cardData.breakdown.HotelsPercentage})
+                            </Text>
+                          </div>
+                          <div style={{ height: 4, backgroundColor: '#f0f0f0', borderRadius: 2, marginBottom: 4 }}>
+                            <div style={{ width: cardData.breakdown.HotelsPercentage, height: '100%', backgroundColor: '#52c41a', borderRadius: 2 }}></div>
+                          </div>
                         </div>
-                        <div style={{ height: 4, backgroundColor: '#f0f0f0', borderRadius: 2, marginBottom: 4 }}>
-                          <div style={{ width: '43%', height: '100%', backgroundColor: '#1890ff', borderRadius: 2 }}></div>
-                        </div>
-                      </div>
 
-                      <div style={{ marginBottom: 8 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                          <Text style={{ fontSize: 12 }}>Hotels</Text>
-                          <Text style={{ fontSize: 12, fontWeight: 500 }}>$179,540</Text>
+                        <div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                            <Text style={{ fontSize: 12 }}>Ground Transport</Text>
+                            <Text style={{ fontSize: 12, fontWeight: 500 }}>
+                              <Rupees className='inline-block' height={"12px"} width={"12px"} />{cardData.breakdown.GroundTransport} ({ cardData.breakdown.groundtransportpercentage})
+                            </Text>
+                          </div>
+                          <div style={{ height: 4, backgroundColor: '#f0f0f0', borderRadius: 2 }}>
+                            <div style={{ width:cardData.breakdown.groundtransportpercentage, height: '100%', backgroundColor: '#722ed1', borderRadius: 2 }}></div>
+                          </div>
                         </div>
-                        <div style={{ height: 4, backgroundColor: '#f0f0f0', borderRadius: 2, marginBottom: 4 }}>
-                          <div style={{ width: '37%', height: '100%', backgroundColor: '#52c41a', borderRadius: 2 }}></div>
-                        </div>
-                      </div>
-
-                      <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                          <Text style={{ fontSize: 12 }}>Ground Transport</Text>
-                          <Text style={{ fontSize: 12, fontWeight: 500 }}>$97,450</Text>
-                        </div>
-                        <div style={{ height: 4, backgroundColor: '#f0f0f0', borderRadius: 2 }}>
-                          <div style={{ width: '20%', height: '100%', backgroundColor: '#722ed1', borderRadius: 2 }}></div>
-                        </div>
-                      </div>
-                    </Card>
-                  </Col>
-
-                  <Col xs={24} md={8}>
-                    <Card>
-                      <div style={{ textAlign: 'center', marginBottom: 16 }}>
-                        <Text style={{ fontSize: 12, color: '#8c8c8c' }}>Q1 2024 Forecast</Text>
-                        <Title level={2} style={{ margin: 0, marginBottom: 4 }}>
-                          $512,800
-                        </Title>
-                        <Text style={{ fontSize: 12, color: '#8c8c8c' }}>
-                          +5% vs Q4 forecast
-                        </Text>
-                        <Text style={{ fontSize: 12, color: '#8c8c8c', display: 'block' }}>
-                          Confidence: 85%
-                        </Text>
-                      </div>
-
-                      <div style={{ marginBottom: 8 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                          <Text style={{ fontSize: 12 }}>Air Travel</Text>
-                          <Text style={{ fontSize: 12, fontWeight: 500 }}>$230,760</Text>
-                        </div>
-                        <div style={{ height: 4, backgroundColor: '#f0f0f0', borderRadius: 2, marginBottom: 4 }}>
-                          <div style={{ width: '45%', height: '100%', backgroundColor: '#1890ff', borderRadius: 2 }}></div>
-                        </div>
-                      </div>
-
-                      <div style={{ marginBottom: 8 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                          <Text style={{ fontSize: 12 }}>Hotels</Text>
-                          <Text style={{ fontSize: 12, fontWeight: 500 }}>$179,480</Text>
-                        </div>
-                        <div style={{ height: 4, backgroundColor: '#f0f0f0', borderRadius: 2, marginBottom: 4 }}>
-                          <div style={{ width: '35%', height: '100%', backgroundColor: '#52c41a', borderRadius: 2 }}></div>
-                        </div>
-                      </div>
-
-                      <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                          <Text style={{ fontSize: 12 }}>Ground Transport</Text>
-                          <Text style={{ fontSize: 12, fontWeight: 500 }}>$102,560</Text>
-                        </div>
-                        <div style={{ height: 4, backgroundColor: '#f0f0f0', borderRadius: 2 }}>
-                          <div style={{ width: '20%', height: '100%', backgroundColor: '#722ed1', borderRadius: 2 }}></div>
-                        </div>
-                      </div>
-                    </Card>
-                  </Col>
-
-                  <Col xs={24} md={8}>
-                    <Card>
-                      <div style={{ textAlign: 'center', marginBottom: 16 }}>
-                        <Text style={{ fontSize: 12, color: '#8c8c8c' }}>Annual 2024 Forecast</Text>
-                        <Title level={2} style={{ margin: 0, marginBottom: 4 }}>
-                          $1,925,000
-                        </Title>
-                        <Text style={{ fontSize: 12, color: '#8c8c8c' }}>
-                          +8.5% vs 2023 projected
-                        </Text>
-                        <Text style={{ fontSize: 12, color: '#8c8c8c', display: 'block' }}>
-                          Confidence: 78%
-                        </Text>
-                      </div>
-
-                      <div style={{ marginBottom: 8 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                          <Text style={{ fontSize: 12 }}>Air Travel</Text>
-                          <Text style={{ fontSize: 12, fontWeight: 500 }}>$866,250</Text>
-                        </div>
-                        <div style={{ height: 4, backgroundColor: '#f0f0f0', borderRadius: 2, marginBottom: 4 }}>
-                          <div style={{ width: '45%', height: '100%', backgroundColor: '#1890ff', borderRadius: 2 }}></div>
-                        </div>
-                      </div>
-
-                      <div style={{ marginBottom: 8 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                          <Text style={{ fontSize: 12 }}>Hotels</Text>
-                          <Text style={{ fontSize: 12, fontWeight: 500 }}>$673,750</Text>
-                        </div>
-                        <div style={{ height: 4, backgroundColor: '#f0f0f0', borderRadius: 2, marginBottom: 4 }}>
-                          <div style={{ width: '35%', height: '100%', backgroundColor: '#52c41a', borderRadius: 2 }}></div>
-                        </div>
-                      </div>
-
-                      <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                          <Text style={{ fontSize: 12 }}>Ground Transport</Text>
-                          <Text style={{ fontSize: 12, fontWeight: 500 }}>$385,000</Text>
-                        </div>
-                        <div style={{ height: 4, backgroundColor: '#f0f0f0', borderRadius: 2 }}>
-                          <div style={{ width: '20%', height: '100%', backgroundColor: '#722ed1', borderRadius: 2 }}></div>
-                        </div>
-                      </div>
-                    </Card>
-                  </Col>
+                      </Card>
+                    </Col>
+                  ))}
+                 
                 </Row>
+              }
               </div>
 
               {/* Bottom Section - Budget Impact and Market Trends */}

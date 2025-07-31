@@ -11,6 +11,7 @@ import { LoaderCard, RecommendationSkeleton, TableLoader } from '@/components/Lo
 import Header from "@/components/dashboard/header";
 import { useDispatch, useSelector } from "react-redux";
 import { setFilterdate, setDatetype } from "../stores/Headerslice"
+import { formatIndianAmount } from '@/utils/commonFunctions';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -190,6 +191,7 @@ export default function VendorComparison() {
   useEffect(() => {
     setVendorResponse_S(resVendorComparission)
   }, [resVendorComparission])
+  console.log(resVendorResponse_S)
 
   useEffect(() => {
     if (resVendorResponse_S.isSuccess) {
@@ -393,7 +395,7 @@ export default function VendorComparison() {
                                   </div>
                                 </div>
                                 <div style={{ display: 'flex', marginBottom: 4 }}>
-                                  <Text style={{ fontSize: 12, marginRight: "5px" }}>1123212</Text>
+                                  <Text style={{ fontSize: 12,marginRight:"5px"}}>{formatIndianAmount((company.spend))}</Text>
                                   <Text style={{ fontSize: 12 }}>({company.spend_percentage}%)</Text>
                                 </div>
                                 <Progress

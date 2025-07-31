@@ -168,18 +168,21 @@ const TopSpenders = () => {
               </Row>
               {/* Department Spending Breakdown */}
               <Card style={{ marginBottom: 32 }}>
-                <Title level={4} style={{ marginBottom: 16 }}>
-                  Department Spending Breakdown
-                </Title>
-                <Text
-                  style={{
-                    color: "#8c8c8c",
-                    display: "block",
-                    marginBottom: 24,
-                  }}
-                >
-                  Detailed analysis of departmental travel expenses
-                </Text>
+                <div className="cls-cardbody-header">
+                  <Title level={4} style={{ marginBottom: 16 }}>
+                    Department Spending Breakdown
+                  </Title>
+                  <Text
+                    style={{
+                      color: "#8c8c8c",
+                      display: "block",
+                      marginBottom: 24,
+                    }}
+                  >
+                    Detailed analysis of departmental travel expenses
+                  </Text>
+                </div>
+                
                 {resTopSpender.isSuccess && (resTopSpender.data as any)?.data?.spending_breakdown && (resTopSpender?.data as any)?.data?.spending_breakdown?.title === "Department Spending Breakdown" ?
                   (<div style={{ marginBottom: 24, overflow: "auto", height: '300px' }}>
                     {deptSpendingBreakdown && deptSpendingBreakdown !== undefined ?
@@ -188,7 +191,7 @@ const TopSpenders = () => {
                           {(deptSpendingBreakdown != undefined && deptSpendingBreakdown?.length > 0) ?
                             <>
                               {deptSpendingBreakdown?.map((dept: any, index: number) => (
-                                <div key={index} style={{ marginBottom: 20 }}>
+                                <div key={index} style={{ marginBottom: 20,paddingRight:10 }}>
                                   <div
                                     style={{
                                       display: "flex",
@@ -291,11 +294,11 @@ const TopSpenders = () => {
                       </Text>
                       {deptExpenseCategories?.groups.length > 0 ?
                         (
-                          <div style={{ height: 365, overflowY: 'auto' }}>
+                          <div style={{ height: 365, overflowY: 'auto',paddingRight:10 }}>
                             {/* Sales Department */}
                             {deptExpenseCategories?.groups?.map((data: any) => (
                               <div style={{ marginBottom: 32 }}>
-                                <Title level={5} style={{ marginBottom: 16 }}>
+                                <Title level={5} style={{ marginBottom: 16, color: "#000" }}>
                                   {data.group_name}
                                 </Title>
                                 {data?.categories.map((subdata: any) => (
@@ -400,7 +403,7 @@ const TopSpenders = () => {
                     </div>
 
                     {/* Trend Summary */}
-                    <div style={{ height: 100, overflowY: 'scroll' }}>
+                    <div style={{ height: 100, overflowY: 'scroll',paddingRight:7 }}>
                       <div style={{ marginBottom: 16 }}>
                         <div
                           style={{

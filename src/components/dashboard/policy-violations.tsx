@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Table, Card, Progress, Tag, Pagination, Select, Empty } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { formatDate } from '@/utils/dateFunctions';
@@ -18,58 +18,6 @@ interface PolicyViolation {
   status: 'Pending Review' | 'Approved' | 'Rejected';
 }
 
-const data: PolicyViolation[] = [
-  {
-    key: '1',
-    date: '2023-11-15',
-    employee: 'David Rodriguez',
-    department: 'Sales',
-    violationType: 'Last-minute booking',
-    severity: 'High',
-    costImpact: 850,
-    status: 'Pending Review'
-  },
-  {
-    key: '2',
-    date: '2023-11-14',
-    employee: 'Jennifer Smith',
-    department: 'Marketing',
-    violationType: 'Non-preferred vendor',
-    severity: 'Medium',
-    costImpact: 320,
-    status: 'Approved'
-  },
-  {
-    key: '3',
-    date: '2023-11-13',
-    employee: 'Michael Brown',
-    department: 'Engineering',
-    violationType: 'Missing receipt',
-    severity: 'Low',
-    costImpact: 0,
-    status: 'Rejected'
-  },
-  {
-    key: '4',
-    date: '2023-11-12',
-    employee: 'Amanda Lee',
-    department: 'Sales',
-    violationType: 'Premium class upgrade',
-    severity: 'High',
-    costImpact: 1250,
-    status: 'Rejected'
-  },
-  {
-    key: '5',
-    date: '2023-11-10',
-    employee: 'Kevin Patel',
-    department: 'Product',
-    violationType: 'Exceeding hotel limit',
-    severity: 'Medium',
-    costImpact: 175,
-    status: 'Approved'
-  }
-];
 
 const violationTypes = [
   { type: 'Last-minute booking', count: 42, percentage: 29 },
@@ -94,6 +42,26 @@ export function PolicyViolations({
   violationComplaince: any;
   resComplainceTabData:any;
 }) {
+  
+  const [selectedSeverity, setSelectedSeverity] = useState<string>('all');
+  const [violationtabledata_S,setViolationTableData_S]=useState<any>([]);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [pageSize, setPageSize] = React.useState(5);
+
+  useEffect(()=>{
+    setViolationTableData_S(violationComplaince?.data?.recent_policy_violations?.data)
+  },[violationComplaince])
+  console.log(violationtabledata_S)
+  console.log(violationComplaince?.data?.recent_policy_violations?.data)
+
+    // Handle page changes
+  const handlePageChange = (page: number, size?: number) => {
+    setCurrentPage(page);
+    if (size && size !== pageSize) {
+      setPageSize(size);
+      setCurrentPage(1); // Reset to first page when page size changes
+    }
+  };
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'High': return 'red';
@@ -111,13 +79,25 @@ export function PolicyViolations({
       default: return 'default';
     }
   };
-
+  
+useEffect(()=>{
+  console.log(selectedSeverity)
+  if(selectedSeverity==='all'){
+      setViolationTableData_S(violationComplaince?.data?.recent_policy_violations?.data)
+  }else{
+    let filteredData=violationComplaince?.data?.recent_policy_violations?.data.filter((item:any) => item.severity.toLowerCase() === selectedSeverity);
+    console.log(filteredData)
+    setViolationTableData_S(filteredData)
+  }
+},[selectedSeverity])
+console.log(violationtabledata_S)
   const columns: ColumnsType<PolicyViolation> = [
     {
       title: 'Date',
       dataIndex: 'date',
       key: 'date',
       sorter: true,
+      width:130,
       render: (date: any) => (formatDate(date))
     },
     {
@@ -147,7 +127,11 @@ export function PolicyViolations({
       title: 'Cost Impact',
       dataIndex: 'cost_impact',
       key: 'cost_impact',
-      render: (amount: number) => amount === 0 ? '0' : <> <Rupees className='inline-block' />{`${amount.toLocaleString()}`}</>,
+        render: (amount: any) => (
+                <span>
+                  <Rupees className="inline-block" height={15} width={15}/> {amount}
+                </span>
+            ),
       sorter: true,
     },
     {
@@ -160,7 +144,7 @@ export function PolicyViolations({
     }
   ];return (
 
-    <div style={{ padding: '24px' }}>
+    <div style={{ padding: '24px 10px' }}>
       {/* Recent Policy Violations Table */}
       
 
@@ -176,6 +160,8 @@ export function PolicyViolations({
           </div>
           <Select
             defaultValue="All Severities"
+            value={selectedSeverity}
+           onChange={(value) => setSelectedSeverity(value)} 
             style={{ width: 140 }}
             options={[
               { value: 'all', label: 'All Severities' },
@@ -193,24 +179,22 @@ export function PolicyViolations({
                 <>
                   <Table
                     columns={columns}
-                    dataSource={violationComplaince?.data?.recent_policy_violations?.data}
-                    pagination={false}
+                    dataSource={violationtabledata_S}
                     size="middle"
                     style={{ marginBottom: 16 }}
+                    pagination={{
+                        current: currentPage,
+                        pageSize: pageSize,
+                        total: violationComplaince?.data?.recent_policy_violations?.data?.length,
+                        showSizeChanger: true,
+                        showQuickJumper: true,
+                        onChange: handlePageChange,
+                        onShowSizeChange: handlePageChange,
+                        showTotal: (total, range) =>
+                          `Showing ${range[0]}-${range[1]} of ${total} violations`,
+                        pageSizeOptions: ['3', '5', '10', '20', '50'],
+                      }}
                   />
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ color: '#8c8c8c', fontSize: 14 }}>
-                      Showing 5 of {violationComplaince?.data?.recent_policy_violations?.data.length} violations
-                    </span>
-                    <Pagination
-                      current={1}
-                      total={violationComplaince?.data?.recent_policy_violations?.data?.length}
-                      pageSize={5}
-                      showSizeChanger={false}
-                      simple
-                    />
-                  </div>
                 </>
               ) : (
                 <Empty className='cls-whole-empty' />

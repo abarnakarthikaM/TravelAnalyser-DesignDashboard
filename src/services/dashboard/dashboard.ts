@@ -150,17 +150,28 @@ export const {
 } = AIInsightService;
 
 
+/***********
+ * DES:service call for AI insights page
+ */
 
+export const spendingTrends = CommonService.enhanceEndpoints({
+  addTagTypes: ["spendingTrends"],
+}).injectEndpoints({
+    endpoints: (build) => ({
+        getSpendingTrendsService: build.query<ApiResponse<any>, { RequestDataFormat: any }>({
+            query: (params) => ({
+                url: params.RequestDataFormat.url,
+                method: "GET",
+            }),
+            providesTags: ["spendingTrends"],
+        })
+    }),
+    overrideExisting: true,
+});
 
-
-
-
-
-
-
-
-
-
+export const {
+    useLazyGetSpendingTrendsServiceQuery
+} = spendingTrends;
 
 
 

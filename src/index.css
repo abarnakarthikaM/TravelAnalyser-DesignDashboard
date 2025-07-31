@@ -288,3 +288,19 @@ body,
 .ant-layout .ant-layout-sider .ant-layout-sider-children .ant-menu .ant-menu-item .ant-menu-title-content{
     font-family: "poppins-semibold" !important;
 }
+/* Target the scrollbar */
+::-webkit-scrollbar {
+  width: 7px;          /* Vertical scrollbar width */
+  height: 8px;         /* Horizontal scrollbar height */
+}
+
+/* Track (background of scrollbar) */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle (scroll thumb) */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}

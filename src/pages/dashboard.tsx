@@ -23,6 +23,7 @@ import { calculateDateValues, formatDate } from "@/utils/dateFunctions";
 import Header from "@/components/dashboard/header";
 import { useDispatch, useSelector } from "react-redux";
 import { setFilterdate } from "../stores/Headerslice"
+import initChatbot from '@/assets/js/chatbot.js';
 const tabItems = [
   {
     key: "expense-breakdown",
@@ -63,6 +64,9 @@ export default function Dashboard() {
   const [reqDashboardOverview, resDashboardOverview] = useLazyGetDashboardOverviewQuery();
   const [reqExpenseBreakdown, resExpenseBreakdown] = useLazyGetDashboardOverviewQuery();
   let vendorHighlights: any;
+  useEffect(() => {
+  initChatbot(document, "script");
+}, []);
   /********
    * request service call for Expense card and Top Expenses  service call
    */

@@ -62,7 +62,7 @@ export default function Login() {
           maxHeight: '100vh'
         }}
       >
-        <div style={{ maxWidth: 530, paddingTop: '20px', paddingBottom: '20px' }}>
+        <div style={{ maxWidth: 630, paddingTop: '20px', paddingBottom: '20px' }}>
           <div style={{ marginBottom: 30 }}>
             <div
               style={{

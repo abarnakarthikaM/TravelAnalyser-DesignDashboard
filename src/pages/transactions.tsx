@@ -98,6 +98,7 @@ export default function Transactions() {
       dataIndex: "date",
       key: "date",
       width: 110,
+      render:(date:any)=>formatDate(date)
     },
     {
       title: "Employee",
@@ -132,16 +133,22 @@ export default function Transactions() {
       title: "Amount",
       dataIndex: "amount",
       key: "amount",
-      width: 100,
-      render: (amount: any) => {
-        const num = Number(amount);
-        return (
-          <>
-            <Rupees className="inline-block" />
-            {isNaN(num) ? "--" : num.toFixed(2)}
-          </>
-        );
-      },
+      width: 150,
+      render: (amount: any) => (
+          <span>
+            <Rupees className="inline-block" height={15} width={15}/> {amount}
+          </span>
+      )
+      
+      // render: (amount: any) => {
+      //   const num = Number(amount);
+      //   return (
+      //     <>
+      //       <Rupees className="inline-block" />
+      //       {isNaN(num) ? "--" : num.toFixed(2)}
+      //     </>
+      //   );
+      // },
     },
     {
       title: "Status",
